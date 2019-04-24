@@ -13,13 +13,28 @@ export default {
 
     },
     async fetchProductos() {
-        try {
-                let response = await fetch('http://13.90.59.76/ApiKaraoke/public/api/videos');
-                let responseJsonData = await response.json();
-                return responseJsonData;
-            }
-        catch(e) {
-            console.log(e)
+        getProductos = () => {
+        
+       
+            const requestProductos = new Request("https://precios.mcypcorrientes.gob.ar/api/producto",
+                    { method: 'GET'});
+        
+        
+                fetch(requestProductos)
+                    .then(response => {
+                        if (response.status === 200) {
+        
+                            productos = JSON.parse(response._bodyText);
+                            this.setState({ productos: productos });
+                            console.log(productos)
+                            this.render();
+                        }
+                        else {
+                            console.log("ERROR EN NOTIFICACIONES")
+                            console.log(response.status);
+        
+                        }
+                    })
         }
     },
     async fetchCategoria() {

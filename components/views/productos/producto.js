@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, Dimensions, FlatList, TouchableOpacity } from 'react-native';
+import { Constants } from 'expo';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { SearchBar, ListItem } from 'react-native-elements';
 import SingleCardView from 'react-native-simple-card';
@@ -10,6 +11,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
+const BARRATOP = Constants.statusBarHeight;
 
 export default class Productos extends React.Component {
 
@@ -28,8 +30,9 @@ export default class Productos extends React.Component {
       _keyExtractor = (item, index) => item.id;
     
     async componentDidMount() {
-        const productos = await api.fetchProductos();
-        this.setState({ productos });
+        this.getProductos();
+        //const productos = await api.fetchProductos();
+        //this.setState({ productos });
         //const productos = await fetch(URL + 'producto_supermercado');
         // const requestProductos = new Request(URL + 'producto_supermercado', 
         // {method: 'GET'});
@@ -66,36 +69,52 @@ export default class Productos extends React.Component {
 
     componentWillMount() {
 
-      //this.getProductos();
+      
     }
 
     getProductos = () => {
-      const requestProductos = new Request(URL + 'producto_supermercado', 
-        {method: 'GET'});
-
-        fetch(requestProductos)
-          .then(response => {
-            if (response.status === 200) {
-              const productos = response.json();
-              this.setState({productos});
-              console.log('prod');
-              console.log(this.state.productos);
-            }
-            else {
-              console.log("Error en productos");
-              console.log(respuesta.status);
-            }
-          })
+      const requestProductos = new Request("https://precios.mcypcorrientes.gob.ar/api/producto",
+                { method: 'GET'});
+    
+    
+            fetch(requestProductos)
+                .then(response => {
+                    if (response.status === 200) {
+    
+                        productos = JSON.parse(response._bodyText);
+                        this.setState({ productos: productos });
+                        console.log(productos)
+                        this.render();
+                    }
+                    else {
+                        console.log("ERROR EN NOTIFICACIONES")
+                        console.log(response.status);
+    
+                    }
+                })
     }
 
-    renderizar = () => {
-      let listado = [];
-      for (let index = 0; index < this.state.data.length; index++) {
-        listado.push(<ListItem key={'id' + index}
-          title={"marca prod id" + data[index].id }/>
-        )
+    viewProductoListado = () =>{
+      let botones = []
+
+      for (let index = 0; index < this.state.produtos.length; index++) {
+          botones.push(
+              <TouchableOpacity
+                  // key={"cadena_" + index}
+                  // onPress={() => this.setProducto(this.state.produtos[index])}
+                  // style={styles.button}
+              >
+                  <Text styles={{ fontSize: 24, color: "green" }}> {this.state.produtos[index].id}</Text>
+              </TouchableOpacity>
+          )
       }
-    }
+      return <View style={styles.view}>
+          <Text>Seleccionar Producto</Text>
+          <ScrollView>
+              {botones}
+          </ScrollView>
+      </View>
+}
 
     SearchFilterFunction = text => {    
         const newData = this.arrayholder.filter(item => {      
@@ -148,14 +167,7 @@ export default class Productos extends React.Component {
           renderItem={({item}) => <Text style={styles.item}>{item.id}</Text>}
           keyExtractor={(x, i) => i} 
         /> */}
-        <FlatList
-          data={this.state.productos}
-          renderItem={({item, separators}) => (  
-            
-                <Text style={styles.texto}>{item.titulo} - {item.autor}</Text>
-          )}
-          keyExtractor={item => item.id.toString()}
-        />
+        {this.viewProductoListado()}
       </View>
     );
   }
@@ -164,6 +176,7 @@ export default class Productos extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: BARRATOP,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
