@@ -77,9 +77,9 @@ export default class Productos extends React.Component {
       }
       return <View style={styles.view}>
           <Text>Seleccionar Producto</Text>
-         
+         <ScrollView>
               {botones}
-          
+          </ScrollView>
       </View>
 }
 
