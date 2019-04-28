@@ -12,40 +12,56 @@ export default {
     }
 
     },
-    async fetchProductos() {
-        getProductos = () => {
-        
-       
-            const requestProductos = new Request("https://precios.mcypcorrientes.gob.ar/api/producto",
-                    { method: 'GET'});
-        
-        
-                fetch(requestProductos)
-                    .then(response => {
-                        if (response.status === 200) {
-        
-                            productos = JSON.parse(response._bodyText);
-                            this.setState({ productos: productos });
-                            console.log(productos)
-                            this.render();
-                        }
-                        else {
-                            console.log("ERROR EN NOTIFICACIONES")
-                            console.log(response.status);
-        
-                        }
-                    })
-        }
-    },
-    async fetchCategoria() {
+    async fetchProductosSupermecados() {
         try {
-            let response = await fetch(URL + 'categoria');
+            let response = await fetch(URL + 'productos_supermercados');
             let responseJsonData = await response.json();
             return responseJsonData;
         }
     catch(e) {
         console.log(e)
     }
+
+    },
+    async fetchProductos() {
+        try {
+            console.log("Fetch Productos");
+            let response = await fetch(URL + 'producto');
+            let responseJsonData = await response.json();
+            return responseJsonData;
+        }
+        catch(e) {
+            console.log(e)
+        }
+        
+        
+        // const requestProductos = new Request(URL + 'producto',
+        //         { method: 'GET'});
+        //         console.log(requestProductos);
+        // fetch(requestProductos)
+        //     .then(response => {
+        //         if (response.status === 200) {
+                    
+        //             const producto = JSON.parse(response._bodyText);
+        //             //const producto = prod.data;
+        //             return producto;
+        //         }
+        //         else {
+        //             console.log("ERROR EN PRODUCTO")
+        //             console.log(response.status);
+        //         }
+        //     })
+    },
+    async fetchCategoria() {
+        try {
+            console.log("Fetch Categorias");
+            let response = await fetch(URL + 'categoria');
+            let responseJsonData = await response.json();
+            return responseJsonData;
+        }
+        catch(e) {
+            console.log(e)
+        }
 
     },
 }

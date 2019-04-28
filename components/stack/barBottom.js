@@ -3,7 +3,9 @@ import { createStackNavigator, createBottomTabNavigator, createAppContainer } fr
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Inicio from '../views/inicio/inicio';
-import Productos from '../views/productos/producto'
+import Detalle from '../views/productos/detalle_producto';
+import Productos from '../views/productos/productos';
+import Categorias from '../views/productos/categorias';
 import App from '../../App';
 
 const InicioStack = createStackNavigator({
@@ -12,16 +14,25 @@ const InicioStack = createStackNavigator({
   headerMode: 'none',
 });
 
-const ProductosStack = createStackNavigator({
-    Productos: {screen: Productos}
+const CategoriasStack = createStackNavigator({
+    Categorias: {screen: Categorias},
+    Productos: {screen: Productos},
+    Detalle: {screen: Detalle},
   },{
     headerMode: 'none',
   });
 
+// const ProductosStack = createStackNavigator({
+//   Productos: {screen: Productos},
+//   Detalle: {screen: Detalle},
+// },{
+//   headerMode: 'none',
+// });
+
 const tabBarBottom = createBottomTabNavigator(
   {
     Inicio: InicioStack,
-    Productos: ProductosStack
+    Categorias: CategoriasStack
   },
   {
     initialRouteName: 'Inicio',
@@ -33,7 +44,7 @@ const tabBarBottom = createBottomTabNavigator(
         if (routeName === 'Inicio') {
                iconName = 'home';
         }
-        if (routeName === 'Productos') {
+        if (routeName === 'Categorias') {
            iconName = 'shopping-bag';
         }
         // } else if (routeName === 'Karaoke') {

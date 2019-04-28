@@ -45,7 +45,7 @@ export default class Inicio extends React.Component {
         >
             <View style={styles.card}>
                 <TouchableOpacity
-                    onPress={() => this.props.navigation.navigate('Productos')}
+                    onPress={() => this.props.navigation.navigate('Categorias')}
                     style={styles.btnCard}
                 >
                 <View style={styles.botones}>
