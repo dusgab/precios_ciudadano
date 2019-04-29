@@ -20,6 +20,7 @@ import {
     Spinner
   } from "native-base";
 
+import HeaderCustom from '../fijos/header';
 import api from '../../services/fetchProductos';
 
 const WIDTH = Dimensions.get('window').width;
@@ -94,22 +95,23 @@ export default class Detalle extends React.Component {
                   />
                 </Left>
                 <Body style={styles.bodyCard}>
-                    <Text>{prod[index].nombreProducto.toUpperCase()} {prod[index].peso.toUpperCase()}</Text>
-                    <Text note>Desde $ {prod[index].precio_lista.toUpperCase()} Hasta</Text>
+                    <Text>{prod[index].nombreProducto.toUpperCase()} {prod[index].nombreMarca.toUpperCase()} {prod[index].peso.toUpperCase()}</Text>
+                    <Text note>Desde $ {prod[index].precio_lista.toUpperCase()} Hasta $ {prod[index].precio_lista.toUpperCase()}</Text>
                     <Text note>Fecha relevada {prod[index].ultimaActualizacion.toUpperCase()}</Text>
                 </Body>
               </CardItem>
             )
         }
         return <Container style={styles.containerCard}>
-                <Header searchBar rounded style={styles.searchBar}>
+                {/* <Header searchBar rounded style={styles.searchBar}>
                 <Item>
                   <Icon active name="search" />
                   <Input placeholder="Buscar Producto" 
                       onChangeText={(text) => this.SearchFilterFunction(text)} />
                 </Item>
-                </Header>
+                </Header> */}
 
+                <HeaderCustom/>
                 <Content padder>
                   <Card style={styles.mb}>
                     {botones}
@@ -117,10 +119,10 @@ export default class Detalle extends React.Component {
                 </Content>
                 <Content padder>
                 <Header transparent>
-                  <Body style={flex= 9}>
+                  <Body style={{flex: 8}}>
                     <Text>Donde comprar este producto</Text>
                   </Body>
-                  <Right style={flex= 1}>
+                  <Right style={{flex: 2}}>
                     <Text>Precio</Text>
                   </Right>
                 </Header>
@@ -135,11 +137,11 @@ export default class Detalle extends React.Component {
                       />
                     </Left>
                     <Body style={{ flex: 8 }}>
-                        <Text>Carrefour</Text>
-                        <Text note>a 600 mts.</Text>
+                        <Text>IMPULSO</Text>
+                        <Text note>IRIGOYEN Y CORDOBA</Text>
                     </Body>
                     <Right style={{ flex: 2 }}>
-                      <Text>$ 65</Text>
+                      <Text>$ 20,90</Text>
                     </Right>
                   </CardItem>
                   </Card>

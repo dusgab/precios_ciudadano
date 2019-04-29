@@ -21,6 +21,7 @@ import {
   } from "native-base";
 
 import api from '../../services/fetchProductos';
+import HeaderCustom from '../fijos/header';
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -106,6 +107,7 @@ export default class Productos extends React.Component {
             )
         }
         return <Container style={styles.containerCard}>
+                <HeaderCustom/>
                 <Header searchBar rounded style={styles.searchBar}>
                 <Item>
                   <Icon active name="search" />

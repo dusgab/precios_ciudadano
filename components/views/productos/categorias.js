@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Dimensions, FlatList, TouchableOpacity } from 'react-native';
-import { Constants } from 'expo';
+import { Constants, Font } from 'expo';
 import {
   Container,
   Header,
@@ -14,9 +14,11 @@ import {
   Thumbnail,
   Left,
   Right,
-  Body
+  Body,
+  Spinner
 } from "native-base";
 
+import HeaderCustom from '../fijos/header';
 import api from '../../services/fetchProductos';
 
 const WIDTH = Dimensions.get('window').width;
@@ -32,6 +34,7 @@ export default class Categorias extends React.Component {
         loading: false,      
         categorias: [],      
         error: null,
+        loading: true
         }
      
         this.arrayholder = [] ;
@@ -40,7 +43,13 @@ export default class Categorias extends React.Component {
       async componentDidMount() {
     
         const categorias = await api.fetchCategoria();
-        this.setState({ categorias: categorias.data });
+
+        await Font.loadAsync({
+          Roboto: require("native-base/Fonts/Roboto.ttf"),
+          Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
+        }); 
+
+        this.setState({ categorias: categorias.data, loading: false });
       
     }
   
@@ -72,10 +81,11 @@ export default class Categorias extends React.Component {
             )
         }
         return <Container style={styles.containerCard}>
+                <HeaderCustom/>
                 <Content padder>
                   <Card style={styles.mb}>
                   <CardItem header bordered >
-                    <Text  style={color='green'}>Categorías</Text>
+                    <Text  style={{color:'green'}}>Categorías</Text>
                   </CardItem>
                     {botones}
                   </Card>
@@ -83,20 +93,27 @@ export default class Categorias extends React.Component {
               </Container>
       }
 
-  render() {
-    return (
-      <View style={styles.container}>
-      {this.state.categorias && this.viewCategoriasListado() }
-      </View>
-    );
-  }
-}
+      render() {
+        if (this.state.loading) {
+          return (
+            <Container style={styles.container}>
+              <Spinner color='green' />
+            </Container>
+          );
+        }
+        return (
+          <View style={styles.container}>
+            {this.state.categorias && this.viewCategoriasListado() }
+          </View>
+        );
+      }
+    }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: BARRATOP,
-    backgroundColor: 'gray',
+    backgroundColor: '#FFF',
     alignItems: 'center',
     justifyContent: 'center',
   },
