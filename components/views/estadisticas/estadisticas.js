@@ -17,8 +17,7 @@ import {
     Left,
     Right,
     Body, 
-    Spinner,
-    Toast
+    Spinner
   } from "native-base";
 
 import HeaderCustom from '../fijos/header';
@@ -28,7 +27,7 @@ const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
 const BARRATOP = Constants.statusBarHeight;
 
-export default class Detalle extends React.Component {
+export default class Estadistica extends React.Component {
 
     constructor(props) {
         super(props);
@@ -38,8 +37,7 @@ export default class Detalle extends React.Component {
         filterProductos: [],
         cat: null,     
         error: null,
-        loading: true,
-        showToast: false
+        loading: true
         }
 
         this.arrayholder = [];
@@ -47,15 +45,15 @@ export default class Detalle extends React.Component {
 
     async componentDidMount() {
     
-        const productos = await api.fetchProductosSupermecados();
+        //const productos = await api.fetchProductosSupermecados();
 
         await Font.loadAsync({
           Roboto: require("native-base/Fonts/Roboto.ttf"),
           Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
         });
 
-        this.setState({ productos: productos.data, loading: false });
-        this.filtrarProductos(this.props.navigation.state.params.id);
+        this.setState({ loading: false });
+        //this.filtrarProductos(this.props.navigation.state.params.id);
         
     }
 
@@ -98,23 +96,8 @@ export default class Detalle extends React.Component {
                 </Left>
                 <Body style={styles.bodyCard}>
                     <Text>{prod[index].nombreProducto.toUpperCase()} {prod[index].nombreMarca.toUpperCase()} {prod[index].peso.toUpperCase()}</Text>
-                    <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
-                      <Item style={{flexDirection: 'column', flex: 9, borderBottomColor: 'transparent', alignItems: 'flex-start',
-    justifyContent: 'flex-start'}}>
-                        <Text note>Desde $ {prod[index].precio_lista.toUpperCase()} Hasta $ {prod[index].precio_lista.toUpperCase()}</Text>
-                        <Text note>Fecha relevada {prod[index].ultimaActualizacion.toUpperCase()}</Text>
-                      </Item>
-                      <Item style={{flexDirection: 'column', flex: 1, borderBottomColor: 'transparent'}}>
-                        <Icon name="plus" type="FontAwesome" style={{ color: "#8DD322", paddingRight: 5 }} 
-                          onPress={() =>
-                              Toast.show({
-                                text: "¡ Producto agregado a Mi Lista !",
-                                textStyle: { textAlign: "center" },
-                                duration: 2000,
-                                type: "success"
-                              })}/>
-                      </Item>
-                    </Item>
+                    <Text note>Desde $ {prod[index].precio_lista.toUpperCase()} Hasta $ {prod[index].precio_lista.toUpperCase()}</Text>
+                    <Text note>Fecha relevada {prod[index].ultimaActualizacion.toUpperCase()}</Text>
                 </Body>
               </CardItem>
             )
@@ -176,44 +159,51 @@ export default class Detalle extends React.Component {
     }
     return (
       <View style={styles.container}>
-        {this.state.productos && this.viewProductosListado() }
+        {/* {this.state.productos && this.viewProductosListado() } */}
+        <Icon
+            active
+            name="bar-chart-o"
+            type="FontAwesome"
+            style={{ color: "green" }}
+        />
+        <Text style={styles.texto}>ESTADISTICAS</Text>
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: BARRATOP,
-    backgroundColor: '#FFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  containerCard: {
-    backgroundColor: "#FFF",
-    width: WIDTH,
-  },
-      mb: {
-        marginBottom: 15
-      },
-      card: {
-          flex: 1,
-      },
-      btnCard: {
-          flex: 1,
-      },
-      bodyCard: {
-        flex: 9,
-        flexDirection: 'column',
-      },
-      texto: {
-        color: 'gray',
-        fontSize: 18, 
-        marginLeft: 10, 
-        textAlign: 'auto'
-      },
-      searchBar: {
-        backgroundColor: 'green'
-      }
-    });
+    container: {
+        flex: 1,
+        paddingTop: BARRATOP,
+        backgroundColor: '#FFF',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    containerCard: {
+        backgroundColor: "#FFF",
+        width: WIDTH,
+    },
+    mb: {
+    marginBottom: 15
+    },
+    card: {
+        flex: 1,
+    },
+    btnCard: {
+        flex: 1,
+    },
+    bodyCard: {
+    flex: 9,
+    flexDirection: 'column',
+    },
+    texto: {
+    color: 'gray',
+    fontSize: 18, 
+    marginLeft: 10, 
+    textAlign: 'auto'
+    },
+    searchBar: {
+    backgroundColor: 'green'
+    }
+});

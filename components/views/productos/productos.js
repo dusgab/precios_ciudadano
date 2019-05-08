@@ -110,9 +110,9 @@ export default class Productos extends React.Component {
                 <HeaderCustom/>
                 <Header searchBar rounded style={styles.searchBar}>
                 <Item>
-                  <Icon active name="search" />
-                  <Input placeholder="Buscar Producto" 
+                    <Input placeholder="Buscar Producto" 
                       onChangeText={(text) => this.SearchFilterFunction(text)} />
+                    <Icon active name='search' style={{fontSize: 20, color: 'gray', paddingRight: 5, paddingBottom: 5}}/>
                 </Item>
                 </Header>
 
@@ -152,26 +152,26 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     width: WIDTH,
   },
-      mb: {
-        marginBottom: 15
-      },
-      card: {
-          flex: 1,
-      },
-      btnCard: {
-          flex: 1,
-      },
-      bodyCard: {
-        flex: 8,
-        flexDirection: 'column',
-      },
-      texto: {
-        color: 'gray',
-        fontSize: 18, 
-        marginLeft: 10, 
-        textAlign: 'auto'
-      },
-      searchBar: {
-        backgroundColor: 'green'
-      }
-    });
+  mb: {
+    marginBottom: 15
+  },
+  card: {
+      flex: 1,
+  },
+  btnCard: {
+      flex: 1,
+  },
+  bodyCard: {
+    flex: 8,
+    flexDirection: 'column',
+  },
+  texto: {
+    color: 'gray',
+    fontSize: 18, 
+    marginLeft: 10, 
+    textAlign: 'auto'
+  },
+  searchBar: {
+    backgroundColor: '#8DD322'
+  }
+});

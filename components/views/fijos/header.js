@@ -47,7 +47,7 @@ export default class HeaderCustom extends React.Component {
 
 const styles = StyleSheet.create({
     header: {
-    backgroundColor: 'green',
+    backgroundColor: '#8DD322',
   },
   texto: {
     color: '#fff',
