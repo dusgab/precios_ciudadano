@@ -38,6 +38,7 @@ export default class Inicio extends React.Component {
         this.state = {
         productos: [],
         filterProductos: [],
+        search: null,
         loading: true,
         showToast: false
         }
@@ -54,21 +55,29 @@ export default class Inicio extends React.Component {
         Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
       });
 
-      this.arrayholder = productos.data;
-      console.log(this.arrayholder);
-      this.setState({ productos: productos.data, loading: false });
+      // this.arrayholder = productos.data;
+      // console.log(this.arrayholder);
+       this.setState({ productos: productos.data, loading: false });
       
     }
 
-    SearchFilterFunction = (text) => {    
+    SearchFilterFunction = async (text) => {    
       console.log('filter');
-      const newData = this.arrayholder.filter(item => {      
-        const itemData = `${item.nombreProducto}`;
+      const prod = await api.fetchProductoBuscar(text);
+      this.setState({ filterProductos: prod.data });
+      const newData = this.filterProductos.filter(item => {      
+        const itemData = `${item.producto}`;
          const textData = text;
          console.log(itemData.indexOf(textData));
          return itemData.indexOf(textData) > -1;    
       });    
       this.setState({ filterProductos: newData });  
+    };
+
+    _handlePress = () => {
+      console.log("handlePress" + this.state.search);
+      const text = this.state.search;
+      this.props.navigation.navigate('Buscar', {prod: text});
     };
 
     _render = () => {
@@ -77,8 +86,9 @@ export default class Inicio extends React.Component {
             <HeaderCustom/>
             <Header searchBar rounded style={{backgroundColor: '#8DD322'}}>
                 <Item >
-                    <Input placeholder="Buscar Producto" onChangeText={(text) => this.SearchFilterFunction(text)}/>
-                    <Button iconRight transparent primary >
+                    {/* <Input placeholder="Buscar Producto" onChangeText={(text) => this.SearchFilterFunction(text)}/> */}
+                    <Input placeholder="Buscar Producto" onChangeText={(text) => this.setState({search:text})}/>
+                    <Button iconRight transparent primary onPress={() => this._handlePress()}>
                         <Icon active name='search' type="FontAwesome" style={{fontSize: 20, color: 'gray', paddingRight: 5, paddingBottom: 5}}/>
                     </Button>
                 </Item>

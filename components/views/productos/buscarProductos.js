@@ -27,7 +27,7 @@ const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
 const BARRATOP = Constants.statusBarHeight;
 
-export default class Productos extends React.Component {
+export default class buscarProductos extends React.Component {
 
     constructor(props) {
         super(props);
@@ -45,15 +45,14 @@ export default class Productos extends React.Component {
 
     async componentDidMount() {
     
-        const productos = await api.fetchProductosSupermecados();
-
+        const productos = await api.fetchProductoBuscar(this.props.navigation.state.params.prod);
+        console.log("componente" + productos);
         await Font.loadAsync({
           Roboto: require("native-base/Fonts/Roboto.ttf"),
           Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
         });
 
         this.setState({ productos: productos.data, loading: false });
-        this.filtrarProductos(this.props.navigation.state.params.id);
         
     }
 
@@ -61,15 +60,9 @@ export default class Productos extends React.Component {
       
     }
 
-    filtrarProductos = (cat_id) => {
-        const filtro = this.state.productos.filter(producto => producto.nombreCategoria == cat_id);
-        this.arrayholder = filtro;
-        this.setState({ filterProductos: filtro });
-    }
-
     SearchFilterFunction = (text) => {    
       const newData = this.arrayholder.filter(item => {      
-        const itemData = `${item.nombreProducto}`;
+        const itemData = `${item.producto}`;
          const textData = text;
          return itemData.indexOf(textData) > -1;    
       });    
@@ -78,13 +71,12 @@ export default class Productos extends React.Component {
 
     viewProductosListado = () => {
       let botones = [];
-      let prod = this.state.filterProductos;
+      let prod = this.state.productos;
       console.log("view prodctos" + prod);
       for (let index = 0; index < prod.length; index++) {
-          let nombreprod = prod[index].nombreProducto;
-          console.log(nombreprod);
+            var res = prod[index].producto.substring(0, prod[index].producto.length -5);
           botones.push(
-            <CardItem button bordered onPress={() => this.props.navigation.navigate('Detalle', {id: nombreprod})}
+            <CardItem button bordered onPress={() => this.props.navigation.navigate('Detalle', {id: res})}
                 key={"categoria_" + index}
               >
                 <Left style={{ flex: 2 }}>
@@ -96,8 +88,8 @@ export default class Productos extends React.Component {
                   />
                 </Left>
                 <Body style={styles.bodyCard}>
-                    <Text>{prod[index].nombreProducto.toUpperCase()} {prod[index].peso.toUpperCase()}</Text>
-                    <Text note>Desde $ {prod[index].precio_lista.toUpperCase()}</Text>
+                    <Text>{prod[index].producto.toUpperCase()} {prod[index].marca.toUpperCase()}</Text>
+                    <Text note>Desde $ {prod[index].precio_lista}</Text>
                 </Body>
                 <Right style={{ flex: 2 }}>
                   <Icon 

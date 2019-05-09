@@ -3,6 +3,7 @@ import URL from '../config';
 export default {
     async fetchProductoSupermecado() {
         try {
+            console.log("Fetch Producto Supermercado");
             let response = await fetch(URL + 'producto_supermercado');
             let responseJsonData = await response.json();
             return responseJsonData;
@@ -14,6 +15,7 @@ export default {
     },
     async fetchProductosSupermecados() {
         try {
+            console.log("Fetch Productos Supermercados");
             let response = await fetch(URL + 'productos_supermercados');
             let responseJsonData = await response.json();
             return responseJsonData;
@@ -51,6 +53,17 @@ export default {
         //             console.log(response.status);
         //         }
         //     })
+    },
+    async fetchProductoBuscar(prod) {
+        try {
+            console.log("Fetch Producto Buscar" + prod);
+            let response = await fetch(URL + 'producto_buscar/' + prod);
+            let responseJsonData = await response.json();
+            return responseJsonData;
+        }
+        catch(e) {
+            console.log(e)
+        }
     },
     async fetchCategoria() {
         try {

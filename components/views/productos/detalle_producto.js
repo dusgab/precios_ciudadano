@@ -18,7 +18,8 @@ import {
     Right,
     Body, 
     Spinner,
-    Toast
+    Toast,
+    Footer
   } from "native-base";
 
 import HeaderCustom from '../fijos/header';
@@ -47,7 +48,9 @@ export default class Detalle extends React.Component {
 
     async componentDidMount() {
     
-        const productos = await api.fetchProductosSupermecados();
+        //const productos = await api.fetchProductosSupermecados();
+        console.log(this.props.navigation.state.params.id);
+        const productos = await api.fetchProductoBuscar(this.props.navigation.state.params.id);
 
         await Font.loadAsync({
           Roboto: require("native-base/Fonts/Roboto.ttf"),
@@ -55,7 +58,7 @@ export default class Detalle extends React.Component {
         });
 
         this.setState({ productos: productos.data, loading: false });
-        this.filtrarProductos(this.props.navigation.state.params.id);
+        //this.filtrarProductos(this.props.navigation.state.params.id);
         
     }
 
@@ -81,40 +84,80 @@ export default class Detalle extends React.Component {
 
     viewProductosListado = () => {
       let botones = [];
-      let prod = this.state.filterProductos;
+      let botones1 = [];
+      let prod = this.state.productos;
+      let last = prod.length - 1;
+      console.log("last" + last);
       console.log("view detalle" + prod);
+        botones.push(
+          <Card style={styles.mb}
+            key={"categoria_" + 0}>
+          <CardItem>
+              <Left style={{ flex: 2 }}>
+              <Icon
+                  active
+                  name="store"
+                  type="MaterialCommunityIcons"
+                  style={{ color: "green" }}
+                />
+              </Left>
+              <Body style={styles.bodyCard}>
+                  <Text style={styles.textoTitulo}>{prod[0].producto} {prod[0].marca}</Text>
+                  <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
+                    <Item style={{flexDirection: 'row', flex: 9, borderBottomColor: 'transparent', alignItems: 'flex-start',
+  justifyContent: 'flex-start'}}>
+                      <Text style={styles.textoPrecio}>Rango de precios $ {prod[0].precio_lista}</Text>
+                      <Icon name="arrow-right" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 14}}/>
+                      <Text style={styles.textoPrecio}>$ {prod[last].precio_lista}</Text>
+                      {/* <Text style={styles.texto}>Fecha relevada {prod[0]["fecha relevada"].toUpperCase()}</Text> */}
+                    </Item>
+                  </Item>
+                  
+              </Body>
+            </CardItem>
+              <Item style={{borderBottomColor: 'transparent', margin: 5}}>
+                <Button transparent style={styles.botonMilista}
+                     onPress={() =>
+                        Toast.show({
+                          text: "¡ Producto agregado a Mi Lista !",
+                          textStyle: { textAlign: "center" },
+                          duration: 2000,
+                          type: "success"
+                        })}>
+                  <Icon name="plus" type="FontAwesome" style={{ color: "#78BE20"}}/>
+                  <Text style={styles.textoMilista}>AÑADIR A MI LISTA</Text>
+                </Button>
+              </Item>
+              </Card>
+          )
       for (let index = 0; index < prod.length; index++) {
-          botones.push(
+          botones1.push(
             <CardItem button bordered 
-                key={"categoria_" + index}
+                key={"categoria_" + index + index}
               >
                 <Left style={{ flex: 2 }}>
                 <Icon
                     active
                     name="store"
                     type="MaterialCommunityIcons"
-                    style={{ color: "green" }}
+                    style={{ color: "gray" }}
                   />
                 </Left>
                 <Body style={styles.bodyCard}>
-                    <Text>{prod[index].nombreProducto.toUpperCase()} {prod[index].nombreMarca.toUpperCase()} {prod[index].peso.toUpperCase()}</Text>
-                    <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
-                      <Item style={{flexDirection: 'column', flex: 9, borderBottomColor: 'transparent', alignItems: 'flex-start',
+                  <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
+                    <Text style={styles.textoTitulo}>{prod[index].supermercado.toUpperCase()} </Text>
+                    <Text style={styles.textoPrecioPromo}>$ {prod[0].precio_promocion}</Text>
+                    <Text style={styles.textoPrecioLista}>$ {prod[0].precio_lista}</Text>
+                  </Item>
+                  <Item style={{flexDirection: 'column', borderBottomColor: 'transparent'}}>
+                    <Text style={styles.texto}>{prod[0].promocion} {prod[0].descripcion_promo} - Valido hasta el {prod[0]["fecha promo final"]}</Text>
+                    <Text style={styles.texto}>Fecha relevada {prod[0]["fecha relevada"]}</Text>
+                  </Item>
+                  <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-start',
     justifyContent: 'flex-start'}}>
-                        <Text note>Desde $ {prod[index].precio_lista.toUpperCase()} Hasta $ {prod[index].precio_lista.toUpperCase()}</Text>
-                        <Text note>Fecha relevada {prod[index].ultimaActualizacion.toUpperCase()}</Text>
-                      </Item>
-                      <Item style={{flexDirection: 'column', flex: 1, borderBottomColor: 'transparent'}}>
-                        <Icon name="plus" type="FontAwesome" style={{ color: "#8DD322", paddingRight: 5 }} 
-                          onPress={() =>
-                              Toast.show({
-                                text: "¡ Producto agregado a Mi Lista !",
-                                textStyle: { textAlign: "center" },
-                                duration: 2000,
-                                type: "success"
-                              })}/>
-                      </Item>
-                    </Item>
+                    <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12 }}/>
+                    <Text style={styles.textoUbicacion}>{prod[index].ubicacion.toUpperCase()}</Text>
+                  </Item>
                 </Body>
               </CardItem>
             )
@@ -130,37 +173,21 @@ export default class Detalle extends React.Component {
 
                 <HeaderCustom/>
                 <Content padder>
-                  <Card style={styles.mb}>
                     {botones}
-                  </Card>
+                    {/* {botones1} */}
                 </Content>
                 <Content padder>
                 <Header transparent>
-                  <Body style={{flex: 8}}>
-                    <Text>Donde comprar este producto</Text>
+                  <Body style={{flex: 6}}>
+                    <Text>Supermercado</Text>
                   </Body>
-                  <Right style={{flex: 2}}>
+                  <Right style={{flex: 4}}>
+                    <Text>Promo</Text>
                     <Text>Precio</Text>
                   </Right>
                 </Header>
                   <Card style={styles.mb}>
-                  <CardItem button bordered>
-                    <Left style={{ flex: 2 }}>
-                    <Icon
-                        active
-                        name="shopping-bag"
-                        type="FontAwesome"
-                        style={{ color: "gray" }}
-                      />
-                    </Left>
-                    <Body style={{ flex: 8 }}>
-                        <Text>IMPULSO</Text>
-                        <Text note>IRIGOYEN Y CORDOBA</Text>
-                    </Body>
-                    <Right style={{ flex: 2 }}>
-                      <Text>$ 20,90</Text>
-                    </Right>
-                  </CardItem>
+                    {botones1}
                   </Card>
                 </Content>
               </Container>
@@ -194,26 +221,66 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     width: WIDTH,
   },
-      mb: {
-        marginBottom: 15
-      },
-      card: {
-          flex: 1,
-      },
-      btnCard: {
-          flex: 1,
-      },
-      bodyCard: {
-        flex: 9,
-        flexDirection: 'column',
-      },
-      texto: {
-        color: 'gray',
-        fontSize: 18, 
-        marginLeft: 10, 
-        textAlign: 'auto'
-      },
-      searchBar: {
-        backgroundColor: 'green'
-      }
-    });
+  mb: {
+    marginBottom: 15
+  },
+  card: {
+      flex: 1,
+  },
+  btnCard: {
+      flex: 1,
+  },
+  bodyCard: {
+    flex: 8,
+    flexDirection: 'column',
+  },
+  texto: {
+    color: 'gray',
+    fontSize: 14,
+  },
+  textoPrecio: {
+    color: 'gray',
+    fontSize: 16,
+  },
+  textoPrecioLista: {
+    textDecorationLine: 'line-through',
+    color: 'gray',
+    textAlign: 'right',
+    fontSize: 14,
+  },
+  textoPrecioPromo: {
+    color: 'gray',
+    textAlign: 'right',
+    fontSize: 16,
+    fontWeight: 'bold'
+  },
+  textoTitulo: {
+    color: 'black',
+    fontSize: 16,
+    textTransform: 'capitalize'
+  },
+  textoUbicacion: {
+    color: 'gray',
+    fontSize: 12,
+  },
+  textoMilista: {
+    color: '#78BE20',
+    fontSize: 14,
+  },
+  botonMilista: {
+    borderColor: '#78BE20',
+    borderStyle: 'solid',
+    borderWidth: 2,
+    borderRadius: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.9,
+    shadowRadius: 1,
+    elevation: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  searchBar: {
+    backgroundColor: 'green'
+  }
+});

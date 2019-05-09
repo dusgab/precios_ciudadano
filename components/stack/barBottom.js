@@ -5,6 +5,7 @@ import { Icon } from "native-base";
 
 import Inicio from '../views/inicio/inicio';
 import Detalle from '../views/productos/detalle_producto';
+import Buscar from '../views/productos/buscarProductos';
 import Productos from '../views/productos/productos';
 import Categorias from '../views/productos/categorias';
 import MiLista from '../views/lista/milista';
@@ -23,6 +24,7 @@ const CategoriasStack = createStackNavigator({
     Categorias: {screen: Categorias},
     Productos: {screen: Productos},
     Detalle: {screen: Detalle},
+    Buscar: {screen: Buscar},
   },{
     headerMode: 'none',
   });
@@ -111,10 +113,10 @@ const tabBarBottom = createBottomTabNavigator(
     tabBarOptions: {
       activeTintColor: 'white',
       inactiveTintColor: 'gray',
-      activeBackgroundColor: '#8DD322',
+      activeBackgroundColor: '#78BE20',
       style: {
         backgroundColor: '#133101',
-        borderTopColor: '#8DD322', 
+        borderTopColor: '#78BE20', 
       }
     }
   }
