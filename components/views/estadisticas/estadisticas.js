@@ -153,7 +153,7 @@ export default class Estadistica extends React.Component {
     if (this.state.loading) {
       return (
         <Container style={styles.container}>
-          <Spinner color='green' />
+          <Spinner color='#78BE20' />
         </Container>
       );
     }
@@ -167,6 +167,7 @@ export default class Estadistica extends React.Component {
             style={{ color: "green" }}
         />
         <Text style={styles.texto}>ESTADISTICAS</Text>
+        <Text style={styles.texto}>PROXIMAMENTE</Text>
       </View>
     );
   }
@@ -198,10 +199,10 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     },
     texto: {
-    color: 'gray',
-    fontSize: 18, 
+    color: '#434343',
+    fontSize: 24, 
     marginLeft: 10, 
-    textAlign: 'auto'
+    textAlign: 'center'
     },
     searchBar: {
     backgroundColor: 'green'

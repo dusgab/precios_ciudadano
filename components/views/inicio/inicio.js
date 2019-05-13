@@ -36,19 +36,22 @@ export default class Inicio extends React.Component {
         super(props);
 
         this.state = {
-        productos: [],
+        promociones: [],
+        categorias: [],
         filterProductos: [],
         search: null,
         loading: true,
         showToast: false
         }
 
+        this.searchInput = React.createRef();
         this.arrayholder = [];
       }
 
     async componentDidMount() {
 
-      const productos = await api.fetchProductosSupermecados();
+      const categorias = await api.fetchCategoria();
+      const promociones = await api.fetchPromociones();
 
       await Font.loadAsync({
         Roboto: require("native-base/Fonts/Roboto.ttf"),
@@ -57,25 +60,13 @@ export default class Inicio extends React.Component {
 
       // this.arrayholder = productos.data;
       // console.log(this.arrayholder);
-       this.setState({ productos: productos.data, loading: false });
+       this.setState({ promociones: promociones.data, categorias: categorias.data, loading: false });
       
     }
 
-    SearchFilterFunction = async (text) => {    
-      console.log('filter');
-      const prod = await api.fetchProductoBuscar(text);
-      this.setState({ filterProductos: prod.data });
-      const newData = this.filterProductos.filter(item => {      
-        const itemData = `${item.producto}`;
-         const textData = text;
-         console.log(itemData.indexOf(textData));
-         return itemData.indexOf(textData) > -1;    
-      });    
-      this.setState({ filterProductos: newData });  
-    };
-
     _handlePress = () => {
       console.log("handlePress" + this.state.search);
+      this.searchInput.current._root.clear();
       const text = this.state.search;
       this.props.navigation.navigate('Buscar', {prod: text});
     };
@@ -84,251 +75,108 @@ export default class Inicio extends React.Component {
         return (
             <Container style={styles.containerCard}>
             <HeaderCustom/>
-            <Header searchBar rounded style={{backgroundColor: '#8DD322'}}>
-                <Item >
+            <Header searchBar transparent style={{marginBottom: 12}}>
+              <Body style={{flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+                <Text style={styles.titulo}>Buscar producto</Text>
+                <Item style={styles.searchBar}>
                     {/* <Input placeholder="Buscar Producto" onChangeText={(text) => this.SearchFilterFunction(text)}/> */}
-                    <Input placeholder="Buscar Producto" onChangeText={(text) => this.setState({search:text})}/>
+                    <Input placeholder="Ej. fideos" 
+                            onChangeText={(text) => this.setState({search:text})}
+                            ref={this.searchInput}/>
                     <Button iconRight transparent primary onPress={() => this._handlePress()}>
-                        <Icon active name='search' type="FontAwesome" style={{fontSize: 20, color: 'gray', paddingRight: 5, paddingBottom: 5}}/>
+                        <Icon active name='search' type="FontAwesome" style={{fontSize: 20, color: 'gray'}}/>
                     </Button>
                 </Item>
+              </Body>
             </Header>
-            <Item style={{alignItems: 'center', justifyContent: 'center'}}>
-                <Text note style={styles.searchBarText}>Por ejemplo fideos, azúcar, harina, jabón líquido</Text>
-            </Item>
-            <Content >
-            <Text style={styles.titulo}>Promociones</Text>
-            <Content >
-            <Text style={styles.subtitulo}>Almacén</Text>
-            <Content horizontal={true} viewIsInsideTabBar={false}>
-                <List thumbnail style={styles.list}>
-                {datas2.map((data, i) => (
-                <ListItem key={data.text} style={styles.listItem}>
-                    <Left style={{flex: 2}}>
-                    <Thumbnail square size={40} source={icono1} />
-                    </Left>
-                    <Body style={{flex: 8}}>
-                    <Text>{data.text}</Text>
-                    <Item style={styles.listItemPrecio}>
-                      <Item style={styles.listItemPromo}>
-                        <Text style={{color: "#FFF", paddingHorizontal: 7}}>Promo</Text>
-                      </Item>
-                      <Icon name="exclamation-circle" type="FontAwesome" style={{fontSize: 20, color: '#0098DA', paddingRight: 15}}
-                          onPress={() =>
-                              Toast.show({
-                                text: "70% de descuento en la 2da unidad. Llevando 2 unidades pagás $ 25,00 cada uno. Promo válida desde 01/05/2019 hasta el 10/06/2019",
-                                duration: 7000,
-                                buttonText: "Ok",
-                                type: "success"
-                              })}/>
-                      <Text note style={{textDecorationLine: 'line-through', color: 'gray', textAlign: 'right'}}>
-                          $ {data.precio}
-                      </Text>
-                      <Text style={{alignSelf: 'flex-end', fontSize: 14}}>
-                          $ {data.promo}
-                      </Text>
-                    </Item>
-                    </Body>
+            <Content style={styles.containerBody}>
+            <Text style={styles.tituloPromo}>Promociones</Text>
+            
+            <List style={styles.listCat}>
+              {this.state.categorias.map((cat, i) => (
+                <Content style={styles.containerPromos} key={i}>
+                  <Text style={styles.tituloCat}>{cat.nombre.toUpperCase()}</Text>
+                  <Content horizontal={true} contentContainerStyle={styles.contentContainer}>
+                  
+                    <ListItem key={"categoria_" + cat.categoria_id} style={{flexDirection: 'column', borderBottomColor: 'transparent', marginLeft: 6}}>
                     
+                      <List thumbnail style={styles.list}>
+                        {this.state.promociones.map((data, j) => {
+                            if (data.precio_promocion != null) {
+                              if (cat.nombre === data.categoria) {
+                                return (
+                                  <ListItem key={"promocion_" + j + i} style={styles.listItem} 
+                                  onPress={() => this.props.navigation.push('Detalle', {id: data.producto})}
+                                  >
+                                    <Left style={{flex: 2}}>
+                                      <Thumbnail square size={40} source={icono1} />
+                                    </Left>
+                                    <Body style={{flex: 8, flexDirection: 'column'}}>
+                                      <Text style={styles.textoProd}>{data.producto} {data.marca}</Text>
+                                      <Text style={styles.textoProd}>{data.peso}</Text>
+                                      <Item style={styles.listItemPrecio}>
+                                        <Item style={styles.listItemPromo}>
+                                          <Text style={{color: "#FFF", paddingHorizontal: 7}}>Promo</Text>
+                                        </Item>
+                                        <Icon name="exclamation-circle" type="FontAwesome" style={{fontSize: 20, color: '#0098DA', paddingRight: 15}}
+                                            onPress={() =>
+                                                Toast.show({
+                                                  text: <Text>{data.promocion} {data.descripcion_promo} - Válido hasta el {data.fecha_promo_final.substring(0, data.fecha_promo_final.length -9)}</Text>,
+                                                  duration: 7000,
+                                                  buttonText: "Ok",
+                                                  type: "success"
+                                                })}/>
+                                        <Text style={styles.textoPrecioLista}>
+                                            $ {data.precio_lista}
+                                        </Text>
+                                        <Text  style={styles.textoPrecioPromo}>
+                                            $ {data.precio_promocion}
+                                        </Text>
+                                      </Item>
+                                    </Body>
+                                  </ListItem> 
+                                );
+                              }
+                            } else {
+                              return (
+                                <ListItem key={"promocion_" + j + i} style={styles.listItem}>
+                                  <Left style={{flex: 2}}>
+                                    <Icon name="ban" type="FontAwesome" style={{fontSize: 60, color: '#838181'}}/>
+                                  </Left>
+                                  <Body style={{flex: 8, flexDirection: 'column'}}>
+                                    <Text style={styles.textoProd}>Categoría sin Promociones</Text>
+                                  </Body>
+                                </ListItem> 
+                              );
+                            }
+                        })
+                        }
+                      </List>
                 </ListItem>
-                ))}
+                </Content>
+                </Content>
+              ))}
             </List>
-            </Content>
-            <Text style={styles.subtitulo}>Bebidas</Text>
-            <Content horizontal={true}>
-                <List thumbnail style={styles.list}>
-                {datas.map((data, i) => (
-                <ListItem key={data.text} style={styles.listItem}>
-                    <Left style={{flex: 2}}>
-                    <Thumbnail square size={40} source={icono} />
-                    </Left>
-                    <Body style={{flex: 8}}>
-                    <Text>{data.text}</Text>
-                    <Item style={styles.listItemPrecio}>
-                      <Item style={styles.listItemPromo}>
-                        <Text style={{color: "#FFF", paddingHorizontal: 7}}>Promo</Text>
-                      </Item>
-                      <Icon name="exclamation-circle" type="FontAwesome" style={{fontSize: 20, color: '#0098DA', paddingRight: 15}}
-                          onPress={() =>
-                              Toast.show({
-                                text: "70% de descuento en la 2da unidad. Llevando 2 unidades pagás $ 25,00 cada uno. Promo válida desde 01/05/2019 hasta el 10/06/2019",
-                                duration: 7000,
-                                buttonText: "Ok",
-                                type: "success"
-                              })}/>
-                      <Text note style={{textDecorationLine: 'line-through', color: 'gray', textAlign: 'right'}}>
-                          $ {data.precio}
-                      </Text>
-                      <Text style={{alignSelf: 'flex-end', fontSize: 14}}>
-                          $ {data.promo}
-                      </Text>
-                    </Item>
-                    </Body>
-                    
-                </ListItem>
-                ))}
-            </List>
-            </Content>
-            <Text style={styles.subtitulo}>Carnicería</Text>
-            <Content horizontal={true}>
-                <List thumbnail style={styles.list}>
-                {datas3.map((data, i) => (
-                <ListItem key={data.text} style={styles.listItem}>
-                    <Left style={{flex: 2}}>
-                    <Thumbnail square size={40} source={icono2} />
-                    </Left>
-                    <Body style={{flex: 8}}>
-                    <Text>{data.text}</Text>
-                    <Item style={styles.listItemPrecio}>
-                      <Item style={styles.listItemPromo}>
-                        <Text style={{color: "#FFF", paddingHorizontal: 7}}>Promo</Text>
-                      </Item>
-                      <Icon name="exclamation-circle" type="FontAwesome" style={{fontSize: 20, color: '#0098DA', paddingRight: 15}}
-                          onPress={() =>
-                              Toast.show({
-                                text: "70% de descuento en la 2da unidad. Llevando 2 unidades pagás $ 25,00 cada uno. Promo válida desde 01/05/2019 hasta el 10/06/2019",
-                                duration: 7000,
-                                buttonText: "Ok",
-                                position: "top",
-                                type: "success"
-                              })}/>
-                      <Text note style={{textDecorationLine: 'line-through', color: 'gray', textAlign: 'right'}}>
-                          $ {data.precio}
-                      </Text>
-                      <Text style={{alignSelf: 'flex-end', fontSize: 14}}>
-                          $ {data.promo}
-                      </Text>
-                    </Item>
-                    </Body>
-                    
-                </ListItem>
-                ))}
-            </List>
-            </Content>
-            </Content>
             </Content>
         </Container>
         );
     }
 
-  _renderProductos = () => {
-    let botones = [];
-      let prod = this.state.filterProductos;
-      console.log("view prodctos" + prod);
-      for (let index = 0; index < prod.length; index++) {
-          botones.push(
-            <CardItem button bordered onPress={() => this.props.navigation.navigate('Detalle', {id: prod[index].id})}
-                key={"categoria_" + index}
-              >
-                <Left style={{ flex: 2 }}>
-                <Icon
-                    active
-                    name="store"
-                    type="MaterialCommunityIcons"
-                    style={{ color: "green" }}
-                  />
-                </Left>
-                <Body style={styles.bodyCard}>
-                    <Text>{prod[index].nombreProducto.toUpperCase()} {prod[index].peso.toUpperCase()}</Text>
-                    <Text note>Desde $ {prod[index].precio_lista.toUpperCase()}</Text>
-                </Body>
-                <Right style={{ flex: 2 }}>
-                  <Icon 
-                    name="arrow-right"
-                    type="FontAwesome"
-                     />
-                </Right>
-              </CardItem>
-            )
-        }
-        return <Container style={styles.containerCard}>
-                <HeaderCustom/>
-                <Header searchBar rounded style={{backgroundColor: '#8DD322'}}>
-                  <Item >
-                      <Input placeholder="Buscar Producto" onChangeText={(text) => this.SearchFilterFunction(text)}/>
-                      <Button iconRight transparent primary >
-                          <Icon active name='search' type="FontAwesome" style={{fontSize: 20, color: 'gray', paddingRight: 5, paddingBottom: 5}}/>
-                      </Button>
-                  </Item>
-                </Header>
-
-                <Content padder>
-                  <Card style={styles.mb}>
-                    {botones}
-                  </Card>
-                </Content>
-              </Container>
-  }
-
   render() {
       if (this.state.loading) {
         return (
           <Container style={styles.container}>
-            <Spinner color='green' />
+            <Spinner color='#78BE20' />
           </Container>
         );
       }
       return (
         <View style={styles.container}>
-            {this.state.filterProductos && this._render() }
+            {this._render() }
         </View>
       );
   }
 }
-
-const datas = [
-    {
-      text: "Gaseosa base Cola 1,5 litros COCA COLA",
-      precio: "56,50 ",
-      promo: "50,00"
-    },
-    {
-      text: "Gaseosa base Cola 1,5 litros MANAOS",
-      precio: "43,90 ",
-      promo: "39,00"
-    },
-    {
-      text: "Agua sin gas 1,5 litros VILLAVICENCIO",
-      precio: "25,50 ",
-      promo: "22,00"
-    }
-  ];
-
-const datas2 = [
-{
-    text: "Galletitas dulces envasadas sin relleno 150g MANA",
-    precio: "22,30 ",
-    promo: "20,50"
-},
-{
-    text: "Galletitas de agua envasadas 250g CRIOLLITAS",
-    precio: "21,90 ",
-    promo: "18,60"
-},
-{
-    text: "Galletitas de agua envasadas 250g EXPRESS",
-    precio: "22,90 ",
-    promo: "18,80"
-}
-];
-
-const datas3 = [
-    {
-        text: "Asado KG NOVILLO",
-        precio: "180,50 ",
-        promo: "150,00"
-    },
-    {
-        text: "Asado KG NOVILLITO",
-        precio: "240,48 ",
-        promo: "200,00"
-    },
-    {
-        text: "Pollo entero KG",
-        precio: "95,00 ",
-        promo: "78,50"
-    }
-    ];
 
 const styles = StyleSheet.create({
   container: {
@@ -339,21 +187,78 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingBottom: 25
   },
+  header: {
+    flex: 3
+  },
   containerCard: {
     backgroundColor: "#FFF",
     width: WIDTH,
   },
+  containerBody: {
+  },
+  contentContainer: {
+    justifyContent: 'flex-start',
+    alignContent: 'flex-start'
+  },
+  containerPromos: {
+    flexDirection: 'column',
+  },  
   titulo: {
-    fontSize: 26,
-    color: 'black'
+    fontSize: 22,
+    color: '#434343',
+    textAlign: 'center',
+    fontWeight: 'bold'
+  },
+  tituloPromo: {
+    flex: 7,
+    fontSize: 20,
+    color: '#434343',
+    marginBottom: 8,
+    marginLeft: 12,
+    fontWeight: 'bold'
+  },
+  tituloCat: {
+    fontSize: 18,
+    color: '#434343',
+    marginBottom: 2,
+    marginLeft: 12,
+  },
+  textoProd: {
+    fontSize: 14,
+    color: '#434343',
+    fontWeight: 'bold',
+    textAlign: 'left'
   },
   subtitulo: {
     fontSize: 20,
     color: 'gray'
   },
+  textoPrecioLista: {
+    textDecorationLine: 'line-through',
+    color: 'gray',
+    textAlign: 'right',
+    fontSize: 14,
+    marginRight: 6
+  },
+  textoPrecioPromo: {
+    color: '#434343',
+    textAlign: 'right',
+    fontSize: 16,
+    fontWeight: 'bold'
+  },
   searchBar: {
-    backgroundColor: '#8DD322',
-    //width: WIDTH,
+    borderStyle: 'solid',
+    borderTopWidth: 3, 
+    borderBottomWidth: 3, 
+    borderLeftWidth: 3, 
+    borderRightWidth: 3, 
+    borderColor: '#78BE20',
+    borderRadius: 5, 
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 8 },
+    shadowOpacity: 0.6,
+    shadowRadius: 1,
+    elevation: 1
   },
   searchBarText: {
     color: 'gray',
@@ -371,18 +276,36 @@ const styles = StyleSheet.create({
   },
   list: {
     flexDirection: 'row',
-    marginBottom: 5,
+    borderBottomColor: 'transparent',
+    marginLeft: 0,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+  },
+  listCat: {
+    borderBottomColor: 'transparent',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
   },
   listItem: {
-      width: WIDTH - 10,
-      marginBottom: 5,
-      borderStyle: 'solid',
-      borderWidth: 4,
-      borderColor: '#8DD322',
-      borderRadius: 5
-  },
+    marginLeft: 0,
+    marginRight: 14,
+    width: WIDTH - 20,
+    marginBottom: 5,
+    borderStyle: 'solid', 
+    borderTopWidth: 3, 
+    borderBottomWidth: 3, 
+    borderLeftWidth: 3, 
+    borderRightWidth: 3, 
+    borderColor: '#78BE20',
+    borderRadius: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 8 },
+    shadowOpacity: 0.6,
+    shadowRadius: 1,
+    elevation: 1
+},
   listItemPrecio: {
-    flex: 1,
+    flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'flex-end',
     borderBottomColor: 'transparent',

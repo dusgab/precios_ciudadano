@@ -77,4 +77,15 @@ export default {
         }
 
     },
+    async fetchPromociones() {
+        try {
+            console.log("Fetch Promociones");
+            let response = await fetch(URL + 'promociones');
+            let responseJsonData = await response.json();
+            return responseJsonData;
+        }
+        catch(e) {
+            console.log(e)
+        }
+    },
 }

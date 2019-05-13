@@ -15,7 +15,8 @@ import App from '../../App';
 const tintColor = "white";
 
 const InicioStack = createStackNavigator({
-  Inicio: {screen: Inicio}
+  Inicio: {screen: Inicio},
+  Buscar: {screen: Buscar},
 },{
   headerMode: 'none',
 });
@@ -24,7 +25,6 @@ const CategoriasStack = createStackNavigator({
     Categorias: {screen: Categorias},
     Productos: {screen: Productos},
     Detalle: {screen: Detalle},
-    Buscar: {screen: Buscar},
   },{
     headerMode: 'none',
   });
@@ -53,38 +53,55 @@ const tabBarBottom = createBottomTabNavigator(
     Inicio: {screen: InicioStack,
           navigationOptions: {
             tabBarIcon: ({ focused, tintColor }) => {
-                
-                return <Icon name="home" type="FontAwesome" style={{ color: "white" }}/>;
+                if(focused === true){
+                  tintColor = "#FFFFFF";
+                } else {
+                  tintColor = "#78BE20";
+                }
+                return <Icon name="home" type="FontAwesome" style={{ color: tintColor}} />;
           },
         },
       },
     Categorías: {screen: CategoriasStack,
         navigationOptions: {
           tabBarIcon: ({ focused, tintColor }) => {
-              
-              return <Icon name="shopping-basket" type="FontAwesome" style={{ color: "white" }}/>;
+            if(focused === true){
+              tintColor = "#FFFFFF";
+            } else {
+              tintColor = "#78BE20";
+            }
+              return <Icon name="shopping-basket" type="FontAwesome" style={{ color: tintColor}}/>;
         },
       },
     },
     "Mi Lista": {screen: MiListaStack,
       navigationOptions: {
         tabBarIcon: ({ focused, tintColor }) => {
-            
-            return <Icon name="star" type="FontAwesome" style={{ color: "white" }}/>;
+          if(focused === true){
+            tintColor = "#FFFFFF";
+          } else {
+            tintColor = "#78BE20";
+          }
+            return <Icon name="star" type="FontAwesome" style={{ color: tintColor}} />;
         },
       },
     },
     "Estadísticas": {screen: EstadisticaStack,
       navigationOptions: {
         tabBarIcon: ({ focused, tintColor }) => {
-            
-            return <Icon name="bar-chart" type="FontAwesome" style={{ color: "white" }}/>;
+          if(focused === true){
+            tintColor = "#FFFFFF";
+          } else {
+            tintColor = "#78BE20";
+          }
+            return <Icon name="bar-chart" type="FontAwesome" style={{ color: tintColor}}/>;
         },
       },
     },
   },
   {
     initialRouteName: 'Inicio',
+    lazy: 'false',
     // navigationOptions: ({ navigation }) => ({
       
     //   tabBarIcon: () => {
@@ -111,12 +128,21 @@ const tabBarBottom = createBottomTabNavigator(
     //   },
     // }),
     tabBarOptions: {
-      activeTintColor: 'white',
-      inactiveTintColor: 'gray',
+      activeTintColor: '#FFFFFF',
+      inactiveTintColor: '#78BE20',
       activeBackgroundColor: '#78BE20',
+      inactiveBackgroundColor: '#FFFFFF',
       style: {
         backgroundColor: '#133101',
         borderTopColor: '#78BE20', 
+        borderTopWidth: 1,
+        shadowRadius: 2,
+        shadowOffset: {
+          width: 0,
+          height: -3,
+        },
+        shadowColor: '#000000',
+        elevation: 4,
       }
     }
   }

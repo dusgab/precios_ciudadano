@@ -85,6 +85,7 @@ export default class Detalle extends React.Component {
     viewProductosListado = () => {
       let botones = [];
       let botones1 = [];
+      let botones2 = [];
       let prod = this.state.productos;
       let last = prod.length - 1;
       console.log("last" + last);
@@ -102,13 +103,12 @@ export default class Detalle extends React.Component {
                 />
               </Left>
               <Body style={styles.bodyCard}>
-                  <Text style={styles.textoTitulo}>{prod[0].producto} {prod[0].marca}</Text>
+                  <Text style={styles.textoTitulo}>{prod[0].producto} {prod[0].peso} {prod[0].marca}</Text>
                   <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
-                    <Item style={{flexDirection: 'row', flex: 9, borderBottomColor: 'transparent', alignItems: 'flex-start',
-  justifyContent: 'flex-start'}}>
-                      <Text style={styles.textoPrecio}>Rango de precios $ {prod[0].precio_lista}</Text>
-                      <Icon name="arrow-right" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 14}}/>
-                      <Text style={styles.textoPrecio}>$ {prod[last].precio_lista}</Text>
+                    <Item style={{flexDirection: 'row', flex: 9, borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                      <Text style={styles.textoPrecio}>Rango de precios ${prod[0].precio_lista}</Text>
+                      <Icon name="arrow-right" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 18, marginLeft: 4, textAlign: 'center'}}/>
+                      <Text style={styles.textoPrecio}>${prod[last].precio_lista}</Text>
                       {/* <Text style={styles.texto}>Fecha relevada {prod[0]["fecha relevada"].toUpperCase()}</Text> */}
                     </Item>
                   </Item>
@@ -131,63 +131,96 @@ export default class Detalle extends React.Component {
               </Card>
           )
       for (let index = 0; index < prod.length; index++) {
+        /*Si tiene promocion muestro otra tarjeta */
+        if(prod[index].precio_promocion != null) {
           botones1.push(
             <CardItem button bordered 
                 key={"categoria_" + index + index}
               >
-                <Left style={{ flex: 2 }}>
+                {/* <Left style={{ flex: 2 }}>
                 <Icon
                     active
                     name="store"
                     type="MaterialCommunityIcons"
                     style={{ color: "gray" }}
                   />
-                </Left>
+                </Left> */}
                 <Body style={styles.bodyCard}>
                   <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
-                    <Text style={styles.textoTitulo}>{prod[index].supermercado.toUpperCase()} </Text>
-                    <Text style={styles.textoPrecioPromo}>$ {prod[0].precio_promocion}</Text>
-                    <Text style={styles.textoPrecioLista}>$ {prod[0].precio_lista}</Text>
+                    <Item style={{flex: 6, flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                      <Text style={styles.textoTitulo}>{prod[index].supermercado} </Text>
+                    </Item>
+                    <Item style={{flex: 4, flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
+                      <Text style={styles.textoPrecioPromo}>${prod[index].precio_promocion}</Text>
+                      <Text style={styles.textoPrecioLista}>${prod[index].precio_lista}</Text>
+                    </Item>
                   </Item>
-                  <Item style={{flexDirection: 'column', borderBottomColor: 'transparent'}}>
-                    <Text style={styles.texto}>{prod[0].promocion} {prod[0].descripcion_promo} - Valido hasta el {prod[0]["fecha promo final"]}</Text>
-                    <Text style={styles.texto}>Fecha relevada {prod[0]["fecha relevada"]}</Text>
+                  <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                    <Text style={styles.texto}>{prod[index].promocion} {prod[index].descripcion_promo}</Text>
+                    <Text style={styles.texto}>Válido hasta el {prod[index].fecha_promo_final.substring(0, prod[index].fecha_promo_final.length -9)}</Text>
+                    <Text style={styles.texto}>Fecha relevada {prod[index].fecha_relevada}</Text>
                   </Item>
-                  <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-start',
-    justifyContent: 'flex-start'}}>
-                    <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12 }}/>
-                    <Text style={styles.textoUbicacion}>{prod[index].ubicacion.toUpperCase()}</Text>
+                  <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                    <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 4 }}/>
+                    <Text style={styles.textoUbicacion}>{prod[index].ubicacion}</Text>
+                  </Item>
+                </Body>
+              </CardItem>
+            )
+        } else {
+          botones2.push(
+            <CardItem button bordered 
+                key={"promo_" + index + index}
+              >
+                {/* <Left style={{ flex: 2 }}>
+                <Icon
+                    active
+                    name="store"
+                    type="MaterialCommunityIcons"
+                    style={{ color: "gray" }}
+                  />
+                </Left> */}
+                <Body style={styles.bodyCard}>
+                  <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
+                    <Item style={{flex: 6, flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                      <Text style={styles.textoTitulo}>{prod[index].supermercado} </Text>
+                    </Item>
+                    <Item style={{flex: 4, flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
+                      <Text style={styles.textoPrecioPromoNull}>--</Text>
+                      <Text style={styles.textoPrecioPromo}>${prod[index].precio_lista}</Text>
+                    </Item>
+                  </Item>
+                  <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                    {/* <Text style={styles.texto}>{prod[index].promocion} {prod[index].descripcion_promo} - Valido hasta el {prod[index].fecha_promo_final.substring(0, prod[index].fecha_promo_final.length -9)}</Text> */}
+                    <Text style={styles.texto}>Fecha relevada {prod[index].fecha_relevada}</Text>
+                  </Item>
+                  <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                    <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, paddingTop: 4 }}/>
+                    <Text style={styles.textoUbicacion}>{prod[index].ubicacion}</Text>
                   </Item>
                 </Body>
               </CardItem>
             )
         }
+        }
         return <Container style={styles.containerCard}>
-                {/* <Header searchBar rounded style={styles.searchBar}>
-                <Item>
-                  <Icon active name="search" />
-                  <Input placeholder="Buscar Producto" 
-                      onChangeText={(text) => this.SearchFilterFunction(text)} />
-                </Item>
-                </Header> */}
-
                 <HeaderCustom/>
-                <Content padder>
+                <Content padder style={{flex: 1}}>
                     {botones}
-                    {/* {botones1} */}
-                </Content>
-                <Content padder>
+                {/* </Content>
+                <Content style={{flex: 8}}> */}
                 <Header transparent>
                   <Body style={{flex: 6}}>
-                    <Text>Supermercado</Text>
+                    <Text style={styles.textoSuper}>Supermercado</Text>
                   </Body>
-                  <Right style={{flex: 4}}>
-                    <Text>Promo</Text>
-                    <Text>Precio</Text>
+                  <Right style={{flex: 4, alignItems: 'flex-end', justifyContent: 'flex-end'}}>
+                    <Text style={styles.textoProPre}>Promo</Text>
+                    <Text style={styles.textoProPre}>Precio</Text>
                   </Right>
                 </Header>
                   <Card style={styles.mb}>
                     {botones1}
+                    {botones2}
                   </Card>
                 </Content>
               </Container>
@@ -197,7 +230,7 @@ export default class Detalle extends React.Component {
     if (this.state.loading) {
       return (
         <Container style={styles.container}>
-          <Spinner color='green' />
+          <Spinner color='#78BE20' />
         </Container>
       );
     }
@@ -235,37 +268,61 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   texto: {
-    color: 'gray',
-    fontSize: 14,
+    color: '#434343',
+    fontSize: 12,
+    textAlign: 'left',
+    marginTop: 4
   },
   textoPrecio: {
-    color: 'gray',
+    color: '#838181',
     fontSize: 16,
   },
   textoPrecioLista: {
+    flex: 5,
     textDecorationLine: 'line-through',
     color: 'gray',
     textAlign: 'right',
     fontSize: 14,
   },
   textoPrecioPromo: {
+    flex: 5,
+    color: 'gray',
+    textAlign: 'right',
+    fontSize: 16,
+    fontWeight: 'bold'
+  },
+  textoPrecioPromoNull: {
+    flex: 5,
     color: 'gray',
     textAlign: 'right',
     fontSize: 16,
     fontWeight: 'bold'
   },
   textoTitulo: {
-    color: 'black',
-    fontSize: 16,
-    textTransform: 'capitalize'
+    color: '#434343',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
   textoUbicacion: {
-    color: 'gray',
+    color: '#707070',
     fontSize: 12,
+    marginTop: 4,
   },
   textoMilista: {
     color: '#78BE20',
     fontSize: 14,
+  },
+  textoSuper: {
+    textAlign: 'left',
+    fontSize: 16,
+    color: '#434343',
+    fontWeight: 'bold'
+  },
+  textoProPre: {
+    flex: 5,
+    textAlign: 'right',
+    fontSize: 16,
+    fontWeight: 'bold'
   },
   botonMilista: {
     borderColor: '#78BE20',
@@ -273,10 +330,10 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 24,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.9,
+    shadowOffset: { width: 4, height: 10 },
+    shadowOpacity: 0.6,
     shadowRadius: 1,
-    elevation: 3,
+    elevation: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },

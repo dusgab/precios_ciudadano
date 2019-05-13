@@ -153,7 +153,7 @@ export default class MiLista extends React.Component {
     if (this.state.loading) {
       return (
         <Container style={styles.container}>
-          <Spinner color='green' />
+          <Spinner color='#78BE20' />
         </Container>
       );
     }

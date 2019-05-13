@@ -41,18 +41,25 @@ export default class buscarProductos extends React.Component {
         }
 
         this.arrayholder = [];
+        //this.prod = [];
       }
 
     async componentDidMount() {
     
-        const productos = await api.fetchProductoBuscar(this.props.navigation.state.params.prod);
-        console.log("componente" + productos);
+      console.log(this.props.navigation.state.params);
+       
+          const prod = await api.fetchProductoBuscar(this.props.navigation.state.params.prod);
+          console.log("componente else prod" + prod.data);
+
+        //const productos = await api.fetchProductoBuscar(this.props.navigation.state.params.prod);
+        
         await Font.loadAsync({
           Roboto: require("native-base/Fonts/Roboto.ttf"),
           Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
         });
 
-        this.setState({ productos: productos.data, loading: false });
+        this.arrayholder = prod.data;
+        this.setState({ productos: prod.data, loading: false });
         
     }
 
@@ -62,8 +69,8 @@ export default class buscarProductos extends React.Component {
 
     SearchFilterFunction = (text) => {    
       const newData = this.arrayholder.filter(item => {      
-        const itemData = `${item.producto}`;
-         const textData = text;
+        const itemData = `${item.producto.toUpperCase()} ${item.marca.toUpperCase()}`;
+         const textData = text.toUpperCase();
          return itemData.indexOf(textData) > -1;    
       });    
       this.setState({ filterProductos: newData });  
@@ -71,12 +78,13 @@ export default class buscarProductos extends React.Component {
 
     viewProductosListado = () => {
       let botones = [];
-      let prod = this.state.productos;
-      console.log("view prodctos" + prod);
-      for (let index = 0; index < prod.length; index++) {
-            var res = prod[index].producto.substring(0, prod[index].producto.length -5);
+      let prod1 = this.state.productos;
+      console.log("view prodctos" + prod1);
+      for (let index = 0; index < prod1.length; index++) {
+            // var res = prod[index].producto.substring(0, prod[index].producto.length -5);
+            let res = prod1[index].producto;
           botones.push(
-            <CardItem button bordered onPress={() => this.props.navigation.navigate('Detalle', {id: res})}
+            <CardItem button bordered onPress={() => this.props.navigation.push('Detalle', {id: res})}
                 key={"categoria_" + index}
               >
                 <Left style={{ flex: 2 }}>
@@ -88,8 +96,8 @@ export default class buscarProductos extends React.Component {
                   />
                 </Left>
                 <Body style={styles.bodyCard}>
-                    <Text>{prod[index].producto.toUpperCase()} {prod[index].marca.toUpperCase()}</Text>
-                    <Text note>Desde $ {prod[index].precio_lista}</Text>
+                    <Text>{prod1[index].producto.toUpperCase()} {prod1[index].marca.toUpperCase()}</Text>
+                    <Text note>Desde $ {prod1[index].precio_lista}</Text>
                 </Body>
                 <Right style={{ flex: 2 }}>
                   <Icon 
@@ -122,13 +130,13 @@ export default class buscarProductos extends React.Component {
     if (this.state.loading) {
       return (
         <Container style={styles.container}>
-          <Spinner color='green' />
+          <Spinner color='#78BE20' />
         </Container>
       );
     }
     return (
       <View style={styles.container}>
-        {this.state.productos && this.viewProductosListado() }
+        {this.state.filterProductos && this.viewProductosListado() }
       </View>
     );
   }

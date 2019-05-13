@@ -69,8 +69,8 @@ export default class Productos extends React.Component {
 
     SearchFilterFunction = (text) => {    
       const newData = this.arrayholder.filter(item => {      
-        const itemData = `${item.nombreProducto}`;
-         const textData = text;
+        const itemData = `${item.nombreProducto.toUpperCase()} ${item.nombreMarca.toUpperCase()}`;
+         const textData = text.toUpperCase();
          return itemData.indexOf(textData) > -1;    
       });    
       this.setState({ filterProductos: newData });  
@@ -96,8 +96,8 @@ export default class Productos extends React.Component {
                   />
                 </Left>
                 <Body style={styles.bodyCard}>
-                    <Text>{prod[index].nombreProducto.toUpperCase()} {prod[index].peso.toUpperCase()}</Text>
-                    <Text note>Desde $ {prod[index].precio_lista.toUpperCase()}</Text>
+                    <Text>{prod[index].nombreProducto.toUpperCase()} {prod[index].nombreMarca.toUpperCase()} {prod[index].peso.toUpperCase()}</Text>
+                    <Text note>Desde $ {prod[index].precio_lista}</Text>
                 </Body>
                 <Right style={{ flex: 2 }}>
                   <Icon 
@@ -130,7 +130,7 @@ export default class Productos extends React.Component {
     if (this.state.loading) {
       return (
         <Container style={styles.container}>
-          <Spinner color='green' />
+          <Spinner color='#78BE20' />
         </Container>
       );
     }
