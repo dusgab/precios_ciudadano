@@ -40,6 +40,7 @@ export default class Productos extends React.Component {
         loading: true
         }
 
+        this.searchInput = React.createRef();
         this.arrayholder = [];
       }
 
@@ -76,15 +77,24 @@ export default class Productos extends React.Component {
       this.setState({ filterProductos: newData });  
   };
 
+  _onPress = (nombreprod, mpid) => {
+    const text = "";
+    this.SearchFilterFunction(text);
+    this.searchInput.current._root.clear();
+    
+    this.props.navigation.navigate('Detalle', {id: nombreprod, mpid: mpid});
+  };
+
     viewProductosListado = () => {
       let botones = [];
       let prod = this.state.filterProductos;
-      console.log("view prodctos" + prod);
       for (let index = 0; index < prod.length; index++) {
           let nombreprod = prod[index].nombreProducto;
-          console.log(nombreprod);
+          let mpid = prod[index].marca_producto_id;
+          console.log("producto" + nombreprod + " " + mpid);
           botones.push(
-            <CardItem button bordered onPress={() => this.props.navigation.navigate('Detalle', {id: nombreprod})}
+            // <CardItem button bordered onPress={() => this.props.navigation.push('Detalle', {id: nombreprod, mpid: mpid})}
+            <CardItem button bordered onPress={() => this._onPress(nombreprod, mpid)}
                 key={"categoria_" + index}
               >
                 <Left style={{ flex: 2 }}>
@@ -113,7 +123,8 @@ export default class Productos extends React.Component {
                 <Header searchBar rounded style={styles.searchBar}>
                 <Item>
                     <Input placeholder="Buscar Producto" 
-                      onChangeText={(text) => this.SearchFilterFunction(text)} />
+                      onChangeText={(text) => this.SearchFilterFunction(text)}
+                      ref={this.searchInput} />
                     <Icon active name='search' style={{fontSize: 20, color: 'gray', paddingRight: 5, paddingBottom: 5}}/>
                 </Item>
                 </Header>
@@ -174,6 +185,6 @@ const styles = StyleSheet.create({
     textAlign: 'auto'
   },
   searchBar: {
-    backgroundColor: '#8DD322'
+    backgroundColor: '#78BE20'
   }
 });

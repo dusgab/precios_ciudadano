@@ -136,13 +136,11 @@ const tabBarBottom = createBottomTabNavigator(
         backgroundColor: '#133101',
         borderTopColor: '#78BE20', 
         borderTopWidth: 1,
-        shadowRadius: 2,
-        shadowOffset: {
-          width: 0,
-          height: -3,
-        },
-        shadowColor: '#000000',
-        elevation: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.6,
+        shadowRadius: 0,
+        elevation: 10
       }
     }
   }

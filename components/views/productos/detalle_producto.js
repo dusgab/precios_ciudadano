@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Dimensions } from 'react-native';
+import { StyleSheet, View, Dimensions, BackHandler } from 'react-native';
 import { Constants, Font } from 'expo';
 import {
     Container,
@@ -33,7 +33,7 @@ export default class Detalle extends React.Component {
 
     constructor(props) {
         super(props);
-
+        this.backButtonClick = this.backButtonClick.bind(this);
         this.state = {
         productos: [],
         filterProductos: [],
@@ -44,13 +44,14 @@ export default class Detalle extends React.Component {
         }
 
         this.arrayholder = [];
+        this.blurSuscription = null;
       }
 
     async componentDidMount() {
-    
-        //const productos = await api.fetchProductosSupermecados();
-        console.log(this.props.navigation.state.params.id);
-        const productos = await api.fetchProductoBuscar(this.props.navigation.state.params.id);
+        
+        const termino = this.props.navigation.state.params.id;
+        const mpid = this.props.navigation.state.params.mpid;
+        const productos = await api.fetchProductoBuscar(termino);
 
         await Font.loadAsync({
           Roboto: require("native-base/Fonts/Roboto.ttf"),
@@ -58,41 +59,54 @@ export default class Detalle extends React.Component {
         });
 
         this.setState({ productos: productos.data, loading: false });
-        //this.filtrarProductos(this.props.navigation.state.params.id);
+        this.filtrarProductos(termino, mpid);
         
     }
 
-    async componentWillMount() {
-      
+    componentWillMount() {
+      BackHandler.addEventListener('hardwareBackPress', this.backButtonClick);
     }
 
-    filtrarProductos = (id) => {
-        const filtro = this.state.productos.filter(producto => producto.id == id);
+    componentWillUnmount(){
+      BackHandler.removeEventListener('hardwareBackPress', this.backButtonClick);
+    } 
+
+    backButtonClick(){
+      if(this.props.navigation && this.props.navigation.goBack){
+        console.log("button click");
+        if(this.props.navigation.state.params.flag === 'Inicio') {
+          this.props.navigation.navigate('Inicio');
+          return true;
+        } else {
+          this.props.navigation.goBack();
+          return true;
+        }
+        
+      }
+      return false;
+    }
+
+    filtrarProductos = (termino, mpid) => {
+        const filtro = this.state.productos.filter(producto => producto.producto === termino && producto.marca_producto_id == mpid);
         //this.arrayholder = filtro;
         console.log(filtro)
         this.setState({ filterProductos: filtro });
     }
 
-  //   SearchFilterFunction = (text) => {    
-  //     const newData = this.arrayholder.filter(item => {      
-  //       const itemData = `${item.nombreProducto}`;
-  //        const textData = text;
-  //        return itemData.indexOf(textData) > -1;    
-  //     });    
-  //     this.setState({ filterProductos: newData });  
-  // };
-
     viewProductosListado = () => {
       let botones = [];
       let botones1 = [];
       let botones2 = [];
-      let prod = this.state.productos;
+      let prod = this.state.filterProductos;
       let last = prod.length - 1;
+      let count = 0;
       console.log("last" + last);
-      console.log("view detalle" + prod);
+      for (let index = 0; index < prod.length; index++) {
+        if (prod[index].marca_producto_id == this.props.navigation.state.params.mpid && count == 0) {
+          count++;
         botones.push(
           <Card style={styles.mb}
-            key={"categoria_" + 0}>
+            key={"categoria_" + index}>
           <CardItem>
               <Left style={{ flex: 2 }}>
               <Icon
@@ -103,10 +117,10 @@ export default class Detalle extends React.Component {
                 />
               </Left>
               <Body style={styles.bodyCard}>
-                  <Text style={styles.textoTitulo}>{prod[0].producto} {prod[0].peso} {prod[0].marca}</Text>
+                  <Text style={styles.textoTitulo}>{prod[index].producto} {prod[index].peso} {prod[index].marca}</Text>
                   <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
                     <Item style={{flexDirection: 'row', flex: 9, borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                      <Text style={styles.textoPrecio}>Rango de precios ${prod[0].precio_lista}</Text>
+                      <Text style={styles.textoPrecio}>Rango de precios ${prod[index].precio_lista}</Text>
                       <Icon name="arrow-right" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 18, marginLeft: 4, textAlign: 'center'}}/>
                       <Text style={styles.textoPrecio}>${prod[last].precio_lista}</Text>
                       {/* <Text style={styles.texto}>Fecha relevada {prod[0]["fecha relevada"].toUpperCase()}</Text> */}
@@ -130,7 +144,7 @@ export default class Detalle extends React.Component {
               </Item>
               </Card>
           )
-      for (let index = 0; index < prod.length; index++) {
+        }
         /*Si tiene promocion muestro otra tarjeta */
         if(prod[index].precio_promocion != null) {
           botones1.push(
@@ -157,7 +171,7 @@ export default class Detalle extends React.Component {
                   </Item>
                   <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
                     <Text style={styles.texto}>{prod[index].promocion} {prod[index].descripcion_promo}</Text>
-                    <Text style={styles.texto}>Válido hasta el {prod[index].fecha_promo_final.substring(0, prod[index].fecha_promo_final.length -9)}</Text>
+                    <Text style={styles.texto}>{prod[index].fecha_promo_final != null ? ("Válido hasta el " + prod[index].fecha_promo_final.substring(0, prod[index].fecha_promo_final.length -9)) : (prod[index].fecha_promo_final)}</Text>
                     <Text style={styles.texto}>Fecha relevada {prod[index].fecha_relevada}</Text>
                   </Item>
                   <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>

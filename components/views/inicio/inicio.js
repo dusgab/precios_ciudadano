@@ -26,6 +26,7 @@ import api from '../../services/fetchProductos';
 import HeaderCustom from '../fijos/header';
 
 const WIDTH = Dimensions.get('window').width;
+const HEIGHT = Dimensions.get('window').height;
 const icono = require('../../../assets/coca15.jpg');
 const icono1 = require('../../../assets/galletita.jpg');
 const icono2 = require('../../../assets/carne.png');
@@ -65,17 +66,20 @@ export default class Inicio extends React.Component {
     }
 
     _handlePress = () => {
-      console.log("handlePress" + this.state.search);
       this.searchInput.current._root.clear();
       const text = this.state.search;
       this.props.navigation.navigate('Buscar', {prod: text});
     };
 
+    Capitalize(str){
+      return str.charAt(0).toUpperCase() + str.slice(1);
+      }
+
     _render = () => {
         return (
             <Container style={styles.containerCard}>
             <HeaderCustom/>
-            <Header searchBar transparent style={{marginBottom: 12}}>
+            <Header searchBar transparent style={{marginBottom: 18}}>
               <Body style={{flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
                 <Text style={styles.titulo}>Buscar producto</Text>
                 <Item style={styles.searchBar}>
@@ -95,7 +99,7 @@ export default class Inicio extends React.Component {
             <List style={styles.listCat}>
               {this.state.categorias.map((cat, i) => (
                 <Content style={styles.containerPromos} key={i}>
-                  <Text style={styles.tituloCat}>{cat.nombre.toUpperCase()}</Text>
+                  <Text style={styles.tituloCat}>{this.Capitalize(cat.nombre)}</Text>
                   <Content horizontal={true} contentContainerStyle={styles.contentContainer}>
                   
                     <ListItem key={"categoria_" + cat.categoria_id} style={{flexDirection: 'column', borderBottomColor: 'transparent', marginLeft: 6}}>
@@ -106,22 +110,23 @@ export default class Inicio extends React.Component {
                               if (cat.nombre === data.categoria) {
                                 return (
                                   <ListItem key={"promocion_" + j + i} style={styles.listItem} 
-                                  onPress={() => this.props.navigation.push('Detalle', {id: data.producto})}
+                                  onPress={() => this.props.navigation.push('Detalle', {id: data.producto, mpid: data.marca_producto_id, flag: 'Inicio'})}
                                   >
                                     <Left style={{flex: 2}}>
                                       <Thumbnail square size={40} source={icono1} />
                                     </Left>
                                     <Body style={{flex: 8, flexDirection: 'column'}}>
-                                      <Text style={styles.textoProd}>{data.producto} {data.marca}</Text>
-                                      <Text style={styles.textoProd}>{data.peso}</Text>
+                                      <Text style={styles.textoProd}>{data.producto} {data.peso}</Text>
+                                      <Text style={styles.textoProd}>{data.marca}</Text>
+                                      <Text style={styles.textoProd}>{data.supermercado}</Text>
                                       <Item style={styles.listItemPrecio}>
                                         <Item style={styles.listItemPromo}>
-                                          <Text style={{color: "#FFF", paddingHorizontal: 7}}>Promo</Text>
+                                          <Text style={{color: "#FFF", paddingHorizontal: 7, paddingVertical: 3, fontSize: 16, fontWeight: '500', textAlign: 'center'}}>Promo</Text>
                                         </Item>
-                                        <Icon name="exclamation-circle" type="FontAwesome" style={{fontSize: 20, color: '#0098DA', paddingRight: 15}}
+                                        <Icon name="exclamation-circle" type="FontAwesome" style={{fontSize: 22, color: '#0098DA', paddingRight: 15}}
                                             onPress={() =>
                                                 Toast.show({
-                                                  text: <Text>{data.promocion} {data.descripcion_promo} - Válido hasta el {data.fecha_promo_final.substring(0, data.fecha_promo_final.length -9)}</Text>,
+                                                  text: <Text>{(data.fecha_promo_final != null) ? (data.promocion + " " + data.descripcion_promo + " - Válido hasta el " + data.fecha_promo_final.substring(0, data.fecha_promo_final.length -9)) : (data.promocion + " " + data.descripcion_promo + " - Válido hasta el ")}</Text>,
                                                   duration: 7000,
                                                   buttonText: "Ok",
                                                   type: "success"
@@ -220,11 +225,12 @@ const styles = StyleSheet.create({
   tituloCat: {
     fontSize: 18,
     color: '#434343',
+    fontWeight: 'bold',
     marginBottom: 2,
     marginLeft: 12,
   },
   textoProd: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#434343',
     fontWeight: 'bold',
     textAlign: 'left'
@@ -237,7 +243,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'line-through',
     color: 'gray',
     textAlign: 'right',
-    fontSize: 14,
+    fontSize: 16,
     marginRight: 6
   },
   textoPrecioPromo: {
@@ -255,10 +261,10 @@ const styles = StyleSheet.create({
     borderColor: '#78BE20',
     borderRadius: 5, 
     shadowColor: '#000',
-    shadowOffset: { width: 2, height: 8 },
+    shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.6,
-    shadowRadius: 1,
-    elevation: 1
+    shadowRadius: 3,
+    elevation: 2
   },
   searchBarText: {
     color: 'gray',
@@ -289,32 +295,40 @@ const styles = StyleSheet.create({
   listItem: {
     marginLeft: 0,
     marginRight: 14,
-    width: WIDTH - 20,
+    width: WIDTH - 40,
+    height: HEIGHT / 5,
     marginBottom: 5,
     borderStyle: 'solid', 
     borderTopWidth: 3, 
     borderBottomWidth: 3, 
     borderLeftWidth: 3, 
     borderRightWidth: 3, 
-    borderColor: '#78BE20',
+    borderColor: 'transparent',
     borderRadius: 5,
     shadowColor: '#000',
-    shadowOffset: { width: 2, height: 8 },
+    shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.6,
-    shadowRadius: 1,
-    elevation: 1
+    shadowRadius: 3,
+    elevation: 2
 },
   listItemPrecio: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'flex-end',
     borderBottomColor: 'transparent',
+    marginTop: 10,
   },
   listItemPromo: {
     borderColor: 'transparent',
-    backgroundColor: 'red',
+    backgroundColor: '#ff3300',
     marginRight: 10,
-    borderRadius: 30
+    paddingHorizontal: 3,
+    borderRadius: 30,
+    // shadowColor: '#000',
+    // shadowOffset: { width: 0, height: 0 },
+    // shadowOpacity: 0.6,
+    // shadowRadius: 0,
+    // elevation: 5
   },    
   botones: {
       flexDirection: 'row',

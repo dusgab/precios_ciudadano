@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Precios Corriente",
+    "name": "Precios Correntinos",
     "slug": "precios",
     "privacy": "public",
     "sdkVersion": "32.0.0",
@@ -25,12 +25,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.corrientes.precios",
-      "buildNumber": "1"
+      "buildNumber": "2"
     },
     "android": {
       "package": "com.corrientes.precios",
       "permissions": [],
-      "versionCode": 1
+      "versionCode": 2
     }
   }
 }

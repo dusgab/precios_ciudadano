@@ -40,6 +40,7 @@ export default class buscarProductos extends React.Component {
         loading: true
         }
 
+        this.searchInput = React.createRef();
         this.arrayholder = [];
         //this.prod = [];
       }
@@ -63,8 +64,8 @@ export default class buscarProductos extends React.Component {
         
     }
 
-    async componentWillMount() {
-      
+    async componentWillUnmount() {
+
     }
 
     SearchFilterFunction = (text) => {    
@@ -73,7 +74,15 @@ export default class buscarProductos extends React.Component {
          const textData = text.toUpperCase();
          return itemData.indexOf(textData) > -1;    
       });    
-      this.setState({ filterProductos: newData });  
+      this.setState({ productos: newData });  
+  };
+
+  _onPress = (id, mpid) => {
+    const text = "";
+    this.SearchFilterFunction(text);
+    this.searchInput.current._root.clear();
+    
+    this.props.navigation.navigate('Detalle', {id: id, mpid: mpid});
   };
 
     viewProductosListado = () => {
@@ -82,9 +91,12 @@ export default class buscarProductos extends React.Component {
       console.log("view prodctos" + prod1);
       for (let index = 0; index < prod1.length; index++) {
             // var res = prod[index].producto.substring(0, prod[index].producto.length -5);
-            let res = prod1[index].producto;
+            let id = prod1[index].producto;
+            let mpid = prod1[index].marca_producto_id;
+            console.log("id, mpid " + id + " " + mpid);
           botones.push(
-            <CardItem button bordered onPress={() => this.props.navigation.push('Detalle', {id: res})}
+            // <CardItem button bordered onPress={() => this.props.navigation.push('Detalle', {id: id, mpid: mpid})}
+            <CardItem button bordered onPress={() => this._onPress(id, mpid)}
                 key={"categoria_" + index}
               >
                 <Left style={{ flex: 2 }}>
@@ -113,7 +125,8 @@ export default class buscarProductos extends React.Component {
                 <Header searchBar rounded style={styles.searchBar}>
                 <Item>
                     <Input placeholder="Buscar Producto" 
-                      onChangeText={(text) => this.SearchFilterFunction(text)} />
+                      onChangeText={(text) => this.SearchFilterFunction(text)} 
+                      ref={this.searchInput}/>
                     <Icon active name='search' style={{fontSize: 20, color: 'gray', paddingRight: 5, paddingBottom: 5}}/>
                 </Item>
                 </Header>
@@ -174,6 +187,6 @@ const styles = StyleSheet.create({
     textAlign: 'auto'
   },
   searchBar: {
-    backgroundColor: '#8DD322'
+    backgroundColor: '#78BE20'
   }
 });
