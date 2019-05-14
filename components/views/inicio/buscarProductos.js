@@ -82,13 +82,14 @@ export default class buscarProductos extends React.Component {
     this.SearchFilterFunction(text);
     this.searchInput.current._root.clear();
     
-    this.props.navigation.navigate('Detalle', {id: id, mpid: mpid});
+    this.props.navigation.navigate('DetalleHome', {id: id, mpid: mpid});
   };
 
     viewProductosListado = () => {
       let botones = [];
       let prod1 = this.state.productos;
       console.log("view prodctos" + prod1);
+      
       for (let index = 0; index < prod1.length; index++) {
             // var res = prod[index].producto.substring(0, prod[index].producto.length -5);
             let id = prod1[index].producto;
@@ -125,7 +126,9 @@ export default class buscarProductos extends React.Component {
                 <Header searchBar rounded style={styles.searchBar}>
                 <Item>
                     <Input placeholder="Buscar Producto" 
-                      onChangeText={(text) => this.SearchFilterFunction(text)} 
+                      placeholderTextColor='#434343'
+                      onChangeText={(text) => this.SearchFilterFunction(text)}
+                      onKeyPress={this.handleKeyDown}
                       ref={this.searchInput}/>
                     <Icon active name='search' style={{fontSize: 20, color: 'gray', paddingRight: 5, paddingBottom: 5}}/>
                 </Item>

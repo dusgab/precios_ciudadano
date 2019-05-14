@@ -29,7 +29,7 @@ const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
 const BARRATOP = Constants.statusBarHeight;
 
-export default class Detalle extends React.Component {
+export default class DetalleHome extends React.Component {
 
     constructor(props) {
         super(props);

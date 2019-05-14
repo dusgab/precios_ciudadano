@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, Keyboard, Alert } from 'react-native';
 import { Constants, Font } from 'expo';
 import {
     Container,
@@ -27,6 +27,7 @@ import HeaderCustom from '../fijos/header';
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
+const SIZE = WIDTH * 0.07;
 const icono = require('../../../assets/coca15.jpg');
 const icono1 = require('../../../assets/galletita.jpg');
 const icono2 = require('../../../assets/carne.png');
@@ -67,9 +68,29 @@ export default class Inicio extends React.Component {
 
     _handlePress = () => {
       this.searchInput.current._root.clear();
+      Keyboard.dismiss()
       const text = this.state.search;
-      this.props.navigation.navigate('Buscar', {prod: text});
+      if(text === null || text === "") {
+        Alert.alert(
+          'Precios Correntinos',
+          'Escriba un producto a buscar. Ej. fideos',
+          [
+            {text: 'OK', onPress: () => console.log('OK Pressed')},
+          ],
+          { cancelable: false }
+        );
+      } else {
+        this.props.navigation.navigate('Buscar', {prod: text});
+      }
+      
     };
+
+    handleKeyDown = (e) => {
+      console.log("handle key" + e.nativeEvent.key);
+      if(e.nativeEvent.key === "Enter") {
+          this._handlePress();
+      }
+    }
 
     Capitalize(str){
       return str.charAt(0).toUpperCase() + str.slice(1);
@@ -79,16 +100,20 @@ export default class Inicio extends React.Component {
         return (
             <Container style={styles.containerCard}>
             <HeaderCustom/>
-            <Header searchBar transparent style={{marginBottom: 18}}>
-              <Body style={{flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+            <Header searchBar transparent style={{marginVertical: 15}}>
+              <Body style={{flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingVertical: 8}}>
                 <Text style={styles.titulo}>Buscar producto</Text>
                 <Item style={styles.searchBar}>
                     {/* <Input placeholder="Buscar Producto" onChangeText={(text) => this.SearchFilterFunction(text)}/> */}
                     <Input placeholder="Ej. fideos" 
                             onChangeText={(text) => this.setState({search:text})}
+                            // onKeyPress={this.handleKeyDown}
+                            keyboardType="default"
+                            returnKeyType="next"
+                            onSubmitEditing={()=> this._handlePress() }
                             ref={this.searchInput}/>
                     <Button iconRight transparent primary onPress={() => this._handlePress()}>
-                        <Icon active name='search' type="FontAwesome" style={{fontSize: 20, color: 'gray'}}/>
+                        <Icon active name='search' type="FontAwesome" style={{fontSize: SIZE, color: 'gray'}}/>
                     </Button>
                 </Item>
               </Body>
@@ -123,7 +148,7 @@ export default class Inicio extends React.Component {
                                         <Item style={styles.listItemPromo}>
                                           <Text style={{color: "#FFF", paddingHorizontal: 7, paddingVertical: 3, fontSize: 16, fontWeight: '500', textAlign: 'center'}}>Promo</Text>
                                         </Item>
-                                        <Icon name="exclamation-circle" type="FontAwesome" style={{fontSize: 22, color: '#0098DA', paddingRight: 15}}
+                                        <Icon name="exclamation-circle" type="FontAwesome" style={{fontSize: SIZE, color: '#0098DA', paddingRight: 15}}
                                             onPress={() =>
                                                 Toast.show({
                                                   text: <Text>{(data.fecha_promo_final != null) ? (data.promocion + " " + data.descripcion_promo + " - Válido hasta el " + data.fecha_promo_final.substring(0, data.fecha_promo_final.length -9)) : (data.promocion + " " + data.descripcion_promo + " - Válido hasta el ")}</Text>,
@@ -196,10 +221,12 @@ const styles = StyleSheet.create({
     flex: 3
   },
   containerCard: {
+    flex: 1,
     backgroundColor: "#FFF",
     width: WIDTH,
   },
   containerBody: {
+    flex: 1,
   },
   contentContainer: {
     justifyContent: 'flex-start',
@@ -224,7 +251,7 @@ const styles = StyleSheet.create({
   },
   tituloCat: {
     fontSize: 18,
-    color: '#434343',
+    color: 'gray',
     fontWeight: 'bold',
     marginBottom: 2,
     marginLeft: 12,
@@ -243,13 +270,13 @@ const styles = StyleSheet.create({
     textDecorationLine: 'line-through',
     color: 'gray',
     textAlign: 'right',
-    fontSize: 16,
+    fontSize: 18,
     marginRight: 6
   },
   textoPrecioPromo: {
     color: '#434343',
     textAlign: 'right',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold'
   },
   searchBar: {

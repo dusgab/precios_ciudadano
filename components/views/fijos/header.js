@@ -34,10 +34,8 @@ export default class HeaderCustom extends React.Component {
       render() {
           return (
             <Header style={styles.header}>
-            <Left>
-            <Thumbnail square small source={icono} />
-            </Left>
-            <Body>
+            <Body style={styles.body}>
+              <Thumbnail square small source={icono} />
               <Title style={styles.texto}>Precios Correntinos</Title>
             </Body>
           </Header>
@@ -46,13 +44,20 @@ export default class HeaderCustom extends React.Component {
     }
 
 const styles = StyleSheet.create({
-    header: {
+  header: {
     backgroundColor: '#78BE20',
+  },
+  body: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   texto: {
     color: '#fff',
-    fontSize: 18, 
-    marginLeft: 10, 
-    textAlign: 'center'
+    marginLeft: 10,
+    fontSize: 20, 
+    textAlign: 'center',
+    fontWeight: 'bold'
   }
 });

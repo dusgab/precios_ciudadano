@@ -5,7 +5,8 @@ import { Icon } from "native-base";
 
 import Inicio from '../views/inicio/inicio';
 import Detalle from '../views/productos/detalle_producto';
-import Buscar from '../views/productos/buscarProductos';
+import DetalleHome from '../views/inicio/detalle_producto_home';
+import Buscar from '../views/inicio/buscarProductos';
 import Productos from '../views/productos/productos';
 import Categorias from '../views/productos/categorias';
 import MiLista from '../views/lista/milista';
@@ -17,6 +18,7 @@ const tintColor = "white";
 const InicioStack = createStackNavigator({
   Inicio: {screen: Inicio},
   Buscar: {screen: Buscar},
+  DetalleHome: {screen: DetalleHome},
 },{
   headerMode: 'none',
 });
@@ -137,7 +139,7 @@ const tabBarBottom = createBottomTabNavigator(
         borderTopColor: '#78BE20', 
         borderTopWidth: 1,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 5 },
+        shadowOffset: { width: 0, height: -15 },
         shadowOpacity: 0.6,
         shadowRadius: 0,
         elevation: 10
