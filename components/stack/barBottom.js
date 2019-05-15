@@ -1,6 +1,5 @@
 import React from 'react';
 import { createStackNavigator, createBottomTabNavigator, createAppContainer } from 'react-navigation';
-//import Icon from 'react-native-vector-icons/FontAwesome';
 import { Icon } from "native-base";
 
 import Inicio from '../views/inicio/inicio';
@@ -43,22 +42,15 @@ const EstadisticaStack = createStackNavigator({
   headerMode: 'none',
 });
 
-// const ProductosStack = createStackNavigator({
-//   Productos: {screen: Productos},
-//   Detalle: {screen: Detalle},
-// },{
-//   headerMode: 'none',
-// });
-
 const tabBarBottom = createBottomTabNavigator(
   {
     Inicio: {screen: InicioStack,
           navigationOptions: {
             tabBarIcon: ({ focused, tintColor }) => {
                 if(focused === true){
-                  tintColor = "#FFFFFF";
+                  tintColor = "#60BBE8";
                 } else {
-                  tintColor = "#78BE20";
+                  tintColor = "gray";
                 }
                 return <Icon name="home" type="FontAwesome" style={{ color: tintColor}} />;
           },
@@ -68,9 +60,9 @@ const tabBarBottom = createBottomTabNavigator(
         navigationOptions: {
           tabBarIcon: ({ focused, tintColor }) => {
             if(focused === true){
-              tintColor = "#FFFFFF";
+              tintColor = "#60BBE8";
             } else {
-              tintColor = "#78BE20";
+              tintColor = "gray";
             }
               return <Icon name="shopping-basket" type="FontAwesome" style={{ color: tintColor}}/>;
         },
@@ -80,9 +72,9 @@ const tabBarBottom = createBottomTabNavigator(
       navigationOptions: {
         tabBarIcon: ({ focused, tintColor }) => {
           if(focused === true){
-            tintColor = "#FFFFFF";
+            tintColor = "#60BBE8";
           } else {
-            tintColor = "#78BE20";
+            tintColor = "gray";
           }
             return <Icon name="star" type="FontAwesome" style={{ color: tintColor}} />;
         },
@@ -92,9 +84,9 @@ const tabBarBottom = createBottomTabNavigator(
       navigationOptions: {
         tabBarIcon: ({ focused, tintColor }) => {
           if(focused === true){
-            tintColor = "#FFFFFF";
+            tintColor = "#60BBE8";
           } else {
-            tintColor = "#78BE20";
+            tintColor = "gray";
           }
             return <Icon name="bar-chart" type="FontAwesome" style={{ color: tintColor}}/>;
         },
@@ -104,45 +96,20 @@ const tabBarBottom = createBottomTabNavigator(
   {
     initialRouteName: 'Inicio',
     lazy: 'false',
-    // navigationOptions: ({ navigation }) => ({
-      
-    //   tabBarIcon: () => {
-    //     const { routeName } = navigation.state;
-    //     let iconName;
-    //     if (routeName === 'Inicio') {
-    //            iconName = 'home';
-    //     } else if (routeName === 'Categorias') {
-    //        iconName = 'shopping-bag';
-    //     }
-    //     } else if (routeName === 'Karaoke') {
-    //       iconName = 'videocam';
-    //     } else if (routeName === 'Biblioteca') {
-    //       iconName = 'library-music';
-    //     } else if (routeName === 'Fiesta') {
-    //       iconName = 'event-note';
-    //     } else if (routeName === 'Chamiguito') {
-    //       iconName = 'gamepad';
-    //     }
-
-    //     You can return any component that you like here! We usually use an
-    //     icon component from react-native-vector-icons
-    //     return <Icon name={iconName} color="white" type="MaterialCommunityIcons"/>;
-    //   },
-    // }),
     tabBarOptions: {
-      activeTintColor: '#FFFFFF',
-      inactiveTintColor: '#78BE20',
-      activeBackgroundColor: '#78BE20',
+      activeTintColor: '#60BBE8',
+      inactiveTintColor: 'gray',
+      activeBackgroundColor: '#FFFFFF',
       inactiveBackgroundColor: '#FFFFFF',
       style: {
         backgroundColor: '#133101',
-        borderTopColor: '#78BE20', 
+        borderTopColor: '#60BBE8', 
         borderTopWidth: 1,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: -15 },
-        shadowOpacity: 0.6,
-        shadowRadius: 0,
-        elevation: 10
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.9,
+        shadowRadius: 1,
+        elevation: 2
       }
     }
   }

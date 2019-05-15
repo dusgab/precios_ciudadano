@@ -45,7 +45,7 @@ export default class HeaderCustom extends React.Component {
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#78BE20',
+    backgroundColor: '#fff',
   },
   body: {
     flex: 1,
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   texto: {
-    color: '#fff',
+    color: '#78BE20',
     marginLeft: 10,
     fontSize: 20, 
     textAlign: 'center',
