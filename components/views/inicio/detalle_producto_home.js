@@ -28,40 +28,40 @@ import api from '../../services/fetchProductos';
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
 const BARRATOP = Constants.statusBarHeight;
+const device_id = Constants.installationId;
 
 export default class DetalleHome extends React.Component {
 
     constructor(props) {
-        super(props);
-        this.backButtonClick = this.backButtonClick.bind(this);
-        this.state = {
+      super(props);
+
+      this.state = {
         productos: [],
         filterProductos: [],
         cat: null,     
         error: null,
         loading: true,
-        showToast: false
-        }
+        showToast: false,
+        enlista: false, //piñata
+      }
 
-        this.arrayholder = [];
-        this.blurSuscription = null;
-        this.milista = [];
+      this.arrayholder = [];
       }
 
     async componentDidMount() {
         
         const mpid = this.props.navigation.state.params.mpid;
         const productos = await api.fetchBuscarPorId(mpid);
+        
+        //await AsyncStorage.clear();
 
         await Font.loadAsync({
           Roboto: require("native-base/Fonts/Roboto.ttf"),
           Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
         });
 
+        this.verificarLista(mpid); //piñata
         this.setState({ productos: productos.data, loading: false });
-
-        //this.verificarLista(mpid);
-        
     }
 
     componentWillMount() {
@@ -71,74 +71,101 @@ export default class DetalleHome extends React.Component {
     } 
 
     verificarLista = async (id) => {
-      const exist = await AsyncStorage.getItem(id);
-      let newList = JSON.parse(exist);
+      //piñata
+      var milista = [];
+      console.log(" verificar 2");
+      const lista = await AsyncStorage.getItem('lista');
+      console.log(" verificar 3");
 
-      if(!newList) {
-        newList = [];
+      if(lista == null) {
+        console.log(" milista null");  
       } else {
-        newList.map((result, i, store) => {
-            // get at each store's key/value so you can work with it
-            let key = store[i][0];
-            let value = store[i][1];
-            console.log(key + " - " + value);
-          });
-      }
-    }
+        milista = JSON.parse(lista);
+        console.log(" verificar 4");
+        for (let index = 0; index < milista.length; index++) {
+          console.log(" ni for verificar " +  milista[index].marca_producto_id);
 
-    backButtonClick(){
-      if(this.props.navigation && this.props.navigation.goBack){
-        console.log("button click");
-        if(this.props.navigation.state.params.flag === 'Inicio') {
-          this.props.navigation.navigate('Inicio');
-          return true;
-        } else {
-          this.props.navigation.goBack();
-          return true;
+          if(milista[index].marca_producto_id == id) {
+            console.log(" ni en if verificar " +  milista[index].marca_producto_id);
+            this.setState({ enlista: true });
+          }
         }
-        
       }
-      return false;
     }
 
-    filtrarProductos = (termino, mpid) => {
-        const filtro = this.state.productos.filter(producto => producto.producto === termino && producto.marca_producto_id == mpid);
-        //this.arrayholder = filtro;
-        console.log(filtro)
-        this.setState({ filterProductos: filtro });
+    _eliminarLista = async (id) => {
+      //piñata
+      var milista = [];
+      const lista = await AsyncStorage.getItem('lista');
+      milista = JSON.parse(lista);
+
+      for (let index = 0; index < milista.length; index++) {
+
+        if(milista[index].marca_producto_id == id) {
+          console.log(" ni en if verificar " +  milista[index].marca_producto_id);
+          milista.splice(index, 1);
+          console.log(" eliminado ");
+          this.setState({ enlista: false });
+        }
+      }
+
+      await AsyncStorage.setItem('lista', JSON.stringify(milista) )
+            .then( ()=>{
+            console.log("se almaceno lista")
+            } )
+            .catch( ()=>{
+            console.log("error al guardar lista")
+            } );
+
+      const lista1 = await AsyncStorage.getItem('lista');
+      ni = JSON.parse(lista1);
+
+      for (let index = 0; index < milista.length; index++) {
+            console.log(" milista " +  milista[index].marca_producto_id);
+      }
+
+      Toast.show({
+        text: "¡Producto eliminado de Mi Lista!",
+        textStyle: { textAlign: "center", color: '#FFF' },
+        duration: 2000,
+        type: "success"
+      });
     }
 
+    //Agregar un producto a Mi Lista
     _agregarLista = async (id) => {
     
-      // const item = {
-      //   "device_id": Constants.installationId,
-      //   "marca_producto_id": id,
-      // };
+      var milista = [];
+      const item = {
+        "device_id": device_id,
+        "marca_producto_id": id,
+      };
 
-      // const exist = await AsyncStorage.getItem(id);
-      // let newList = JSON.parse(exist);
+      const lista = await AsyncStorage.getItem('lista');
+      
+      if(lista == null) {
+        console.log("exist null");
+      } else {
+        milista = JSON.parse(lista);
+      }
+      
+      milista.push(item);
 
-      // if(!newList) {
-      //   newList = [];
-      // }
+      await AsyncStorage.setItem('lista', JSON.stringify(milista) )
+            .then( ()=>{
+            console.log("se almaceno lista")
+            this.setState({ enlista: true });
+            } )
+            .catch( ()=>{
+            console.log("error al guardar lista")
+            } );
 
-      // newList.push(item);
-     
-      // await AsyncStorage.setItem('lista ', JSON.stringify(newList) )
-      //       .then( ()=>{
-      //       console.log("‘It was saved successfully’")
-      //       } )
-      //       .catch( ()=>{
-      //       console.log("‘There was an error saving the product’")
-      //       } );
-          
-      // const nuevo = await AsyncStorage.getItem(id);
-      // let ni = JSON.parse(nuevo);
+      const lista3 = await AsyncStorage.getItem('lista');
+            milista = JSON.parse(lista3);
 
-      // for (let index = 0; index < ni.length; index++) {
-      //       console.log(" ni['device_id'] " +  ni[index].marca_producto_id);
-
-      // }
+      for (let index = 0; index < milista.length; index++) {
+            console.log(" ni " +  milista[index].marca_producto_id);
+      }
 
       Toast.show({
         text: "¡Producto agregado a Mi Lista!",
@@ -263,13 +290,24 @@ export default class DetalleHome extends React.Component {
                       
                   </Body>
               </CardItem>
-              <Item style={{borderBottomColor: 'transparent', margin: 8}}>
+              {this.state.enlista ? 
+                <Item style={{borderBottomColor: 'transparent', margin: 8}}>
+                  <Button transparent style={styles.botonMilistaRem}
+                        onPress={() => this._eliminarLista(prod[index].marca_producto_id)}>
+                      <Icon name="trash-can-outline" type="MaterialCommunityIcons" style={{ color: "gray"}}/>
+                      <Text style={styles.textoMilistaRem}>ELIMINAR DE MI LISTA</Text>
+                  </Button>
+                </Item>
+                :
+                <Item style={{borderBottomColor: 'transparent', margin: 8}}>
                   <Button transparent style={styles.botonMilista}
                         onPress={() => this._agregarLista(prod[index].marca_producto_id)}>
                       <Icon name="plus" type="FontAwesome" style={{ color: "#78BE20"}}/>
                       <Text style={styles.textoMilista}>AÑADIR A MI LISTA</Text>
                   </Button>
-              </Item>
+                </Item>
+              }
+              
             </Card>
             )
           }
@@ -382,6 +420,11 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontSize: 14,
   },
+  textoMilistaRem: {
+    color: 'gray',
+    fontWeight: '400',
+    fontSize: 14,
+  },
   textoSuper: {
     textAlign: 'left',
     fontSize: 16,
@@ -396,6 +439,20 @@ const styles = StyleSheet.create({
   },
   botonMilista: {
     borderColor: '#78BE20',
+    borderStyle: 'solid',
+    borderWidth: 2,
+    borderRadius: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 4, height: 10 },
+    shadowOpacity: 0.6,
+    shadowRadius: 1,
+    elevation: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 8
+  },
+  botonMilistaRem: {
+    borderColor: 'gray',
     borderStyle: 'solid',
     borderWidth: 2,
     borderRadius: 24,
