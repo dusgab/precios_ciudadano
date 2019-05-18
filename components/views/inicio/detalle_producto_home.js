@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Dimensions, BackHandler } from 'react-native';
+import { StyleSheet, View, Dimensions, BackHandler, AsyncStorage } from 'react-native';
 import { Constants, Font } from 'expo';
 import {
     Container,
@@ -45,13 +45,13 @@ export default class DetalleHome extends React.Component {
 
         this.arrayholder = [];
         this.blurSuscription = null;
+        this.milista = [];
       }
 
     async componentDidMount() {
         
-        const termino = this.props.navigation.state.params.id;
         const mpid = this.props.navigation.state.params.mpid;
-        const productos = await api.fetchProductoBuscar(termino);
+        const productos = await api.fetchBuscarPorId(mpid);
 
         await Font.loadAsync({
           Roboto: require("native-base/Fonts/Roboto.ttf"),
@@ -59,17 +59,32 @@ export default class DetalleHome extends React.Component {
         });
 
         this.setState({ productos: productos.data, loading: false });
-        this.filtrarProductos(termino, mpid);
+
+        //this.verificarLista(mpid);
         
     }
 
     componentWillMount() {
-      BackHandler.addEventListener('hardwareBackPress', this.backButtonClick);
     }
 
     componentWillUnmount(){
-      BackHandler.removeEventListener('hardwareBackPress', this.backButtonClick);
     } 
+
+    verificarLista = async (id) => {
+      const exist = await AsyncStorage.getItem(id);
+      let newList = JSON.parse(exist);
+
+      if(!newList) {
+        newList = [];
+      } else {
+        newList.map((result, i, store) => {
+            // get at each store's key/value so you can work with it
+            let key = store[i][0];
+            let value = store[i][1];
+            console.log(key + " - " + value);
+          });
+      }
+    }
 
     backButtonClick(){
       if(this.props.navigation && this.props.navigation.goBack){
@@ -93,72 +108,75 @@ export default class DetalleHome extends React.Component {
         this.setState({ filterProductos: filtro });
     }
 
+    _agregarLista = async (id) => {
+    
+      // const item = {
+      //   "device_id": Constants.installationId,
+      //   "marca_producto_id": id,
+      // };
+
+      // const exist = await AsyncStorage.getItem(id);
+      // let newList = JSON.parse(exist);
+
+      // if(!newList) {
+      //   newList = [];
+      // }
+
+      // newList.push(item);
+     
+      // await AsyncStorage.setItem('lista ', JSON.stringify(newList) )
+      //       .then( ()=>{
+      //       console.log("‘It was saved successfully’")
+      //       } )
+      //       .catch( ()=>{
+      //       console.log("‘There was an error saving the product’")
+      //       } );
+          
+      // const nuevo = await AsyncStorage.getItem(id);
+      // let ni = JSON.parse(nuevo);
+
+      // for (let index = 0; index < ni.length; index++) {
+      //       console.log(" ni['device_id'] " +  ni[index].marca_producto_id);
+
+      // }
+
+      Toast.show({
+        text: "¡Producto agregado a Mi Lista!",
+        textStyle: { textAlign: "center", color: '#FFF' },
+        duration: 2000,
+        type: "success"
+      });
+    }
+
     viewProductosListado = () => {
       let botones = [];
       let botones1 = [];
       let botones2 = [];
-      let prod = this.state.filterProductos;
+      let prod = this.state.productos;
       let last = prod.length - 1;
-      let count = 0;
-      console.log("last" + last);
+      let desde = 9999;
+      let hasta = 0;
+      
       for (let index = 0; index < prod.length; index++) {
-        if (prod[index].marca_producto_id == this.props.navigation.state.params.mpid && count == 0) {
-          count++;
-        botones.push(
-          <Card style={styles.mb}
-            key={"categoria_" + index}>
-            <CardItem>
-                <Left style={{ flex: 2 }}>
-                <Icon
-                    active
-                    name="store"
-                    type="MaterialCommunityIcons"
-                    style={{ color: "green" }}
-                  />
-                </Left>
-                <Body style={styles.bodyCard}>
-                    <Text style={styles.textoTitulo}>{prod[index].producto} {prod[index].peso} {prod[index].marca}</Text>
-                    <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
-                      <Item style={{flexDirection: 'row', flex: 9, borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                        <Text style={styles.textoPrecio}>Rango de precios ${prod[index].precio_lista}</Text>
-                        <Icon name="arrow-right" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 18, marginLeft: 4, textAlign: 'center'}}/>
-                        <Text style={styles.textoPrecio}>${prod[last].precio_lista}</Text>
-                        {/* <Text style={styles.texto}>Fecha relevada {prod[0]["fecha relevada"].toUpperCase()}</Text> */}
-                      </Item>
-                    </Item>
-                    
-                </Body>
-            </CardItem>
-            <Item style={{borderBottomColor: 'transparent', margin: 8}}>
-                <Button transparent style={styles.botonMilista}
-                      onPress={() =>
-                          Toast.show({
-                            text: "¡ Producto agregado a Mi Lista !",
-                            textStyle: { textAlign: "center" },
-                            duration: 2000,
-                            type: "success"
-                          })}>
-                    <Icon name="plus" type="FontAwesome" style={{ color: "#78BE20"}}/>
-                    <Text style={styles.textoMilista}>AÑADIR A MI LISTA</Text>
-                </Button>
-            </Item>
-          </Card>
-          )
-        }
+        
+        
         /*Si tiene promocion muestro otra tarjeta */
         if(prod[index].precio_promocion != null) {
+          
+          if(desde > prod[index].precio_promocion) {
+            desde = prod[index].precio_promocion;
+          }
+
+          if(hasta < prod[index].precio_promocion) {
+            hasta = prod[index].precio_promocion;
+          }
+          
+          console.log("desde" + desde);
+          console.log("hasta" + hasta);
           botones1.push(
             <CardItem button bordered 
                 key={"categoria_" + index + index}
               >
-                {/* <Left style={{ flex: 2 }}>
-                <Icon
-                    active
-                    name="store"
-                    type="MaterialCommunityIcons"
-                    style={{ color: "gray" }}
-                  />
-                </Left> */}
                 <Body style={styles.bodyCard}>
                   <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
                     <Item style={{flex: 6, flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
@@ -182,18 +200,21 @@ export default class DetalleHome extends React.Component {
               </CardItem>
             )
         } else {
+
+          if(desde > prod[index].precio_lista) {
+            desde = prod[index].precio_lista;
+          }
+
+          if(hasta < prod[index].precio_lista) {
+            hasta = prod[index].precio_lista;
+          }
+
+          console.log("desde" + desde);
+          console.log("hasta" + hasta);
           botones2.push(
             <CardItem button bordered 
                 key={"promo_" + index + index}
               >
-                {/* <Left style={{ flex: 2 }}>
-                <Icon
-                    active
-                    name="store"
-                    type="MaterialCommunityIcons"
-                    style={{ color: "gray" }}
-                  />
-                </Left> */}
                 <Body style={styles.bodyCard}>
                   <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
                     <Item style={{flex: 6, flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
@@ -205,7 +226,6 @@ export default class DetalleHome extends React.Component {
                     </Item>
                   </Item>
                   <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                    {/* <Text style={styles.texto}>{prod[index].promocion} {prod[index].descripcion_promo} - Valido hasta el {prod[index].fecha_promo_final.substring(0, prod[index].fecha_promo_final.length -9)}</Text> */}
                     <Text style={styles.texto}>Fecha relevada {prod[index].fecha_relevada}</Text>
                   </Item>
                   <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
@@ -216,13 +236,48 @@ export default class DetalleHome extends React.Component {
               </CardItem>
             )
         }
+
+          if (last == index) {
+            
+          botones.push(
+            <Card style={styles.mb}
+              key={"categoria_" + index}>
+              <CardItem>
+                  <Left style={{ flex: 2 }}>
+                  <Icon
+                      active
+                      name="store"
+                      type="MaterialCommunityIcons"
+                      style={{ color: "#78BE20" }}
+                    />
+                  </Left>
+                  <Body style={styles.bodyCard}>
+                      <Text style={styles.textoTitulo}>{prod[index].producto} {prod[index].peso} {prod[index].marca}</Text>
+                      <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
+                        <Item style={{flexDirection: 'row', flex: 9, borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                          <Text style={styles.textoPrecio}>Rango de precios ${desde}</Text>
+                          <Icon name="arrow-right" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 18, marginLeft: 4, textAlign: 'center'}}/>
+                          <Text style={styles.textoPrecio}>${hasta}</Text>
+                        </Item>
+                      </Item>
+                      
+                  </Body>
+              </CardItem>
+              <Item style={{borderBottomColor: 'transparent', margin: 8}}>
+                  <Button transparent style={styles.botonMilista}
+                        onPress={() => this._agregarLista(prod[index].marca_producto_id)}>
+                      <Icon name="plus" type="FontAwesome" style={{ color: "#78BE20"}}/>
+                      <Text style={styles.textoMilista}>AÑADIR A MI LISTA</Text>
+                  </Button>
+              </Item>
+            </Card>
+            )
+          }
         }
         return <Container style={styles.containerCard}>
                 <HeaderCustom/>
                 <Content padder style={{flex: 1}}>
                     {botones}
-                {/* </Content>
-                <Content style={{flex: 8}}> */}
                 <Header transparent>
                   <Body style={{flex: 6}}>
                     <Text style={styles.textoSuper}>Supermercado</Text>
@@ -265,7 +320,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   containerCard: {
-    backgroundColor: "#FFF",
+    backgroundColor: "#F9F9F9",
     width: WIDTH,
   },
   mb: {
@@ -354,6 +409,6 @@ const styles = StyleSheet.create({
     marginLeft: 8
   },
   searchBar: {
-    backgroundColor: 'green'
+    backgroundColor: '#78BE20'
   }
 });

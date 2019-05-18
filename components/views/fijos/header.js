@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Dimensions, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Dimensions, FlatList, TouchableOpacity, Image } from 'react-native';
 import { Font } from 'expo';
 import {
   Container,
@@ -19,7 +19,8 @@ import {
 } from "native-base";
 
 const WIDTH = Dimensions.get('window').width;
-const icono = require('../../../assets/icono2.png');
+const icono = require('../../../assets/icon2.png');
+const SIZE = WIDTH * 0.06;
 
 export default class HeaderCustom extends React.Component {
 
@@ -35,8 +36,7 @@ export default class HeaderCustom extends React.Component {
           return (
             <Header style={styles.header}>
             <Body style={styles.body}>
-              <Thumbnail square small source={icono} />
-              <Title style={styles.texto}>Precios Correntinos</Title>
+              <Image source={icono} resizeMode='contain' style={{flex:1, height: 40, width: WIDTH}}/>
             </Body>
           </Header>
           );
@@ -49,15 +49,9 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
+    width: WIDTH,
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  texto: {
-    color: '#78BE20',
-    marginLeft: 10,
-    fontSize: 20, 
-    textAlign: 'center',
-    fontWeight: 'bold'
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
   }
 });

@@ -118,8 +118,8 @@ export default class Inicio extends React.Component {
                 </Item>
               </Body>
             </Header>
+
             <Content style={styles.containerBody}>
-            
             <List style={styles.listCat}>
               {this.state.categorias.map((cat, i) => (
                 <Content style={styles.containerPromos} key={i}>
@@ -135,7 +135,7 @@ export default class Inicio extends React.Component {
                                 return (
                                   <Card key={"promocion_" + j + i}>
                                   <CardItem button bordered style={styles.listItem} 
-                                  onPress={() => this.props.navigation.push('Detalle', {id: data.producto, mpid: data.marca_producto_id, flag: 'Inicio'})}
+                                  onPress={() => this.props.navigation.push('DetalleHome', {id: data.producto, mpid: data.marca_producto_id, flag: 'Inicio'})}
                                   >
                                     <Left style={{flex: 2}}>
                                       <Thumbnail square size={40} source={icono1} />
@@ -227,12 +227,12 @@ const styles = StyleSheet.create({
   },
   containerCard: {
     flex: 1,
-    backgroundColor: "#FFF",
+    backgroundColor: "#F9F9F9",
     width: WIDTH,
   },
   containerBody: {
     flex: 1,
-    backgroundColor: '#FFF',
+    backgroundColor: '#F9F9F9',
   },
   contentContainer: {
     justifyContent: 'flex-start',
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   barraBusqueda: {
-    backgroundColor: '#FFF',
+    backgroundColor: '#F9F9F9',
     paddingVertical: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 5 },
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
   },
   top: {
     flex: 3,
-    backgroundColor: "green",
+    backgroundColor: "#78BE20",
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -339,6 +339,8 @@ const styles = StyleSheet.create({
     marginRight: 4,
     width: WIDTH - 70,
     height: HEIGHT / 5.5,
+    borderRadius: 7,
+    shadowColor: '#000000',
   },
   listItemOld: {
     backgroundColor: '#FFF',

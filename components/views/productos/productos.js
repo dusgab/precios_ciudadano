@@ -25,6 +25,7 @@ import HeaderCustom from '../fijos/header';
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
+const SIZE = WIDTH * 0.07;
 const BARRATOP = Constants.statusBarHeight;
 
 export default class Productos extends React.Component {
@@ -102,11 +103,11 @@ export default class Productos extends React.Component {
                     active
                     name="store"
                     type="MaterialCommunityIcons"
-                    style={{ color: "green" }}
+                    style={{ color: "#78BE20" }}
                   />
                 </Left>
                 <Body style={styles.bodyCard}>
-                    <Text>{prod[index].nombreProducto.toUpperCase()} {prod[index].nombreMarca.toUpperCase()} {prod[index].peso.toUpperCase()}</Text>
+                    <Text style={styles.texto}>{prod[index].nombreProducto.toUpperCase()} {prod[index].nombreMarca.toUpperCase()} {prod[index].peso.toUpperCase()}</Text>
                     <Text note>Desde $ {prod[index].precio_lista}</Text>
                 </Body>
                 <Right style={{ flex: 2 }}>
@@ -120,13 +121,18 @@ export default class Productos extends React.Component {
         }
         return <Container style={styles.containerCard}>
                 <HeaderCustom/>
-                <Header searchBar rounded style={styles.searchBar}>
-                <Item>
-                    <Input placeholder="Buscar Producto" 
+                <Header searchBar transparent >
+                <Body style={{flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingVertical: 8}}>
+                  <Item style={styles.searchBar}>
+                    <Input placeholder="Buscar producto"
+                      placeholderTextColor='#434343'
                       onChangeText={(text) => this.SearchFilterFunction(text)}
                       ref={this.searchInput} />
-                    <Icon active name='search' style={{fontSize: 20, color: 'gray', paddingRight: 5, paddingBottom: 5}}/>
-                </Item>
+                    <Button iconRight transparent primary>
+                        <Icon active name='search' type="FontAwesome" style={{fontSize: SIZE, color: 'gray'}}/>
+                    </Button>
+                  </Item>
+                  </Body>
                 </Header>
 
                 <Content padder>
@@ -162,7 +168,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   containerCard: {
-    backgroundColor: "#FFF",
+    backgroundColor: "#F9F9F9",
     width: WIDTH,
   },
   mb: {
@@ -179,12 +185,33 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   texto: {
-    color: 'gray',
-    fontSize: 18, 
-    marginLeft: 10, 
+    color: '#434343',
+    fontSize: 16,
+    fontWeight: 'bold', 
     textAlign: 'auto'
   },
+  barraBusqueda: {
+    backgroundColor: '#FFF',
+    borderBottomColor: 'transparent',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.6,
+    shadowRadius: 3,
+    elevation: 2
+  },
   searchBar: {
-    backgroundColor: '#78BE20'
-  }
+    backgroundColor: '#FFF',
+    borderStyle: 'solid',
+    borderTopWidth: 2, 
+    borderBottomWidth: 2, 
+    borderLeftWidth: 2, 
+    borderRightWidth: 2, 
+    borderColor: '#78BE20',
+    borderRadius: 5, 
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.6,
+    shadowRadius: 3,
+    elevation: 2
+  },
 });

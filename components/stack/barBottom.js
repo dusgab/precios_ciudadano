@@ -1,6 +1,7 @@
 import React from 'react';
 import { createStackNavigator, createBottomTabNavigator, createAppContainer } from 'react-navigation';
-import { Icon } from "native-base";
+import { Dimensions } from 'react-native';
+import { Icon, Thumbnail } from "native-base";
 
 import Inicio from '../views/inicio/inicio';
 import Detalle from '../views/productos/detalle_producto';
@@ -13,6 +14,15 @@ import Estadistica from '../views/estadisticas/estadisticas';
 import App from '../../App';
 
 const tintColor = "white";
+
+const home = require('../../assets/home.png');
+const prod = require('../../assets/canasta.png');
+const milista = require('../../assets/mi-lista.png');
+const estad = require('../../assets/estadisticas.png');
+
+const WIDTH = Dimensions.get('window').width;
+const HEIGHT = Dimensions.get('window').height;
+const SIZE = WIDTH * 0.02;
 
 const InicioStack = createStackNavigator({
   Inicio: {screen: Inicio},
@@ -52,7 +62,8 @@ const tabBarBottom = createBottomTabNavigator(
                 } else {
                   tintColor = "gray";
                 }
-                return <Icon name="home" type="FontAwesome" style={{ color: tintColor}} />;
+                //return <Icon name="home" type="FontAwesome" style={{ color: tintColor}} />;
+                return <Thumbnail square source={home}  style={{ width: 30, height: 30, resizeMode: 'contain' }} />;
           },
         },
       },
@@ -64,7 +75,8 @@ const tabBarBottom = createBottomTabNavigator(
             } else {
               tintColor = "gray";
             }
-              return <Icon name="shopping-basket" type="FontAwesome" style={{ color: tintColor}}/>;
+              // return <Icon name="shopping-basket" type="FontAwesome" style={{ color: tintColor}}/>;
+              return <Thumbnail square  source={prod} style={{ width: 30, height: 30, resizeMode: 'contain' }}/>;
         },
       },
     },
@@ -76,7 +88,8 @@ const tabBarBottom = createBottomTabNavigator(
           } else {
             tintColor = "gray";
           }
-            return <Icon name="star" type="FontAwesome" style={{ color: tintColor}} />;
+            // return <Icon name="star" type="FontAwesome" style={{ color: tintColor}} />;
+            return <Thumbnail square  source={milista} style={{ width: 30, height: 30, resizeMode: 'contain' }} />;
         },
       },
     },
@@ -88,7 +101,8 @@ const tabBarBottom = createBottomTabNavigator(
           } else {
             tintColor = "gray";
           }
-            return <Icon name="bar-chart" type="FontAwesome" style={{ color: tintColor}}/>;
+            // return <Icon name="bar-chart" type="FontAwesome" style={{ color: tintColor}}/>;
+            return <Thumbnail square source={estad} style={{ width: 30, height: 30, resizeMode: 'contain' }}/>;
         },
       },
     },
@@ -97,19 +111,19 @@ const tabBarBottom = createBottomTabNavigator(
     initialRouteName: 'Inicio',
     lazy: 'false',
     tabBarOptions: {
-      activeTintColor: '#60BBE8',
+      activeTintColor: '#78BE20',
       inactiveTintColor: 'gray',
       activeBackgroundColor: '#FFFFFF',
       inactiveBackgroundColor: '#FFFFFF',
       style: {
-        backgroundColor: '#133101',
-        borderTopColor: '#60BBE8', 
+        backgroundColor: '#FFFFFF',
+        borderTopColor: '#78BE20', 
         borderTopWidth: 1,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.9,
-        shadowRadius: 1,
-        elevation: 2
+        shadowRadius: 4,
+        elevation: 2,
       }
     }
   }

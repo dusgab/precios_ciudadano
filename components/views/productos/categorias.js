@@ -45,13 +45,17 @@ export default class Categorias extends React.Component {
         const categorias = await api.fetchCategoria();
 
         await Font.loadAsync({
-          Roboto: require("native-base/Fonts/Roboto.ttf"),
+          'Roboto': require("native-base/Fonts/Roboto.ttf"),
           Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
         }); 
 
         this.setState({ categorias: categorias.data, loading: false });
       
     }
+
+    Capitalize(str){
+      return str.charAt(0).toUpperCase() + str.slice(1);
+      }
   
       viewCategoriasListado = () =>{
         let botones = []
@@ -67,9 +71,9 @@ export default class Categorias extends React.Component {
                     active
                     name="store"
                     type="MaterialCommunityIcons"
-                    style={{ color: "green" }}
+                    style={{ color: "#78BE20" }}
                   />
-                  <Text>{cat[index].nombre.toUpperCase()}</Text>
+                  <Text style={{fontFamily: 'Roboto', fontWeight: 'bold'}}>{this.Capitalize(cat[index].nombre)}</Text>
                 </Left>
                 <Right>
                   <Icon 
@@ -85,7 +89,7 @@ export default class Categorias extends React.Component {
                 <Content padder>
                   <Card style={styles.mb}>
                   <CardItem header bordered >
-                    <Text  style={{color:'green'}}>Categorías</Text>
+                    <Text  style={{color:'#78BE20'}}>Categorías</Text>
                   </CardItem>
                     {botones}
                   </Card>
@@ -118,7 +122,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   containerCard: {
-    backgroundColor: "#FFF",
+    backgroundColor: "#F9F9F9",
     width: WIDTH,
   },
   mb: {

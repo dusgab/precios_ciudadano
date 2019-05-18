@@ -65,6 +65,17 @@ export default {
             console.log(e)
         }
     },
+    async fetchBuscarPorId(id) {
+        try {
+            console.log("Fetch Buscar por Id" + id);
+            let response = await fetch(URL + 'buscarPorId/' + id);
+            let responseJsonData = await response.json();
+            return responseJsonData;
+        }
+        catch(e) {
+            console.log(e)
+        }
+    },
     async fetchCategoria() {
         try {
             console.log("Fetch Categorias");
