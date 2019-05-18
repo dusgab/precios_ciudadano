@@ -111,4 +111,15 @@ export default {
             console.log(e)
         }
     },
+    async fetchListarProductosSupermercados() {
+        try {
+            console.log("Fetch Listar Productos Super");
+            let response = await fetch(URL + 'listarProductosSupermercados');
+            let responseJsonData = await response.json();
+            return responseJsonData;
+        }
+        catch(e) {
+            console.log(e)
+        }
+    },
 }

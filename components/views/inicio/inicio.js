@@ -135,7 +135,7 @@ export default class Inicio extends React.Component {
                                 return (
                                   <Card key={"promocion_" + j + i}>
                                   <CardItem button bordered style={styles.listItem} 
-                                  onPress={() => this.props.navigation.push('DetalleHome', {id: data.producto, mpid: data.marca_producto_id, flag: 'Inicio'})}
+                                  onPress={() => this.props.navigation.push('DetalleHome', {mpid: data.marca_producto_id})}
                                   >
                                     <Left style={{flex: 2}}>
                                       <Thumbnail square size={40} source={icono1} />
