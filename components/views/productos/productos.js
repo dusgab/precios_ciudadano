@@ -47,15 +47,17 @@ export default class Productos extends React.Component {
 
     async componentDidMount() {
     
-        const productos = await api.fetchProductosSupermecados();
+        //const productos = await api.fetchProductosSupermecados();
+        const productos = await api.fetchCategoriaBuscar(this.props.navigation.state.params.id);
 
         await Font.loadAsync({
           Roboto: require("native-base/Fonts/Roboto.ttf"),
           Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
         });
 
+        this.arrayholder = productos.data;
         this.setState({ productos: productos.data, loading: false });
-        this.filtrarProductos(this.props.navigation.state.params.id);
+        //this.filtrarProductos(this.props.navigation.state.params.id);
         
     }
 
@@ -71,11 +73,11 @@ export default class Productos extends React.Component {
 
     SearchFilterFunction = (text) => {    
       const newData = this.arrayholder.filter(item => {      
-        const itemData = `${item.nombreProducto.toUpperCase()} ${item.nombreMarca.toUpperCase()}`;
+        const itemData = `${item.producto.toUpperCase()} ${item.marca.toUpperCase()}`;
          const textData = text.toUpperCase();
          return itemData.indexOf(textData) > -1;    
       });    
-      this.setState({ filterProductos: newData });  
+      this.setState({ productos: newData });  
   };
 
   _onPress = (nombreprod, mpid) => {
@@ -88,9 +90,9 @@ export default class Productos extends React.Component {
 
     viewProductosListado = () => {
       let botones = [];
-      let prod = this.state.filterProductos;
+      let prod = this.state.productos;
       for (let index = 0; index < prod.length; index++) {
-          let nombreprod = prod[index].nombreProducto;
+          let nombreprod = prod[index].producto;
           let mpid = prod[index].marca_producto_id;
           console.log("producto" + nombreprod + " " + mpid);
           botones.push(
@@ -107,7 +109,7 @@ export default class Productos extends React.Component {
                   />
                 </Left>
                 <Body style={styles.bodyCard}>
-                    <Text style={styles.texto}>{prod[index].nombreProducto.toUpperCase()} {prod[index].nombreMarca.toUpperCase()} {prod[index].peso.toUpperCase()}</Text>
+                    <Text style={styles.texto}>{prod[index].producto.toUpperCase()} {prod[index].marca.toUpperCase()} {prod[index].peso.toUpperCase()}</Text>
                     <Text note>Desde $ {prod[index].precio_lista}</Text>
                 </Body>
                 <Right style={{ flex: 2 }}>

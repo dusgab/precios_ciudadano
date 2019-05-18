@@ -63,7 +63,7 @@ export default class Categorias extends React.Component {
          console.log(cat)
         for (let index = 0; index < cat.length; index++) {
             botones.push(
-              <CardItem button bordered onPress={() => this.props.navigation.navigate('Productos', {id: cat[index].nombre})}
+              <CardItem button bordered onPress={() => this.props.navigation.navigate('Productos', {id: cat[index].id})}
                 key={"categoria_" + index}
               >
                 <Left>

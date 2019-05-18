@@ -88,6 +88,18 @@ export default {
         }
 
     },
+    async fetchCategoriaBuscar(id) {
+        try {
+            console.log("Fetch Categorias Buscar por ID");
+            let response = await fetch(URL + 'categoria_buscar/' + id);
+            let responseJsonData = await response.json();
+            return responseJsonData;
+        }
+        catch(e) {
+            console.log(e)
+        }
+
+    },
     async fetchPromociones() {
         try {
             console.log("Fetch Promociones");
