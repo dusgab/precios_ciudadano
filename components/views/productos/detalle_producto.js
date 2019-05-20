@@ -30,6 +30,13 @@ export default class DetalleHome extends React.Component {
 
     constructor(props) {
       super(props);
+      this.props.navigation.addListener('didFocus', () => {
+        
+        if ( this.state.isMounted ) {
+          console.log("ismounted on focus");
+          this.verificarLista(this.props.navigation.state.params.mpid);
+        }
+      });
 
       this.state = {
         productos: [],
@@ -39,6 +46,8 @@ export default class DetalleHome extends React.Component {
         loading: true,
         showToast: false,
         enlista: false, //piñata
+        flag: 0,
+        isMounted: false
       }
     }
 
@@ -55,7 +64,7 @@ export default class DetalleHome extends React.Component {
         });
 
         this.verificarLista(mpid); //piñata
-        this.setState({ productos: productos.data, loading: false });
+        this.setState({ productos: productos.data, loading: false, isMounted: true, flag: 10 });
     }
 
     componentWillMount() {
@@ -65,21 +74,57 @@ export default class DetalleHome extends React.Component {
     } 
 
     verificarLista = async (id) => {
-      //piñata
-      var milista = [];
-      const lista = await AsyncStorage.getItem('lista');
+       //piñata
+       var milista = [];
+       const lista = await AsyncStorage.getItem('lista');
+ 
+       if(lista == null) {
+         console.log(" milista null");
+         
+         this.setState({ listaVacia: true, flag: 1 });
+       } else {
+         milista = JSON.parse(lista);
+         for (let index = 0; index < milista.length; index++) {
+              console.log(" for de lista");
+              if(milista[index].marca_producto_id == id) {
+                console.log(" true de for");
+                this.setState({ enlista: true, flag: 8  });
+              } else {
+                console.log(" false de for");
+                this.setState({ enlista: false, flag: 9  });
+              }
+            }
+       }
+      // //piñata
+      // console.log(" verificar lista");
+      // var milista = [];
+      // const lista = await AsyncStorage.getItem('lista');
+      // console.log(lista);
+      // if(lista == null || lista === "") {
+      //   console.log(" milista null");
+      //   this.setState({ enlista: false });  
+      // } else {
+      //   console.log(" lista no null");
+      //   milista = JSON.parse(lista);
+      //   for (let index = 0; index < milista.length; index++) {
+      //     console.log(" for de lista");
+      //     if(milista[index].marca_producto_id == id) {
+      //       console.log(" true de for");
+      //       this.setState({ enlista: true });
+      //     } else {
+      //       console.log(" false de for");
+      //       this.setState({ enlista: false });
+      //     }
+      //   }
 
-      if(lista == null) {
-        console.log(" milista null");  
-      } else {
-        milista = JSON.parse(lista);
-        for (let index = 0; index < milista.length; index++) {
-
-          if(milista[index].marca_producto_id == id) {
-            this.setState({ enlista: true });
-          }
-        }
-      }
+      //   await AsyncStorage.setItem('lista', JSON.stringify(milista) )
+      //       .then( ()=>{
+      //         console.log("se almaceno lista")
+      //       } )
+      //       .catch( ()=>{
+      //         console.log("error al guardar lista")
+      // } );
+      // }
     }
 
     _eliminarLista = async (id) => {
@@ -139,13 +184,6 @@ export default class DetalleHome extends React.Component {
             .catch( ()=>{
             console.log("error al guardar lista")
             } );
-
-      const lista3 = await AsyncStorage.getItem('lista');
-            milista = JSON.parse(lista3);
-
-      for (let index = 0; index < milista.length; index++) {
-            console.log(" ni " +  milista[index].marca_producto_id);
-      }
 
       Toast.show({
         text: "¡Producto agregado a Mi Lista!",
@@ -323,9 +361,10 @@ export default class DetalleHome extends React.Component {
     }
     return (
       <View style={styles.container}>
-        {this.state.productos && this.viewProductosListado() }
+        {/* {this.state.productos && this.viewProductosListado() } */}
+        {this.state.flag && this.viewProductosListado() }
       </View>
-    );
+    );     
   }
 }
 

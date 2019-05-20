@@ -32,6 +32,9 @@ export default class MiLista extends React.Component {
 
     constructor(props) {
         super(props);
+        this.props.navigation.addListener('didFocus', () => {
+          this.verificarLista();
+        });
 
         this.state = {
         loading: true,
@@ -43,7 +46,7 @@ export default class MiLista extends React.Component {
         }
 
         this.listaArray = [];
-      }
+    }
 
     async componentDidMount() {
 
@@ -64,13 +67,16 @@ export default class MiLista extends React.Component {
     }
 
     async componentWillMount() {
+
     }
 
     async componentWillUnmount() {
+
     }
 
     verificarLista = async () => {
       //piñata
+      var milista = [];
       const lista = await AsyncStorage.getItem('lista');
 
       if(lista == null) {
@@ -78,9 +84,9 @@ export default class MiLista extends React.Component {
         
         this.setState({ listaVacia: true, flag: 1 });
       } else {
-        this.listaArray = JSON.parse(lista);;
-        this.setState({ listaVacia: false, flag: 2 });
-        console.log("listaArray " + this.listaArray[0].marca_producto_id);  
+        milista = JSON.parse(lista);
+        this.listaArray = milista;
+        this.setState({ enlista: false, flag: 8 }); 
       }
     }
 
@@ -96,6 +102,12 @@ export default class MiLista extends React.Component {
           milista.splice(index, 1);
           this.listaArray = milista;
           this.setState({ enlista: false, flag: 3 });
+          Toast.show({
+            text: "¡Producto eliminado de Mi Lista!",
+            textStyle: { textAlign: "center", color: '#FFF' },
+            duration: 2000,
+            type: "success"
+          });
         }
       }
 
@@ -111,18 +123,34 @@ export default class MiLista extends React.Component {
       milista = JSON.parse(lista);
       this.listaArray = milista;
       this.setState({ enlista: false, flag: 13 });
-      Toast.show({
-        text: "¡Producto eliminado de Mi Lista!",
-        textStyle: { textAlign: "center", color: '#FFF' },
-        duration: 2000,
-        type: "success"
-      });
+      
     }
 
     _eliminarTodos = async () => {
       //piñata
-      await AsyncStorage.clear();
-      this.setState({ enlista: false, flag: 4 });
+      var milista = [];
+      const lista = await AsyncStorage.getItem('lista');
+      milista = JSON.parse(lista);
+
+      for (let index = 0; index = milista.length; index++) {
+
+          milista.splice(index, 1);
+          this.listaArray = milista;
+          this.setState({ enlista: false, flag: 3 });
+      }
+
+      await AsyncStorage.setItem('lista', JSON.stringify(milista) )
+            .then( ()=>{
+              console.log("se almaceno lista")
+            } )
+            .catch( ()=>{
+              console.log("error al guardar lista")
+      } );
+
+      lista = await AsyncStorage.getItem('lista');
+      milista = JSON.parse(lista);
+      this.listaArray = milista;
+      this.setState({ enlista: false, flag: 13 });
       Toast.show({
         text: "¡Productos eliminados de Mi Lista!",
         textStyle: { textAlign: "center", color: '#FFF' },
@@ -141,13 +169,16 @@ export default class MiLista extends React.Component {
       console.log("lenght prod " + prod.length);
       //let list = this.listaArray;
       //console.log("producto" + this.listaArray);
-      for (let index = 0; index < prod.length; index++) {
-        console.log("for producto " + prod[index].producto);
-        for (let ind = 0; ind < list.length; ind++) {
-          console.log("for lista " + list[ind].marca_producto_id);
-          if(list[ind].marca_producto_id === prod[index].marca_producto_id) {
+      for (let ind = 0; ind < list.length; ind++) {
+      
+        console.log("for lista " + list[ind].marca_producto_id);
+        let count2 = 0;
+        for (let index = 0; index < prod.length; index++) {  
+          if(list[ind].marca_producto_id === prod[index].marca_producto_id && count2 === 0) {
+            console.log("count2 " + count2 + " ind " + ind);
             count++;
-            console.log("if lista " + list[ind].marca_producto_id);
+            count2 = count2 + 1;
+            
             let nombreprod = prod[index].producto;
             let mpid = prod[index].marca_producto_id;
             console.log("producto" + nombreprod + " " + mpid);
@@ -166,7 +197,6 @@ export default class MiLista extends React.Component {
                   {/* <Body style={styles.bodyCard} onPress={() => this.props.navigation.push('DetalleLista', {mpid: mpid})}> */}
                   <Body style={styles.bodyCard} onPress={() => Alert.alert('Ir a Detalle Lista', {text: 'OK', onPress: () => console.log('OK Pressed')}) }>
                       <Text style={styles.texto}>{prod[index].producto} {prod[index].marca} {prod[index].peso}</Text>
-                      <Text note>Desde $ {prod[index].precio_lista}</Text>
                   </Body>
                   <Right style={{ flex: 2 }}>
                     <Icon name="trash-can-outline" type="MaterialCommunityIcons" style={{ color: "gray"}} onPress={() => this._eliminarLista(prod[index].marca_producto_id)}/>
