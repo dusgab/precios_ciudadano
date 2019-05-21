@@ -127,7 +127,7 @@ export default class buscarProductos extends React.Component {
                 <Header searchBar transparent >
                 <Body style={{flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingVertical: 8}}>
                   <Item style={styles.searchBar}>
-                    <Input placeholder="Buscar producto" 
+                    <Input placeholder="Buscar producto" style={{ marginLeft: 10 }}
                       placeholderTextColor='#434343'
                       onChangeText={(text) => this.SearchFilterFunction(text)}
                       onKeyPress={this.handleKeyDown}

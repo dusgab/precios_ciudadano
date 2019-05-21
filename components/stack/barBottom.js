@@ -10,6 +10,7 @@ import Buscar from '../views/inicio/buscarProductos';
 import Productos from '../views/productos/productos';
 import Categorias from '../views/productos/categorias';
 import MiLista from '../views/lista/milista';
+import DetalleLista from '../views/lista/detalle_producto_lista';
 import Estadistica from '../views/estadisticas/estadisticas';
 import App from '../../App';
 
@@ -19,6 +20,10 @@ const home = require('../../assets/home.png');
 const prod = require('../../assets/canasta.png');
 const milista = require('../../assets/mi-lista.png');
 const estad = require('../../assets/estadisticas.png');
+const homeAct = require('../../assets/home-active.png');
+const prodAct = require('../../assets/canasta-active.png');
+const milistaAct = require('../../assets/mi-lista-active.png');
+const estadAct = require('../../assets/estadisticas-active.png');
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -41,7 +46,8 @@ const CategoriasStack = createStackNavigator({
   });
 
 const MiListaStack = createStackNavigator({
-  Lista: {screen: MiLista}
+  Lista: {screen: MiLista},
+  DetalleLista: {screen: DetalleLista}
 },{
   headerMode: 'none',
 });
@@ -58,12 +64,10 @@ const tabBarBottom = createBottomTabNavigator(
           navigationOptions: {
             tabBarIcon: ({ focused, tintColor }) => {
                 if(focused === true){
-                  tintColor = "#60BBE8";
+                  return <Thumbnail square source={homeAct}  style={{ width: 30, height: 30, resizeMode: 'contain' }} />;
                 } else {
-                  tintColor = "gray";
+                  return <Thumbnail square source={home}  style={{ width: 30, height: 30, resizeMode: 'contain' }} />;
                 }
-                //return <Icon name="home" type="FontAwesome" style={{ color: tintColor}} />;
-                return <Thumbnail square source={home}  style={{ width: 30, height: 30, resizeMode: 'contain' }} />;
           },
         },
       },
@@ -71,12 +75,10 @@ const tabBarBottom = createBottomTabNavigator(
         navigationOptions: {
           tabBarIcon: ({ focused, tintColor }) => {
             if(focused === true){
-              tintColor = "#60BBE8";
+              return <Thumbnail square  source={prodAct} style={{ width: 30, height: 30, resizeMode: 'contain' }}/>;
             } else {
-              tintColor = "gray";
-            }
-              // return <Icon name="shopping-basket" type="FontAwesome" style={{ color: tintColor}}/>;
               return <Thumbnail square  source={prod} style={{ width: 30, height: 30, resizeMode: 'contain' }}/>;
+            }
         },
       },
     },
@@ -84,12 +86,10 @@ const tabBarBottom = createBottomTabNavigator(
       navigationOptions: {
         tabBarIcon: ({ focused, tintColor }) => {
           if(focused === true){
-            tintColor = "#60BBE8";
+            return <Thumbnail square  source={milistaAct} style={{ width: 30, height: 30, resizeMode: 'contain' }} />;
           } else {
-            tintColor = "gray";
-          }
-            // return <Icon name="star" type="FontAwesome" style={{ color: tintColor}} />;
             return <Thumbnail square  source={milista} style={{ width: 30, height: 30, resizeMode: 'contain' }} />;
+          }
         },
       },
     },
@@ -97,12 +97,10 @@ const tabBarBottom = createBottomTabNavigator(
       navigationOptions: {
         tabBarIcon: ({ focused, tintColor }) => {
           if(focused === true){
-            tintColor = "#60BBE8";
+            return <Thumbnail square source={estadAct} style={{ width: 30, height: 30, resizeMode: 'contain' }}/>;
           } else {
-            tintColor = "gray";
-          }
-            // return <Icon name="bar-chart" type="FontAwesome" style={{ color: tintColor}}/>;
             return <Thumbnail square source={estad} style={{ width: 30, height: 30, resizeMode: 'contain' }}/>;
+          }
         },
       },
     },

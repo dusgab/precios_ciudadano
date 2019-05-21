@@ -61,8 +61,6 @@ export default class Inicio extends React.Component {
         'amazon': require("../../../assets/amazon.ttf")
       });
 
-      // this.arrayholder = productos.data;
-      // console.log(this.arrayholder);
        this.setState({ promociones: promociones.data, categorias: categorias.data, loading: false });
       
     }
@@ -81,6 +79,7 @@ export default class Inicio extends React.Component {
           { cancelable: false }
         );
       } else {
+        this.setState({ search: ""});
         this.props.navigation.navigate('Buscar', {prod: text});
       }
       
@@ -105,7 +104,7 @@ export default class Inicio extends React.Component {
               <Body style={{flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingVertical: 8}}>
                 <Item style={styles.searchBar}>
                     {/* <Input placeholder="Buscar Producto" onChangeText={(text) => this.SearchFilterFunction(text)}/> */}
-                    <Input placeholder="Buscar producto" 
+                    <Input placeholder="Buscar producto" style={{ marginLeft: 10 }}
                             onChangeText={(text) => this.setState({search:text})}
                             // onKeyPress={this.handleKeyDown}
                             keyboardType="default"
@@ -126,7 +125,7 @@ export default class Inicio extends React.Component {
                   <Text style={styles.tituloCat}>{this.Capitalize(cat.nombre)}</Text>
                   <Content horizontal={true} contentContainerStyle={styles.contentContainer}>
                   
-                    <ListItem key={"categoria_" + cat.categoria_id} style={{flexDirection: 'column', borderBottomColor: 'transparent', marginLeft: 6}}>
+                    <ListItem key={"categoria_" + cat.categoria_id} style={{flexDirection: 'column', borderBottomColor: 'transparent', marginLeft: 6, marginTop: -12 }}>
                     
                       <List thumbnail style={styles.list}>
                         {this.state.promociones.map((data, j) => {
@@ -235,6 +234,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9F9F9',
   },
   contentContainer: {
+    marginBottom: 10,
     justifyContent: 'flex-start',
     alignContent: 'flex-start'
   },

@@ -30,6 +30,13 @@ export default class DetalleHome extends React.Component {
 
     constructor(props) {
       super(props);
+      this.props.navigation.addListener('didFocus', () => {
+        
+        if ( this.state.isMounted ) {
+          console.log("ismounted on focus detalle home");
+          this.verificarLista(this.props.navigation.state.params.mpid);
+        }
+      });
 
       this.state = {
         productos: [],
@@ -39,6 +46,8 @@ export default class DetalleHome extends React.Component {
         loading: true,
         showToast: false,
         enlista: false, //piñata
+        flag: 0,
+        isMounted: false
       }
     }
 
@@ -55,7 +64,7 @@ export default class DetalleHome extends React.Component {
         });
 
         this.verificarLista(mpid); //piñata
-        this.setState({ productos: productos.data, loading: false });
+        this.setState({ productos: productos.data, loading: false, isMounted: true, flag: 10 });
     }
 
     componentWillMount() {
@@ -65,21 +74,28 @@ export default class DetalleHome extends React.Component {
     } 
 
     verificarLista = async (id) => {
-      //piñata
-      var milista = [];
-      const lista = await AsyncStorage.getItem('lista');
+      
+       var milista = [];
+       const lista = await AsyncStorage.getItem('lista');
 
-      if(lista == null) {
-        console.log(" milista null");  
-      } else {
-        milista = JSON.parse(lista);
-        for (let index = 0; index < milista.length; index++) {
+       milista = JSON.parse(lista);
 
-          if(milista[index].marca_producto_id == id) {
-            this.setState({ enlista: true });
-          }
-        }
-      }
+       if(milista == null || milista.length == 0) {
+         console.log(" milista null");
+         this.setState({ listaVacia: true, flag: 1, enlista: false });
+       } else {
+        console.log(" verificar por false ");
+         for (let index = 0; index < milista.length; index++) {
+          console.log("   for");
+              if(milista[index].marca_producto_id == id) {
+                console.log(" true for ");
+                this.setState({ enlista: true, flag: 8  });
+              } else {
+                console.log(" false for");
+                this.setState({ enlista: false, flag: 9  });
+              }
+            }
+       }
     }
 
     _eliminarLista = async (id) => {
@@ -122,11 +138,13 @@ export default class DetalleHome extends React.Component {
       };
 
       const lista = await AsyncStorage.getItem('lista');
-      
-      if(lista == null) {
-        console.log("exist null");
+
+      if ( lista == null ) {
+        console.log("  lista null ");
+        this.setState({ enlista: false, flag: 101 });
       } else {
         milista = JSON.parse(lista);
+        console.log(" milista " + milista);
       }
       
       milista.push(item);
@@ -139,13 +157,6 @@ export default class DetalleHome extends React.Component {
             .catch( ()=>{
             console.log("error al guardar lista")
             } );
-
-      const lista3 = await AsyncStorage.getItem('lista');
-            milista = JSON.parse(lista3);
-
-      for (let index = 0; index < milista.length; index++) {
-            console.log(" ni " +  milista[index].marca_producto_id);
-      }
 
       Toast.show({
         text: "¡Producto agregado a Mi Lista!",
@@ -323,9 +334,10 @@ export default class DetalleHome extends React.Component {
     }
     return (
       <View style={styles.container}>
-        {this.state.productos && this.viewProductosListado() }
+        {/* {this.state.productos && this.viewProductosListado() } */}
+        {this.state.flag && this.viewProductosListado() }
       </View>
-    );
+    );     
   }
 }
 

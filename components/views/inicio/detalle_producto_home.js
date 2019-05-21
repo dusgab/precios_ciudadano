@@ -33,7 +33,7 @@ export default class DetalleHome extends React.Component {
       this.props.navigation.addListener('didFocus', () => {
         
         if ( this.state.isMounted ) {
-          console.log("ismounted on focus");
+          console.log("ismounted on focus detalle home");
           this.verificarLista(this.props.navigation.state.params.mpid);
         }
       });
@@ -74,57 +74,28 @@ export default class DetalleHome extends React.Component {
     } 
 
     verificarLista = async (id) => {
-       //piñata
+      
        var milista = [];
        const lista = await AsyncStorage.getItem('lista');
- 
-       if(lista == null) {
+
+       milista = JSON.parse(lista);
+
+       if(milista == null || milista.length == 0) {
          console.log(" milista null");
-         
-         this.setState({ listaVacia: true, flag: 1 });
+         this.setState({ listaVacia: true, flag: 1, enlista: false });
        } else {
-         milista = JSON.parse(lista);
+        console.log(" verificar por false ");
          for (let index = 0; index < milista.length; index++) {
-              console.log(" for de lista");
+          console.log("   for");
               if(milista[index].marca_producto_id == id) {
-                console.log(" true de for");
+                console.log(" true for ");
                 this.setState({ enlista: true, flag: 8  });
               } else {
-                console.log(" false de for");
+                console.log(" false for");
                 this.setState({ enlista: false, flag: 9  });
               }
             }
        }
-      // //piñata
-      // console.log(" verificar lista");
-      // var milista = [];
-      // const lista = await AsyncStorage.getItem('lista');
-      // console.log(lista);
-      // if(lista == null || lista === "") {
-      //   console.log(" milista null");
-      //   this.setState({ enlista: false });  
-      // } else {
-      //   console.log(" lista no null");
-      //   milista = JSON.parse(lista);
-      //   for (let index = 0; index < milista.length; index++) {
-      //     console.log(" for de lista");
-      //     if(milista[index].marca_producto_id == id) {
-      //       console.log(" true de for");
-      //       this.setState({ enlista: true });
-      //     } else {
-      //       console.log(" false de for");
-      //       this.setState({ enlista: false });
-      //     }
-      //   }
-
-      //   await AsyncStorage.setItem('lista', JSON.stringify(milista) )
-      //       .then( ()=>{
-      //         console.log("se almaceno lista")
-      //       } )
-      //       .catch( ()=>{
-      //         console.log("error al guardar lista")
-      // } );
-      // }
     }
 
     _eliminarLista = async (id) => {
@@ -167,11 +138,13 @@ export default class DetalleHome extends React.Component {
       };
 
       const lista = await AsyncStorage.getItem('lista');
-      
-      if(lista == null) {
-        console.log("exist null");
+
+      if ( lista == null ) {
+        console.log("  lista null ");
+        this.setState({ enlista: false, flag: 101 });
       } else {
         milista = JSON.parse(lista);
+        console.log(" milista " + milista);
       }
       
       milista.push(item);
