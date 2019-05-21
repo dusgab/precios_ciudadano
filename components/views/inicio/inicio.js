@@ -141,7 +141,6 @@ export default class Inicio extends React.Component {
                                     </Left>
                                     <Body style={{flex: 8, flexDirection: 'column'}}>
                                       <Text style={styles.textoProd}>{data.producto} {data.peso} {data.marca} - {data.supermercado}</Text>
-                                      {/* <Item footer style={styles.listItemPrecio}> */}
                                     <Item style={styles.listItemPrecio}>
                                       <Item style={styles.listItemPromo}>
                                           <Text style={{color: "#FFF", paddingHorizontal: 7, paddingVertical: 3, fontSize: 14, fontWeight: '500', textAlign: 'center'}}

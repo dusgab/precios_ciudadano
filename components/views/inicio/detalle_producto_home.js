@@ -123,7 +123,7 @@ export default class DetalleHome extends React.Component {
       Toast.show({
         text: "¡Producto eliminado de Mi Lista!",
         textStyle: { textAlign: "center", color: '#FFF' },
-        duration: 2000,
+        duration: 1500,
         type: "success"
       });
     }
@@ -161,7 +161,7 @@ export default class DetalleHome extends React.Component {
       Toast.show({
         text: "¡Producto agregado a Mi Lista!",
         textStyle: { textAlign: "center", color: '#FFF' },
-        duration: 2000,
+        duration: 1500,
         type: "success"
       });
     }
@@ -189,8 +189,6 @@ export default class DetalleHome extends React.Component {
             hasta = prod[index].precio_promocion;
           }
           
-          console.log("desde" + desde);
-          console.log("hasta" + hasta);
           botones1.push(
             <CardItem button bordered 
                 key={"categoria_" + index + index}
@@ -227,8 +225,6 @@ export default class DetalleHome extends React.Component {
             hasta = prod[index].precio_lista;
           }
 
-          console.log("desde" + desde);
-          console.log("hasta" + hasta);
           botones2.push(
             <CardItem button bordered 
                 key={"promo_" + index + index}

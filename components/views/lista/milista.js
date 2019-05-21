@@ -32,6 +32,7 @@ export default class MiLista extends React.Component {
 
     constructor(props) {
         super(props);
+        
         this.props.navigation.addListener('didFocus', () => {
           if ( this.state.isMounted ) {
             console.log("ismounted on focus detalle home");
@@ -42,7 +43,7 @@ export default class MiLista extends React.Component {
         this.state = {
         loading: true,
         listaVacia: true,
-        enlista: false, //piñata
+        enlista: false,
         showToast: false,
         productos: [],
         isMounted: false,
@@ -54,32 +55,33 @@ export default class MiLista extends React.Component {
 
     async componentDidMount() {
 
-      
-      this.verificarLista(); //piñata
-      
+      this.verificarLista();
         
         const productos = await api.fetchListarProductosSupermercados();
+
         await Font.loadAsync({
           Roboto: require("native-base/Fonts/Roboto.ttf"),
           Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
         });
 
-          
+        this._alertInfo();
+
         this.setState({ productos: productos.data, loading: false, flag: 10, isMounted: true });
 
-        
     }
 
-    async componentWillMount() {
-
-    }
-
-    async componentWillUnmount() {
-
+    _alertInfo = () => {
+      Alert.alert(
+        'Precios Correntinos',
+        'Compare su lista de productos favoritos para encontrar los mejores precios!',
+        [
+          {text: 'OK', onPress: () => console.log('OK Pressed')},
+        ],
+        { cancelable: false }
+      );
     }
 
     verificarLista = async () => {
-      //piñata
       var milista = [];
       const lista = await AsyncStorage.getItem('lista');
       console.log(" lista verificar" + lista);
@@ -89,18 +91,11 @@ export default class MiLista extends React.Component {
       } else {
         milista = JSON.parse(lista);
         this.listaArray = milista;
-        this.setState({ enlista: false, flag: 8 }); 
-
-        for (let index = 0; index < milista.length; index++) {
-
-          console.log(" for veri " + milista[index].marca_producto_id);
-          }
-        }
-      
+        this.setState({ enlista: false, listaVacia: false, flag: 8 }); 
+      }
   }
 
     _eliminarLista = async (id) => {
-      //piñata
       var milista = [];
       const lista = await AsyncStorage.getItem('lista');
       milista = JSON.parse(lista);
@@ -114,7 +109,7 @@ export default class MiLista extends React.Component {
           Toast.show({
             text: "¡Producto eliminado de Mi Lista!",
             textStyle: { textAlign: "center", color: '#FFF' },
-            duration: 2000,
+            duration: 1500,
             type: "success"
           });
         }
@@ -139,7 +134,6 @@ export default class MiLista extends React.Component {
     }
 
     _eliminarTodos = async () => {
-      //piñata
       console.log("eliminar todos ");
       await AsyncStorage.clear();
     
@@ -149,7 +143,7 @@ export default class MiLista extends React.Component {
       Toast.show({
         text: "¡Productos eliminados de Mi Lista!",
         textStyle: { textAlign: "center", color: '#FFF' },
-        duration: 2000,
+        duration: 1500,
         type: "success"
       });
     }
@@ -157,26 +151,19 @@ export default class MiLista extends React.Component {
     viewProductosListado = () => {
       let botones = [];
       let prod = this.state.productos;
-      //let list = this.listaArray;
       let count = 0;
-      console.log("lenght prod " + prod.length);
 
       if (this.listaArray != null) {
         for (let ind = 0; ind < this.listaArray.length; ind++) {
         
-          console.log("for lista " + this.listaArray[ind].marca_producto_id);
           let count2 = 0;
           for (let index = 0; index < prod.length; index++) {  
             if(this.listaArray[ind].marca_producto_id === prod[index].marca_producto_id && count2 === 0) {
-              console.log("count2 " + count2 + " ind " + ind);
               count++;
               count2 = count2 + 1;
               
-              let nombreprod = prod[index].producto;
-              let mpid = prod[index].marca_producto_id;
-              console.log("producto" + nombreprod + " " + mpid);
               botones.push(
-                <CardItem button bordered onPress={() => Alert.alert('Ir a Detalle Lista', {text: 'OK', onPress: () => console.log('OK Pressed')}) }
+                <CardItem button bordered
                     key={"categoria_" + index}
                   >
                     <Left style={{ flex: 2 }}>
@@ -187,12 +174,11 @@ export default class MiLista extends React.Component {
                         style={{ color: "#78BE20" }}
                       />
                     </Left>
-                    {/* <Body style={styles.bodyCard} onPress={() => this.props.navigation.push('DetalleLista', {mpid: mpid})}> */}
                     <Body style={styles.bodyCard} >
                         <Text style={styles.texto}>{prod[index].producto} {prod[index].marca} {prod[index].peso}</Text>
                     </Body>
                     <Right style={{ flex: 2 }}>
-                      <Icon name="trash-can-outline" type="MaterialCommunityIcons" style={{ color: "gray"}} onPress={() => this._eliminarLista(prod[index].marca_producto_id)}/>
+                      <Icon name="trash-can-outline" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 30 }} onPress={() => this._eliminarLista(prod[index].marca_producto_id)}/>
                     </Right>
                 </CardItem>
               )
@@ -200,6 +186,7 @@ export default class MiLista extends React.Component {
           }
         }
       }
+
       if(count == 0) {
         botones.push(
           <CardItem button bordered 
@@ -214,28 +201,42 @@ export default class MiLista extends React.Component {
           </CardItem>
         )
       }
-        return <Container style={styles.containerCard}>
-                <HeaderCustom/>
-                <Header transparent>
-                <Item style={{borderBottomColor: 'transparent', margin: 8, flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                    <Button transparent style={styles.botonMilistaComp}
-                          onPress={() => this._comparar()}>
-                        <Icon name="playlist-check" type="MaterialCommunityIcons" style={{ color: "gray"}}/>
-                        <Text style={styles.textoMilistaRem}>COMPARAR</Text>
-                    </Button>
-                    <Button transparent style={styles.botonMilistaRem}
-                          onPress={() => this._eliminarTodos()}>
-                        <Icon name="trash-can-outline" type="MaterialCommunityIcons" style={{ color: "gray"}}/>
-                        <Text style={styles.textoMilistaRem}>VACIAR MI LISTA</Text>
-                    </Button>
+
+      return <Container style={styles.containerCard}>
+              <HeaderCustom/>
+              <Header transparent>
+                {this.state.listaVacia ?
+                <Item style={{borderBottomColor: 'transparent', margin: 0, flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+                  <Button transparent style={styles.botonMilistaRemV}>
+                      <Icon name="trash-can-outline" type="MaterialCommunityIcons" style={{ color: "gray"}}/>
+                      <Text style={styles.textoMilistaRemL}>VACIAR MI LISTA</Text>
+                  </Button>
+                  <Button transparent style={styles.botonMilistaCompV}>
+                      <Icon name="playlist-check" type="MaterialCommunityIcons" style={{ color: "gray"}}/>
+                      <Text style={styles.textoMilistaRem}>COMPARAR</Text>
+                  </Button>
                 </Item>
-                </Header>
-                <Content padder>
-                  <Card style={styles.mb}>
-                    {botones}
-                  </Card>
-                </Content>
-              </Container>
+                :
+                <Item style={{borderBottomColor: 'transparent', margin: 0, flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+                  <Button transparent style={styles.botonMilistaRem}
+                        onPress={() => this._eliminarTodos()}>
+                      <Icon name="trash-can-outline" type="MaterialCommunityIcons" style={{ color: "gray"}}/>
+                      <Text style={styles.textoMilistaRemL}>VACIAR MI LISTA</Text>
+                  </Button>
+                  <Button transparent style={styles.botonMilistaComp}
+                        onPress={() => this.props.navigation.navigate('DetalleLista')}>
+                      <Icon name="playlist-check" type="MaterialCommunityIcons" style={{ color: "gray"}}/>
+                      <Text style={styles.textoMilistaRem}>COMPARAR</Text>
+                  </Button>
+                </Item>
+                }
+              </Header>
+              <Content padder>
+                <Card style={styles.mb}>
+                  {botones}
+                </Card>
+              </Content>
+            </Container>
     }
 
   render() {
@@ -299,7 +300,23 @@ const styles = StyleSheet.create({
   },
   botonMilistaRem: {
     flex: 5,
+    marginRight: 2,
     borderColor: '#FF1024',
+    borderStyle: 'solid',
+    borderWidth: 2,
+    borderRadius: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 4, height: 10 },
+    shadowOpacity: 0.6,
+    shadowRadius: 1,
+    elevation: 2,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  botonMilistaRemV: {
+    flex: 5,
+    marginRight: 2,
+    borderColor: 'gray',
     borderStyle: 'solid',
     borderWidth: 2,
     borderRadius: 24,
@@ -313,6 +330,7 @@ const styles = StyleSheet.create({
   },
   botonMilistaComp: {
     flex: 5,
+    marginLeft: 2,
     borderColor: '#78BE20',
     borderStyle: 'solid',
     borderWidth: 2,
@@ -325,7 +343,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
+  botonMilistaCompV: {
+    flex: 5,
+    marginLeft: 2,
+    borderColor: 'gray',
+    borderStyle: 'solid',
+    borderWidth: 2,
+    borderRadius: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 4, height: 10 },
+    shadowOpacity: 0.6,
+    shadowRadius: 1,
+    elevation: 2,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   textoMilistaRem: {
+    color: 'gray',
+    fontWeight: '400',
+    fontSize: 14,
+  },
+  textoMilistaRemL: {
+    marginRight: 5,
     color: 'gray',
     fontWeight: '400',
     fontSize: 14,
