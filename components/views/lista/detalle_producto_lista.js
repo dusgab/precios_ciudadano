@@ -58,8 +58,9 @@ export default class DetalleHome extends React.Component {
       const productos = await api.fetchListarProductosSupermercados();
 
         await Font.loadAsync({
-          Roboto: require("native-base/Fonts/Roboto.ttf"),
-          Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
+          'Roboto': require("native-base/Fonts/Roboto.ttf"),
+          'Roboto_medium': require("native-base/Fonts/Roboto_medium.ttf"),
+          'Roboto_bold': require("native-base/Fonts/Roboto_bold.ttf")
         });
 
       this.setState({ productos: productos.data, loading: false, isMounted: true, flag: 10 });
@@ -129,7 +130,7 @@ export default class DetalleHome extends React.Component {
                       <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
                         <Text style={styles.texto}>Fecha relevada {prod[indice].fecha_relevada}</Text>
                         <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'center', justifyContent: 'center', textAlign: 'center'}}>
-                          <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 14, paddingTop: 14 }}/>
+                          <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 6 }}/>
                           <Text style={styles.textoUbicacion}>{prod[indice].ubicacion}</Text>
                         </Item>
                       </Item>
@@ -144,10 +145,14 @@ export default class DetalleHome extends React.Component {
         }
       }  
         return <Container style={styles.containerCard}>
-                <HeaderCustom/>
+                <Header style={styles.header}>
+                  <Body style={styles.bodyheader}>
+                    <Text style={styles.textoheader}>Comparar Mi Lista</Text>
+                  </Body>
+                </Header>
                 <Content padder style={{flex: 1}}>
                   <Item style={{borderBottomColor: 'transparent', alignItems: 'center', justifyContent: 'center'}}>
-                      <Text style={styles.textoDestacado}>Precios Destacados</Text>
+                      <Text style={styles.textoDestacado}>¡Ahorrá Más!</Text>
                   </Item>
                   <Card style={styles.mb} >
                     {botones}
@@ -184,6 +189,21 @@ const styles = StyleSheet.create({
     backgroundColor: "#F9F9F9",
     width: WIDTH,
   },
+  header: {
+    backgroundColor: '#fff',
+  },
+  bodyheader: {
+    flex: 1,
+    width: WIDTH,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  textoheader: {
+    textAlign: 'center',
+    fontSize: 20,
+    fontFamily: 'Roboto_bold',
+    color: '#434343'
+  },
   mb: {
     marginBottom: 15
   },
@@ -201,22 +221,19 @@ const styles = StyleSheet.create({
     color: '#434343',
     fontSize: 12,
     textAlign: 'left',
-    marginTop: 4
+    marginTop: 4,
+    fontFamily: 'Roboto'
   },
   textoPrecio: {
     color: 'gray',
     textAlign: 'right',
-    fontSize: 18,
-    fontWeight: 'bold'
+    fontSize: 16,
+    fontFamily: 'Roboto_bold',
   },
-  textoDestacado: {
-    color: "#78BE20",
-    textAlign: 'center',
-    fontSize: 24,
-    fontWeight: 'bold',
-    textShadowColor: 'rgba(0, 0, 0, 0.6)',
-    textShadowOffset: {width: -1, height: 1},
-    textShadowRadius: 2
+  titulo: {
+    color: '#434343',
+    fontSize: 14,
+    fontFamily: 'Roboto_bold'
   },
   textoPrecioLista: {
     flex: 5,
@@ -242,12 +259,12 @@ const styles = StyleSheet.create({
   textoTitulo: {
     color: '#434343',
     fontSize: 20,
-    fontWeight: 'bold',
+    fontFamily: 'Roboto_bold'
   },
   textoUbicacion: {
     color: '#707070',
     fontSize: 12,
-    marginTop: 0,
+    fontFamily: 'Roboto'
   },
   textoMilista: {
     color: '#78BE20',

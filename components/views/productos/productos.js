@@ -47,17 +47,25 @@ export default class Productos extends React.Component {
 
     async componentDidMount() {
     
-        //const productos = await api.fetchProductosSupermecados();
         const productos = await api.fetchCategoriaBuscar(this.props.navigation.state.params.id);
 
         await Font.loadAsync({
-          Roboto: require("native-base/Fonts/Roboto.ttf"),
-          Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
+          'Roboto': require("native-base/Fonts/Roboto.ttf"),
+          'Roboto_medium': require("native-base/Fonts/Roboto_medium.ttf"),
+          'Roboto_bold': require("native-base/Fonts/Roboto_bold.ttf")
         });
 
-        this.arrayholder = productos.data;
-        this.setState({ productos: productos.data, loading: false });
-        //this.filtrarProductos(this.props.navigation.state.params.id);
+        this.arrayholder = productos;
+        console.log("array " + this.arrayholder.length);
+
+        if(this.arrayholder.length == 0) {
+
+        } else {
+          this.arrayholder = productos.data;
+          this.setState({ productos: productos.data });
+        }
+        
+        this.setState({ loading: false });
         
     }
 
@@ -65,12 +73,7 @@ export default class Productos extends React.Component {
       
     }
 
-    filtrarProductos = (cat_id) => {
-        const filtro = this.state.productos.filter(producto => producto.nombreCategoria == cat_id);
-        this.arrayholder = filtro;
-        this.setState({ filterProductos: filtro });
-    }
-
+    //Funcion para filtrar busqueda por nombre de producto y marca
     SearchFilterFunction = (text) => {    
       const newData = this.arrayholder.filter(item => {      
         const itemData = `${item.producto.toUpperCase()} ${item.marca.toUpperCase()}`;
@@ -80,49 +83,68 @@ export default class Productos extends React.Component {
       this.setState({ productos: newData });  
   };
 
-  _onPress = (nombreprod, mpid) => {
+  _onPress = (mpid) => {
     const text = "";
     this.SearchFilterFunction(text);
     this.searchInput.current._root.clear();
     
-    this.props.navigation.navigate('Detalle', {id: nombreprod, mpid: mpid});
+    this.props.navigation.navigate('Detalle', {mpid: mpid});
   };
 
     viewProductosListado = () => {
       let botones = [];
-      let prod = this.state.productos;
-      for (let index = 0; index < prod.length; index++) {
-          let nombreprod = prod[index].producto;
-          let mpid = prod[index].marca_producto_id;
-          console.log("producto" + nombreprod + " " + mpid);
-          botones.push(
-            // <CardItem button bordered onPress={() => this.props.navigation.push('Detalle', {id: nombreprod, mpid: mpid})}
-            <CardItem button bordered onPress={() => this._onPress(nombreprod, mpid)}
-                key={"categoria_" + index}
-              >
-                <Left style={{ flex: 2 }}>
-                <Icon
-                    active
-                    name="store"
-                    type="MaterialCommunityIcons"
-                    style={{ color: "#78BE20" }}
-                  />
-                </Left>
-                <Body style={styles.bodyCard}>
-                    <Text style={styles.texto}>{prod[index].producto.toUpperCase()} {prod[index].marca.toUpperCase()} {prod[index].peso.toUpperCase()}</Text>
-                    <Text note>Desde $ {prod[index].precio_lista}</Text>
-                </Body>
-                <Right style={{ flex: 2 }}>
-                  <Icon 
-                    name="arrow-right"
-                    type="FontAwesome"
-                     />
-                </Right>
-              </CardItem>
-            )
+      let prod1 = this.state.productos;
+      if(prod1.length == 0) {
+        botones.push(
+          <CardItem button bordered 
+              key={"categoria_" + 1}
+            >
+              <Left style={{ flex: 2 }}>
+                <Icon name="ban" type="FontAwesome" style={{fontSize: 60, color: 'gray'}}/>
+              </Left>
+              <Body style={styles.bodyCardVacio} >
+                  <Text style={styles.textoVacio}>Producto no encontrado</Text>
+                  <Text style={styles.textoVacio}>o</Text>
+                  <Text style={styles.textoVacio}>Categoría sin productos</Text>
+              </Body>
+          </CardItem>
+          )
+      } else {
+        for (let index = 0; index < prod1.length; index++) {
+
+            let mpid = prod1[index].marca_producto_id;
+            botones.push(
+              <CardItem button bordered onPress={() => this._onPress(mpid)}
+                  key={"categoria_" + index}
+                >
+                  <Left style={{ flex: 2 }}>
+                  <Icon
+                      active
+                      name="store"
+                      type="MaterialCommunityIcons"
+                      style={{ color: "#78BE20" }}
+                    />
+                  </Left>
+                  <Body style={styles.bodyCard}>
+                      <Text style={styles.texto}>{prod1[index].producto.toUpperCase()} {prod1[index].marca.toUpperCase()}</Text>
+                      <Text note>Desde $ {prod1[index].precio_lista}</Text>
+                  </Body>
+                  <Right style={{ flex: 2 }}>
+                    <Icon 
+                      name="arrow-right"
+                      type="FontAwesome"
+                      />
+                  </Right>
+                </CardItem>
+              )
+          }
         }
         return <Container style={styles.containerCard}>
-                <HeaderCustom/>
+                <Header style={styles.header}>
+                  <Body style={styles.bodyheader}>
+                    <Text style={styles.textoheader}>Productos</Text>
+                  </Body>
+                </Header>
                 <Header searchBar transparent >
                 <Body style={{flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingVertical: 8}}>
                   <Item style={styles.searchBar}>
@@ -143,7 +165,7 @@ export default class Productos extends React.Component {
                   </Card>
                 </Content>
               </Container>
-}
+    }
 
   render() {
     if (this.state.loading) {
@@ -172,6 +194,33 @@ const styles = StyleSheet.create({
   containerCard: {
     backgroundColor: "#F9F9F9",
     width: WIDTH,
+  },
+  header: {
+    backgroundColor: '#fff',
+  },
+  bodyheader: {
+    flex: 1,
+    width: WIDTH,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  textoheader: {
+    textAlign: 'center',
+    fontSize: 20,
+    fontFamily: 'Roboto_bold',
+    color: '#434343'
+  },
+  bodyCardVacio: {
+    flex: 8,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  textoVacio: {
+    fontFamily: 'Roboto_bold',
+    color: 'gray',
+    fontSize: 20,
+    textAlign: 'center'
   },
   mb: {
     marginBottom: 15

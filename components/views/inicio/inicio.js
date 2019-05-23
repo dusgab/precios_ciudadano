@@ -56,9 +56,9 @@ export default class Inicio extends React.Component {
       const promociones = await api.fetchPromociones();
 
       await Font.loadAsync({
-        'Roboto': require("native-base/Fonts/Roboto.ttf"),
-        'Roboto_medium': require("native-base/Fonts/Roboto_medium.ttf"),
-        'amazon': require("../../../assets/amazon.ttf")
+          'Roboto': require("native-base/Fonts/Roboto.ttf"),
+          'Roboto_medium': require("native-base/Fonts/Roboto_medium.ttf"),
+          'Roboto_bold': require("native-base/Fonts/Roboto_bold.ttf")
       });
 
        this.setState({ promociones: promociones.data, categorias: categorias.data, loading: false });
@@ -143,7 +143,7 @@ export default class Inicio extends React.Component {
                                       <Text style={styles.textoProd}>{data.producto} {data.peso} {data.marca} - {data.supermercado}</Text>
                                     <Item style={styles.listItemPrecio}>
                                       <Item style={styles.listItemPromo}>
-                                          <Text style={{color: "#FFF", paddingHorizontal: 7, paddingVertical: 3, fontSize: 14, fontWeight: '500', textAlign: 'center'}}
+                                          <Text style={{color: "#FFF", paddingHorizontal: 7, paddingVertical: 0, fontSize: 14, fontWeight: '500', textAlign: 'center'}}
                                           onPress={() =>
                                             Toast.show({
                                               text: <Text>{(data.fecha_promo_final != null) ? (data.promocion + " " + data.descripcion_promo + " - Válido hasta el " + data.fecha_promo_final.substring(0, data.fecha_promo_final.length -9)) : (data.promocion + " " + data.descripcion_promo + " - Válido hasta el ")}</Text>,
@@ -255,16 +255,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   tituloCat: {
-    fontSize: 18,
+    fontFamily: 'Roboto_medium',
+    fontSize: 16,
     color: '#434343',
-    fontWeight: 'bold',
     marginLeft: 12,
   },
   textoProd: {
     flex: 7,
     fontSize: 16,
     color: '#434343',
-    fontWeight: '500',
+    fontFamily: 'Roboto_bold',
     textAlign: 'left'
   },
   subtitulo: {
@@ -276,13 +276,14 @@ const styles = StyleSheet.create({
     color: 'gray',
     textAlign: 'right',
     fontSize: 15,
-    marginRight: 6
+    marginRight: 6,
+    fontFamily: 'Roboto',
   },
   textoPrecioPromo: {
     color: '#434343',
     textAlign: 'right',
     fontSize: 15,
-    fontWeight: 'bold'
+    fontFamily: 'Roboto_bold',
   },
   barraBusqueda: {
     backgroundColor: '#F9F9F9',
@@ -364,8 +365,8 @@ const styles = StyleSheet.create({
   listItemPrecio: {
     flex: 3,
     flexDirection: 'row',
-    alignItems: 'flex-end', 
-    justifyContent: 'flex-end',
+    alignItems: 'center', 
+    justifyContent: 'center',
     borderBottomColor: 'transparent',
     marginLeft: 65,
     textAlign: 'right'
@@ -374,7 +375,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
     backgroundColor: '#FF1024',
     marginRight: 10,
-    paddingHorizontal: 3,
+    paddingHorizontal: 0,
     borderRadius: 30,
   },    
   botones: {

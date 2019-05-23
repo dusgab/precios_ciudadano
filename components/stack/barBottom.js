@@ -64,9 +64,9 @@ const tabBarBottom = createBottomTabNavigator(
           navigationOptions: {
             tabBarIcon: ({ focused, tintColor }) => {
                 if(focused === true){
-                  return <Thumbnail square source={homeAct}  style={{ width: 30, height: 30, resizeMode: 'contain' }} />;
+                  return <Thumbnail square source={homeAct}  style={{ width: 25, height: 25, resizeMode: 'contain' }} />;
                 } else {
-                  return <Thumbnail square source={home}  style={{ width: 30, height: 30, resizeMode: 'contain' }} />;
+                  return <Thumbnail square source={home}  style={{ width: 25, height: 25, resizeMode: 'contain' }} />;
                 }
           },
         },
@@ -75,9 +75,9 @@ const tabBarBottom = createBottomTabNavigator(
         navigationOptions: {
           tabBarIcon: ({ focused, tintColor }) => {
             if(focused === true){
-              return <Thumbnail square  source={prodAct} style={{ width: 30, height: 30, resizeMode: 'contain' }}/>;
+              return <Thumbnail square  source={prodAct} style={{ width: 25, height: 25, resizeMode: 'contain' }}/>;
             } else {
-              return <Thumbnail square  source={prod} style={{ width: 30, height: 30, resizeMode: 'contain' }}/>;
+              return <Thumbnail square  source={prod} style={{ width: 25, height: 25, resizeMode: 'contain' }}/>;
             }
         },
       },
@@ -86,9 +86,9 @@ const tabBarBottom = createBottomTabNavigator(
       navigationOptions: {
         tabBarIcon: ({ focused, tintColor }) => {
           if(focused === true){
-            return <Thumbnail square  source={milistaAct} style={{ width: 30, height: 30, resizeMode: 'contain' }} />;
+            return <Thumbnail square  source={milistaAct} style={{ width: 25, height: 25, resizeMode: 'contain' }} />;
           } else {
-            return <Thumbnail square  source={milista} style={{ width: 30, height: 30, resizeMode: 'contain' }} />;
+            return <Thumbnail square  source={milista} style={{ width: 25, height: 25, resizeMode: 'contain' }} />;
           }
         },
       },
@@ -97,9 +97,9 @@ const tabBarBottom = createBottomTabNavigator(
       navigationOptions: {
         tabBarIcon: ({ focused, tintColor }) => {
           if(focused === true){
-            return <Thumbnail square source={estadAct} style={{ width: 30, height: 30, resizeMode: 'contain' }}/>;
+            return <Thumbnail square source={estadAct} style={{ width: 25, height: 25, resizeMode: 'contain' }}/>;
           } else {
-            return <Thumbnail square source={estad} style={{ width: 30, height: 30, resizeMode: 'contain' }}/>;
+            return <Thumbnail square source={estad} style={{ width: 25, height: 25, resizeMode: 'contain' }}/>;
           }
         },
       },

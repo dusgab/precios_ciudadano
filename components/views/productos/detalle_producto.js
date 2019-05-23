@@ -30,10 +30,9 @@ export default class DetalleHome extends React.Component {
 
     constructor(props) {
       super(props);
+
       this.props.navigation.addListener('didFocus', () => {
-        
         if ( this.state.isMounted ) {
-          console.log("ismounted on focus detalle home");
           this.verificarLista(this.props.navigation.state.params.mpid);
         }
       });
@@ -45,7 +44,7 @@ export default class DetalleHome extends React.Component {
         error: null,
         loading: true,
         showToast: false,
-        enlista: false, //piñata
+        enlista: false,
         flag: 0,
         isMounted: false
       }
@@ -55,24 +54,18 @@ export default class DetalleHome extends React.Component {
         
         const mpid = this.props.navigation.state.params.mpid;
         const productos = await api.fetchBuscarPorId(mpid);
-        
-        //await AsyncStorage.clear();
 
         await Font.loadAsync({
-          Roboto: require("native-base/Fonts/Roboto.ttf"),
-          Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
+          'Roboto': require("native-base/Fonts/Roboto.ttf"),
+          'Roboto_medium': require("native-base/Fonts/Roboto_medium.ttf"),
+          'Roboto_bold': require("native-base/Fonts/Roboto_bold.ttf")
         });
 
-        this.verificarLista(mpid); //piñata
+        this.verificarLista(mpid);
         this.setState({ productos: productos.data, loading: false, isMounted: true, flag: 10 });
     }
 
-    componentWillMount() {
-    }
-
-    componentWillUnmount(){
-    } 
-
+    //Funcion para verificar si el producto se encuentra en Mi Lista por marca_producto _id
     verificarLista = async (id) => {
       
        var milista = [];
@@ -81,25 +74,25 @@ export default class DetalleHome extends React.Component {
        milista = JSON.parse(lista);
 
        if(milista == null || milista.length == 0) {
-         console.log(" milista null");
+
          this.setState({ listaVacia: true, flag: 1, enlista: false });
+
        } else {
-        console.log(" verificar por false ");
-         for (let index = 0; index < milista.length; index++) {
-          console.log("   for");
+
+          for (let index = 0; index < milista.length; index++) {
+
               if(milista[index].marca_producto_id == id) {
-                console.log(" true for ");
                 this.setState({ enlista: true, flag: 8  });
               } else {
-                console.log(" false for");
                 this.setState({ enlista: false, flag: 9  });
               }
-            }
+
+          }
        }
     }
 
+    //Funcion para eliminar un producto de Mi Lista por marca_producti_id
     _eliminarLista = async (id) => {
-      //piñata
       var milista = [];
       const lista = await AsyncStorage.getItem('lista');
       milista = JSON.parse(lista);
@@ -110,6 +103,7 @@ export default class DetalleHome extends React.Component {
           milista.splice(index, 1);
           this.setState({ enlista: false });
         }
+
       }
 
       await AsyncStorage.setItem('lista', JSON.stringify(milista) )
@@ -128,7 +122,7 @@ export default class DetalleHome extends React.Component {
       });
     }
 
-    //Agregar un producto a Mi Lista
+    //Funcion para agregar un producto a Mi Lista por marca_producto_id
     _agregarLista = async (id) => {
     
       var milista = [];
@@ -140,11 +134,9 @@ export default class DetalleHome extends React.Component {
       const lista = await AsyncStorage.getItem('lista');
 
       if ( lista == null ) {
-        console.log("  lista null ");
         this.setState({ enlista: false, flag: 101 });
       } else {
         milista = JSON.parse(lista);
-        console.log(" milista " + milista);
       }
       
       milista.push(item);
@@ -166,6 +158,7 @@ export default class DetalleHome extends React.Component {
       });
     }
 
+    //Funcion para crear los array con las cards a renderizar
     viewProductosListado = () => {
       let botones = [];
       let botones1 = [];
@@ -176,7 +169,6 @@ export default class DetalleHome extends React.Component {
       let hasta = 0;
       
       for (let index = 0; index < prod.length; index++) {
-        
         
         /*Si tiene promocion muestro otra tarjeta */
         if(prod[index].precio_promocion != null) {
@@ -209,7 +201,7 @@ export default class DetalleHome extends React.Component {
                     <Text style={styles.texto}>Fecha relevada {prod[index].fecha_relevada}</Text>
                   </Item>
                   <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                    <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 4 }}/>
+                    <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 8 }}/>
                     <Text style={styles.textoUbicacion}>{prod[index].ubicacion}</Text>
                   </Item>
                 </Body>
@@ -224,7 +216,7 @@ export default class DetalleHome extends React.Component {
           if(hasta < prod[index].precio_lista) {
             hasta = prod[index].precio_lista;
           }
-          
+
           botones2.push(
             <CardItem button bordered 
                 key={"promo_" + index + index}
@@ -243,7 +235,7 @@ export default class DetalleHome extends React.Component {
                     <Text style={styles.texto}>Fecha relevada {prod[index].fecha_relevada}</Text>
                   </Item>
                   <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                    <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, paddingTop: 4 }}/>
+                    <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 8 }}/>
                     <Text style={styles.textoUbicacion}>{prod[index].ubicacion}</Text>
                   </Item>
                 </Body>
@@ -251,8 +243,8 @@ export default class DetalleHome extends React.Component {
             )
         }
 
-          if (last == index) {
-            
+        if (last == index) {
+          
           botones.push(
             <Card style={styles.mb}
               key={"categoria_" + index}>
@@ -296,29 +288,33 @@ export default class DetalleHome extends React.Component {
               }
               
             </Card>
-            )
-          }
+          )
         }
-        return <Container style={styles.containerCard}>
-                <HeaderCustom/>
-                <Content padder style={{flex: 1}}>
-                    {botones}
-                <Header transparent>
-                  <Body style={{flex: 6}}>
-                    <Text style={styles.textoSuper}>Supermercado</Text>
-                  </Body>
-                  <Right style={{flex: 4, alignItems: 'flex-end', justifyContent: 'flex-end'}}>
-                    <Text style={styles.textoProPre}>Promo</Text>
-                    <Text style={styles.textoProPre}>Precio</Text>
-                  </Right>
-                </Header>
-                  <Card style={styles.mb}>
-                    {botones1}
-                    {botones2}
-                  </Card>
-                </Content>
-              </Container>
-}
+      }
+      return <Container style={styles.containerCard}>
+              <Header style={styles.header}>
+                <Body style={styles.bodyheader}>
+                  <Text style={styles.textoheader}>Producto</Text>
+                </Body>
+              </Header>
+              <Content padder style={{flex: 1}}>
+                  {botones}
+              <Header transparent>
+                <Body style={{flex: 6}}>
+                  <Text style={styles.textoSuper}>Supermercado</Text>
+                </Body>
+                <Right style={{flex: 4, alignItems: 'flex-end', justifyContent: 'flex-end'}}>
+                  <Text style={styles.textoProPre}>Promo</Text>
+                  <Text style={styles.textoProPre}>Precio</Text>
+                </Right>
+              </Header>
+                <Card style={styles.mb}>
+                  {botones1}
+                  {botones2}
+                </Card>
+              </Content>
+            </Container>
+    }
 
   render() {
     if (this.state.loading) {
@@ -330,7 +326,6 @@ export default class DetalleHome extends React.Component {
     }
     return (
       <View style={styles.container}>
-        {/* {this.state.productos && this.viewProductosListado() } */}
         {this.state.flag && this.viewProductosListado() }
       </View>
     );     
@@ -349,6 +344,21 @@ const styles = StyleSheet.create({
     backgroundColor: "#F9F9F9",
     width: WIDTH,
   },
+  header: {
+    backgroundColor: '#fff',
+  },
+  bodyheader: {
+    flex: 1,
+    width: WIDTH,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  textoheader: {
+    textAlign: 'center',
+    fontSize: 20,
+    fontFamily: 'Roboto_bold',
+    color: '#434343'
+  },
   mb: {
     marginBottom: 15
   },
@@ -366,11 +376,13 @@ const styles = StyleSheet.create({
     color: '#434343',
     fontSize: 12,
     textAlign: 'left',
-    marginTop: 4
+    marginTop: 4,
+    fontFamily: 'Roboto',
   },
   textoPrecio: {
     color: '#838181',
     fontSize: 16,
+    fontFamily: 'Roboto',
   },
   textoPrecioLista: {
     flex: 5,
@@ -378,52 +390,55 @@ const styles = StyleSheet.create({
     color: 'gray',
     textAlign: 'right',
     fontSize: 14,
+    fontFamily: 'Roboto_medium',
   },
   textoPrecioPromo: {
     flex: 5,
     color: 'gray',
     textAlign: 'right',
     fontSize: 16,
-    fontWeight: 'bold'
+    fontFamily: 'Roboto_bold',
   },
   textoPrecioPromoNull: {
     flex: 5,
     color: 'gray',
     textAlign: 'right',
     fontSize: 16,
-    fontWeight: 'bold'
+    fontFamily: 'Roboto_bold',
   },
   textoTitulo: {
     color: '#434343',
     fontSize: 20,
-    fontWeight: 'bold',
+    fontFamily: 'Roboto_bold',
   },
   textoUbicacion: {
     color: '#707070',
     fontSize: 12,
     marginTop: 4,
+    fontFamily: 'Roboto',
   },
   textoMilista: {
     color: '#78BE20',
-    fontWeight: '400',
+    fontFamily: 'Roboto_medium',
     fontSize: 14,
   },
   textoMilistaRem: {
     color: 'gray',
-    fontWeight: '400',
+    fontFamily: 'Roboto_medium',
     fontSize: 14,
   },
   textoSuper: {
     textAlign: 'left',
     fontSize: 16,
     color: '#434343',
-    fontWeight: 'bold'
+    fontFamily: 'Roboto_bold',
   },
   textoProPre: {
     flex: 5,
     textAlign: 'right',
     fontSize: 16,
-    fontWeight: 'bold'
+    color: '#434343',
+    fontFamily: 'Roboto_bold',
   },
   botonMilista: {
     borderColor: '#78BE20',

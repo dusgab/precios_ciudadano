@@ -43,25 +43,22 @@ export default class buscarProductos extends React.Component {
 
         this.searchInput = React.createRef();
         this.arrayholder = [];
-        //this.prod = [];
       }
 
     async componentDidMount() {
-    
-      console.log(this.props.navigation.state.params);
-       
-          const prod = await api.fetchProductoBuscar(this.props.navigation.state.params.prod);
-          console.log("componente else prod" + prod.data);
 
-        //const productos = await api.fetchProductoBuscar(this.props.navigation.state.params.prod);
+        const productos = await api.fetchListarProductosSupermercados();
         
         await Font.loadAsync({
-          Roboto: require("native-base/Fonts/Roboto.ttf"),
-          Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
+          'Roboto': require("native-base/Fonts/Roboto.ttf"),
+          'Roboto_medium': require("native-base/Fonts/Roboto_medium.ttf"),
+          'Roboto_bold': require("native-base/Fonts/Roboto_bold.ttf")
         });
 
-        this.arrayholder = prod.data;
-        this.setState({ productos: prod.data, loading: false });
+        this.arrayholder = productos.data;
+        this.setState({ loading: false });
+
+        this.filtrarProductos(this.props.navigation.state.params.prod);
         
     }
 
@@ -69,6 +66,18 @@ export default class buscarProductos extends React.Component {
 
     }
 
+    //Filtro al cargar el componente con el termino que se paso del home
+    filtrarProductos = (prod) => {
+      const newData = this.arrayholder.filter(item => {      
+        const itemData = `${item.producto.toUpperCase()} ${item.marca.toUpperCase()}`;
+         const textData = prod.toUpperCase();
+         return itemData.indexOf(textData) > -1;    
+      });
+      //console.log(newData);
+      this.setState({ productos: newData });
+  }
+
+  //Funcion para filtrar busqueda por nombre de producto y marca
     SearchFilterFunction = (text) => {    
       const newData = this.arrayholder.filter(item => {      
         const itemData = `${item.producto.toUpperCase()} ${item.marca.toUpperCase()}`;
@@ -80,55 +89,67 @@ export default class buscarProductos extends React.Component {
 
   _onPress = (mpid) => {
     const text = "";
-    this.SearchFilterFunction(text);
     this.searchInput.current._root.clear();
-    
     this.props.navigation.navigate('DetalleHome', {mpid: mpid});
   };
 
     viewProductosListado = () => {
       let botones = [];
       let prod1 = this.state.productos;
-      console.log("view prodctos" + prod1);
       
-      for (let index = 0; index < prod1.length; index++) {
-            // var res = prod[index].producto.substring(0, prod[index].producto.length -5);
-            let id = prod1[index].producto;
+      if(prod1.length == 0) {
+        botones.push(
+          <CardItem button bordered 
+              key={"categoria_" + 1}
+            >
+              <Left style={{ flex: 2 }}>
+                <Icon name="ban" type="FontAwesome" style={{fontSize: 60, color: 'gray'}}/>
+              </Left>
+              <Body style={styles.bodyCardVacio} >
+                  <Text style={styles.textoVacio}>Producto no encontrado</Text>
+              </Body>
+          </CardItem>
+          )
+      } else {
+        for (let index = 0; index < prod1.length; index++) {
+
             let mpid = prod1[index].marca_producto_id;
-            console.log("id, mpid " + id + " " + mpid);
-          botones.push(
-            // <CardItem button bordered onPress={() => this.props.navigation.push('Detalle', {id: id, mpid: mpid})}
-            <CardItem button bordered onPress={() => this._onPress(mpid)}
-                key={"categoria_" + index}
-              >
-                <Left style={{ flex: 2 }}>
-                <Icon
-                    active
-                    name="store"
-                    type="MaterialCommunityIcons"
-                    style={{ color: "#78BE20" }}
-                  />
-                </Left>
-                <Body style={styles.bodyCard}>
-                    <Text style={styles.texto}>{prod1[index].producto.toUpperCase()} {prod1[index].marca.toUpperCase()}</Text>
-                    <Text note>Desde $ {prod1[index].precio_lista}</Text>
-                </Body>
-                <Right style={{ flex: 2 }}>
-                  <Icon 
-                    name="arrow-right"
-                    type="FontAwesome"
-                     />
-                </Right>
-              </CardItem>
-            )
+            botones.push(
+              <CardItem button bordered onPress={() => this._onPress(mpid)}
+                  key={"categoria_" + index}
+                >
+                  <Left style={{ flex: 2 }}>
+                  <Icon
+                      active
+                      name="store"
+                      type="MaterialCommunityIcons"
+                      style={{ color: "#78BE20" }}
+                    />
+                  </Left>
+                  <Body style={styles.bodyCard}>
+                      <Text style={styles.texto}>{prod1[index].producto.toUpperCase()} {prod1[index].marca.toUpperCase()}</Text>
+                      <Text note>Desde $ {prod1[index].precio_lista}</Text>
+                  </Body>
+                  <Right style={{ flex: 2 }}>
+                    <Icon 
+                      name="arrow-right"
+                      type="FontAwesome"
+                      />
+                  </Right>
+                </CardItem>
+              )
+          }
         }
         return <Container style={styles.containerCard}>
-                <HeaderCustom/>
+                <Header style={styles.header}>
+                  <Body style={styles.bodyheader}>
+                    <Text style={styles.textoheader}>Producto</Text>
+                  </Body>
+                </Header>
                 <Header searchBar transparent >
                 <Body style={{flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingVertical: 8}}>
                   <Item style={styles.searchBar}>
                     <Input placeholder="Buscar producto" style={{ marginLeft: 10 }}
-                      placeholderTextColor='#434343'
                       onChangeText={(text) => this.SearchFilterFunction(text)}
                       onKeyPress={this.handleKeyDown}
                       ref={this.searchInput}/>
@@ -157,7 +178,7 @@ export default class buscarProductos extends React.Component {
     }
     return (
       <View style={styles.container}>
-        {this.state.filterProductos && this.viewProductosListado() }
+        {this.state.productos && this.viewProductosListado() }
       </View>
     );
   }
@@ -175,6 +196,21 @@ const styles = StyleSheet.create({
     backgroundColor: "#F9F9F9",
     width: WIDTH,
   },
+  header: {
+    backgroundColor: '#fff',
+  },
+  bodyheader: {
+    flex: 1,
+    width: WIDTH,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  textoheader: {
+    textAlign: 'center',
+    fontSize: 20,
+    fontFamily: 'Roboto_bold',
+    color: '#434343'
+  },
   mb: {
     marginBottom: 15
   },
@@ -188,11 +224,22 @@ const styles = StyleSheet.create({
     flex: 8,
     flexDirection: 'column',
   },
+  bodyCardVacio: {
+    flex: 8,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   texto: {
+    fontFamily: 'Roboto_bold',
     color: '#434343',
     fontSize: 16,
-    fontWeight: 'bold', 
     textAlign: 'auto'
+  },
+  textoVacio: {
+    fontFamily: 'Roboto_bold',
+    color: 'gray',
+    fontSize: 20,
   },
   searchBar: {
     backgroundColor: '#FFF',

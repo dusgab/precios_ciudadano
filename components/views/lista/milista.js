@@ -60,8 +60,9 @@ export default class MiLista extends React.Component {
         const productos = await api.fetchListarProductosSupermercados();
 
         await Font.loadAsync({
-          Roboto: require("native-base/Fonts/Roboto.ttf"),
-          Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
+          'Roboto': require("native-base/Fonts/Roboto.ttf"),
+          'Roboto_medium': require("native-base/Fonts/Roboto_medium.ttf"),
+          'Roboto_bold': require("native-base/Fonts/Roboto_bold.ttf")
         });
 
         this._alertInfo();
@@ -85,7 +86,7 @@ export default class MiLista extends React.Component {
       var milista = [];
       const lista = await AsyncStorage.getItem('lista');
       console.log(" lista verificar" + lista);
-      if(lista == null) {
+      if(lista == null || lista.length == 0) {
         console.log(" milista null " + this.listaArray);
         this.setState({ listaVacia: true, flag: 1 });
       } else {
@@ -105,6 +106,9 @@ export default class MiLista extends React.Component {
         if(milista[index].marca_producto_id == id) {
           milista.splice(index, 1);
           this.listaArray = milista;
+          if(this.listaArray.length == 0 || this.listaArray == null) {
+            this.setState({ listaVacia: true, flag: 139 });  
+          }
           this.setState({ flag: 3 });
           Toast.show({
             text: "¡Producto eliminado de Mi Lista!",
@@ -126,8 +130,8 @@ export default class MiLista extends React.Component {
       const lista1 = await AsyncStorage.getItem('lista');
       milista = JSON.parse(lista1);
       this.listaArray = milista;
-      if(this.listaArray.length == 0) {
-        this.setState({ listaVacia: true });  
+      if(this.listaArray.length == 0 || this.listaArray == null) {
+        this.setState({ listaVacia: true, flag: 135 });  
       }
       this.setState({ flag: 13 });
       
@@ -203,8 +207,12 @@ export default class MiLista extends React.Component {
       }
 
       return <Container style={styles.containerCard}>
-              <HeaderCustom/>
-              <Header transparent>
+              <Header style={styles.header}>
+                <Body style={styles.bodyheader}>
+                  <Text style={styles.textoheader}>Mi Lista</Text>
+                </Body>
+              </Header>
+              <Header transparent style={styles.headerBotones}>
                 {this.state.listaVacia ?
                 <Item style={{borderBottomColor: 'transparent', margin: 0, flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
                   <Button transparent style={styles.botonMilistaRemV}>
@@ -232,6 +240,10 @@ export default class MiLista extends React.Component {
                 }
               </Header>
               <Content padder>
+                <Item style={{borderBottomColor: 'transparent', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+                  <Text style={styles.titulo}>¡Ahorrá Más!</Text>
+                  <Text style={styles.textotitulo}>Compará el precio de tu lista en cada supermercado. Algunos productos pueden estar no disponibles.</Text>
+                </Item>
                 <Card style={styles.mb}>
                   {botones}
                 </Card>
@@ -274,6 +286,26 @@ const styles = StyleSheet.create({
   containerCard: {
     backgroundColor: "#F9F9F9",
     width: WIDTH,
+    flexDirection: 'column'
+  },
+  header: {
+    backgroundColor: '#fff',
+  },
+  bodyheader: {
+    flex: 1,
+    width: WIDTH,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  textoheader: {
+    textAlign: 'center',
+    fontSize: 20,
+    fontFamily: 'Roboto_bold',
+    color: '#434343'
+  },
+  headerBotones: {
+    width: WIDTH,
+    flexDirection: 'column'
   },
   body: {
     flex: 1,
@@ -291,6 +323,16 @@ const styles = StyleSheet.create({
     color: 'gray',
     fontSize: 24,
     fontWeight: 'bold', 
+  },
+  titulo: {
+    color: '#434343',
+    fontSize: 14,
+    fontFamily: 'Roboto_medium'
+  },
+  textotitulo: {
+    color: 'gray',
+    fontSize: 12,
+    fontFamily: 'Roboto'
   },
   bodyCard: {
     flex: 8,

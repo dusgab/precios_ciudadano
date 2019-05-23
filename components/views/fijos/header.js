@@ -27,8 +27,9 @@ export default class HeaderCustom extends React.Component {
     async componentDidMount() {
 
         await Font.loadAsync({
-          Roboto: require("native-base/Fonts/Roboto.ttf"),
-          Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
+          'Roboto': require("native-base/Fonts/Roboto.ttf"),
+          'Roboto_medium': require("native-base/Fonts/Roboto_medium.ttf"),
+          'Roboto_bold': require("native-base/Fonts/Roboto_bold.ttf")
         });        
     }
 
@@ -51,7 +52,5 @@ const styles = StyleSheet.create({
     flex: 1,
     width: WIDTH,
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
   }
 });

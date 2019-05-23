@@ -90,7 +90,7 @@ export default {
     },
     async fetchCategoriaBuscar(id) {
         try {
-            console.log("Fetch Categorias Buscar por ID");
+            console.log("Fetch Categorias Buscar por ID " + id);
             let response = await fetch(URL + 'categoria_buscar/' + id);
             let responseJsonData = await response.json();
             return responseJsonData;
