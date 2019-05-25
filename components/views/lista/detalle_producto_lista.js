@@ -130,14 +130,14 @@ export default class DetalleHome extends React.Component {
                       <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
                         <Text style={styles.texto}>Fecha relevada {prod[indice].fecha_relevada}</Text>
                         <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'center', justifyContent: 'center', textAlign: 'center'}}>
-                          <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 2 }}/>
+                          <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 1 }}/>
                           <Text style={styles.textoUbicacion}>{prod[indice].ubicacion}</Text>
                         </Item>
                       </Item>
                   </Body>
                   <Right style={{ flex: 2 }}>
                       <Item style={{flex: 1, borderBottomColor: 'transparent', alignItems: 'center', justifyContent: 'center'}}>
-                          <Text style={styles.textoPrecio}>${minimo}</Text>
+                          <Text style={styles.textoPrecio}>${parseFloat(minimo).toFixed(2)}</Text>
                       </Item>
                   </Right>
               </CardItem>
@@ -264,7 +264,8 @@ const styles = StyleSheet.create({
   textoUbicacion: {
     color: '#707070',
     fontSize: 12,
-    fontFamily: 'Roboto'
+    marginLeft: -7,
+    fontFamily: 'Roboto',
   },
   textoMilista: {
     color: '#78BE20',

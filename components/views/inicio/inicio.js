@@ -94,7 +94,24 @@ export default class Inicio extends React.Component {
 
     Capitalize(str){
       return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    comprobarVacio = (cont) => {
+      if(cont == 0){
+        return (
+          <Card key={"vacio"}>
+            <CardItem bordered  style={styles.listItem}>
+              <Left style={{flex: 2}}>
+                <Icon name="ban" type="FontAwesome" style={{fontSize: 45, color: 'gray'}}/>
+              </Left>
+              <Body style={{flex: 8, flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+                <Text style={styles.textoProdVacio}>Categoría sin promociones</Text>
+              </Body>
+            </CardItem>
+          </Card>
+        );
       }
+    }
 
     _render = () => {
         return (
@@ -120,7 +137,9 @@ export default class Inicio extends React.Component {
 
             <Content style={styles.containerBody}>
             <List style={styles.listCat}>
-              {this.state.categorias.map((cat, i) => (
+              {this.state.categorias.map((cat, i) => {
+                let cont = 0;
+                return(
                 <Content style={styles.containerPromos} key={i}>
                   <Text style={styles.tituloCat}>{this.Capitalize(cat.nombre)}</Text>
                   <Content horizontal={true} contentContainerStyle={styles.contentContainer}>
@@ -129,8 +148,8 @@ export default class Inicio extends React.Component {
                     
                       <List thumbnail style={styles.list}>
                         {this.state.promociones.map((data, j) => {
-                            if (data.precio_promocion != null) {
                               if (cat.nombre === data.categoria) {
+                                cont++;
                                 return (
                                   <Card key={"promocion_" + j + i}>
                                   <CardItem button bordered style={styles.listItem} 
@@ -158,10 +177,10 @@ export default class Inicio extends React.Component {
                                         </Item>
                                         
                                         <Text style={styles.textoPrecioLista}>
-                                            $ {data.precio_lista}
+                                            ${parseFloat(data.precio_lista).toFixed(2)}
                                         </Text>
-                                        <Text  style={styles.textoPrecioPromo}>
-                                            $ {data.precio_promocion}
+                                        <Text style={styles.textoPrecioPromo}>
+                                            ${parseFloat(data.precio_promocion).toFixed(2)}
                                         </Text>
                                       </Item>
                                     </Body>
@@ -170,27 +189,17 @@ export default class Inicio extends React.Component {
                                   </Card>
                                 );
                               }
-                            } else {
-                              return (
-                                <ListItem key={"promocion_" + j + i} style={styles.listItem}>
-                                  <Left style={{flex: 2}}>
-                                    <Icon name="ban" type="FontAwesome" style={{fontSize: 60, color: '#838181'}}/>
-                                  </Left>
-                                  <Body style={{flex: 8, flexDirection: 'column'}}>
-                                    <Text style={styles.textoProd}>Categoría sin Promociones</Text>
-                                  </Body>
-                                </ListItem> 
-                              );
                             }
-                        })
-                        }
+                        )}
+                        {this.comprobarVacio(cont)}
                       </List>
-                </ListItem>
+                    </ListItem>
+                  </Content>
                 </Content>
-                </Content>
-              ))}
+                );
+              })}
             </List>
-            </Content>
+          </Content>
         </Container>
         );
     }
@@ -267,6 +276,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto_bold',
     textAlign: 'left'
   },
+  textoProdVacio: {
+    fontSize: 16,
+    color: 'gray',
+    fontFamily: 'Roboto_medium',
+  },
   subtitulo: {
     fontSize: 20,
     color: 'gray'
@@ -341,6 +355,15 @@ const styles = StyleSheet.create({
     height: HEIGHT / 5.5,
     borderRadius: 7,
     shadowColor: '#000000',
+  },
+  listItemVacio: {
+    marginRight: 4,
+    width: WIDTH - 70,
+    height: HEIGHT / 5.5,
+    borderRadius: 7,
+    shadowColor: '#000000',
+    alignContent: 'center', 
+    justifyContent: 'center'
   },
   listItemOld: {
     backgroundColor: '#FFF',

@@ -171,7 +171,6 @@ export default class DetalleHome extends React.Component {
     
       var milista = [];
       const item = {
-        "device_id": device_id,
         "marca_producto_id": id,
       };
 
@@ -250,8 +249,8 @@ export default class DetalleHome extends React.Component {
                         <Text style={styles.textoTitulo}>{prod[index].supermercado} </Text>
                       </Item>
                       <Item style={{flex: 4, flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
-                        <Text style={styles.textoPrecioPromo}>${prod[index].precio_promocion}</Text>
-                        <Text style={styles.textoPrecioLista}>${prod[index].precio_lista}</Text>
+                        <Text style={styles.textoPrecioPromo}>${parseFloat(prod[index].precio_promocion).toFixed(2)}</Text>
+                        <Text style={styles.textoPrecioLista}>${parseFloat(prod[index].precio_lista).toFixed(2)}</Text>
                       </Item>
                     </Item>
                     <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
@@ -287,7 +286,7 @@ export default class DetalleHome extends React.Component {
                       </Item>
                       <Item style={{flex: 4, flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
                         <Text style={styles.textoPrecioPromoNull}>--</Text>
-                        <Text style={styles.textoPrecioPromo}>${prod[index].precio_lista}</Text>
+                        <Text style={styles.textoPrecioPromo}>${parseFloat(prod[index].precio_lista).toFixed(2)}</Text>
                       </Item>
                     </Item>
                     <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
@@ -327,8 +326,8 @@ export default class DetalleHome extends React.Component {
                         <Text style={styles.textoTitulo}>{prod[index].supermercado} </Text>
                       </Item>
                       <Item style={{flex: 4, flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
-                        <Text style={styles.textoPrecioPromo}>${prod[index].precio_promocion}</Text>
-                        <Text style={styles.textoPrecioLista}>${prod[index].precio_lista}</Text>
+                        <Text style={styles.textoPrecioPromo}>${parseFloat(prod[index].precio_promocion).toFixed(2)}</Text>
+                        <Text style={styles.textoPrecioLista}>${parseFloat(prod[index].precio_lista).toFixed(2)}</Text>
                       </Item>
                     </Item>
                     <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
@@ -364,7 +363,7 @@ export default class DetalleHome extends React.Component {
                       </Item>
                       <Item style={{flex: 4, flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
                         <Text style={styles.textoPrecioPromoNull}>--</Text>
-                        <Text style={styles.textoPrecioPromo}>${prod[index].precio_lista}</Text>
+                        <Text style={styles.textoPrecioPromo}>${parseFloat(prod[index].precio_lista).toFixed(2)}</Text>
                       </Item>
                     </Item>
                     <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
@@ -398,9 +397,9 @@ export default class DetalleHome extends React.Component {
                       <Text style={styles.textoTitulo}>{prod[index].producto} {prod[index].peso} {prod[index].marca}</Text>
                       <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
                         <Item style={{flexDirection: 'row', flex: 9, borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                          <Text style={styles.textoPrecio}>Rango de precios ${desde}</Text>
+                          <Text style={styles.textoPrecio}>Rango de precios ${parseFloat(desde).toFixed(2)}</Text>
                           <Icon name="arrow-right" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 18, marginLeft: 4, textAlign: 'center'}}/>
-                          <Text style={styles.textoPrecio}>${hasta}</Text>
+                          <Text style={styles.textoPrecio}>${parseFloat(hasta).toFixed(2)}</Text>
                         </Item>
                       </Item>
                       
