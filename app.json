@@ -29,7 +29,10 @@
     },
     "android": {
       "package": "com.corrientes.precios",
-      "permissions": [],
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ],
       "versionCode": 2
     },
     "description": ""

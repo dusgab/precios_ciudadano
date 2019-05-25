@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   texto: {
-    fontFamily: 'Roboto_bold',
+    fontFamily: 'Roboto_medium',
     color: '#434343',
     fontSize: 16,
     textAlign: 'auto'

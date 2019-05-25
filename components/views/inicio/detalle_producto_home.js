@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Dimensions, AsyncStorage } from 'react-native';
-import { Constants, Font } from 'expo';
+import { Constants, Font, Permissions } from 'expo';
 import {
     Container,
     Header,
@@ -17,8 +17,8 @@ import {
     Spinner,
     Toast,
   } from "native-base";
+  import haversine from "haversine";
 
-import HeaderCustom from '../fijos/header';
 import api from '../../services/fetchProductos';
 
 const WIDTH = Dimensions.get('window').width;
@@ -46,12 +46,45 @@ export default class DetalleHome extends React.Component {
         showToast: false,
         enlista: false,
         flag: 0,
-        isMounted: false
+        isMounted: false,
+        //Geo
+        miLatLng: {
+          latitude: 0,
+          longitude: 0
+        },
+        status: null,
       }
     }
 
     async componentDidMount() {
-        
+
+      //Permisos para geolocalizacion y calcular la distancia hacia los supermercados
+       const { status } = await Permissions.askAsync(Permissions.LOCATION);
+
+       if ( status === 'granted' ) {
+
+        this.watchID = navigator.geolocation.watchPosition(
+          position => {
+            const { latitude, longitude } = position.coords;
+
+            const miLatLng = {
+              latitude,
+              longitude
+            };
+            
+            this.setState({ miLatLng });
+
+          },
+            error => console.log("error en wathc" + error),
+          {
+            enableHighAccuracy: true,
+            timeout: 20000,
+            maximumAge: 1000,
+          }
+        );
+
+       }
+
         const mpid = this.props.navigation.state.params.mpid;
         const productos = await api.fetchBuscarPorId(mpid);
 
@@ -62,8 +95,19 @@ export default class DetalleHome extends React.Component {
         });
 
         this.verificarLista(mpid);
-        this.setState({ productos: productos.data, loading: false, isMounted: true, flag: 10 });
+        this.setState({ productos: productos.data, loading: false, isMounted: true, flag: 10, status });
+        
     }
+
+    componentWillUnmount() {
+      navigator.geolocation.clearWatch(this.watchID);
+    }
+
+    calcDistance = newLatLng => {
+      const { miLatLng } = this.state;
+      const res =  haversine(miLatLng, newLatLng) || 0;
+      return res;
+    };
 
     //Funcion para verificar si el producto se encuentra en Mi Lista por marca_producto _id
     verificarLista = async (id) => {
@@ -170,77 +214,170 @@ export default class DetalleHome extends React.Component {
       
       for (let index = 0; index < prod.length; index++) {
         
-        /*Si tiene promocion muestro otra tarjeta */
-        if(prod[index].precio_promocion != null) {
-          
-          if(desde > prod[index].precio_promocion) {
-            desde = prod[index].precio_promocion;
-          }
+        const distancia = 0;
 
-          if(hasta < prod[index].precio_promocion) {
-            hasta = prod[index].precio_promocion;
+        //Si el producto posee latitud y longitud y se concedieron los permisos de ubicación
+        //muestro tarjetas con el cálculo de las distancias hacia los supermercados
+        //sino solo se muestra la dirección
+        if ( prod[index].latitud != null && prod[index].longitud != null && this.state.status === 'granted') {
+
+          let lat = prod[index].latitud;
+          let long = prod[index].longitud;
+
+          const newLatLang = { latitude: lat, longitude: long };
+
+          distancia = this.calcDistance(newLatLang);
+          const dist = parseFloat(distancia).toFixed(2);
+
+          /*Si no tiene promocion muestro otra tarjeta */
+          if(prod[index].precio_promocion != null) {
+            
+            if(desde > prod[index].precio_promocion) {
+              desde = prod[index].precio_promocion;
+            }
+
+            if(hasta < prod[index].precio_promocion) {
+              hasta = prod[index].precio_promocion;
+            }
+
+            botones1.push(
+              <CardItem button bordered 
+                  key={"categoria_" + index + index}
+                >
+                  <Body style={styles.bodyCard}>
+                    <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
+                      <Item style={{flex: 6, flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                        <Text style={styles.textoTitulo}>{prod[index].supermercado} </Text>
+                      </Item>
+                      <Item style={{flex: 4, flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
+                        <Text style={styles.textoPrecioPromo}>${prod[index].precio_promocion}</Text>
+                        <Text style={styles.textoPrecioLista}>${prod[index].precio_lista}</Text>
+                      </Item>
+                    </Item>
+                    <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                      <Text style={styles.texto}>{prod[index].promocion} {prod[index].descripcion_promo}</Text>
+                      <Text style={styles.texto}>{prod[index].fecha_promo_final != null ? ("Válido hasta el " + prod[index].fecha_promo_final.substring(0, prod[index].fecha_promo_final.length -9)) : (prod[index].fecha_promo_final)}</Text>
+                      <Text style={styles.texto}>Fecha relevada {prod[index].fecha_relevada}</Text>
+                    </Item>
+                    <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                      <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 7, marginRight: 0 }}/>
+                      <Text style={styles.textoUbicacion}>{prod[index].ubicacion}  a  {dist} km</Text>
+                    </Item>
+                  </Body>
+                </CardItem>
+              )
+          } else if (prod[index].precio_lista != null) {
+
+            if(desde > prod[index].precio_lista) {
+              desde = prod[index].precio_lista;
+            }
+
+            if(hasta < prod[index].precio_lista) {
+              hasta = prod[index].precio_lista;
+            }
+
+            botones2.push(
+              <CardItem button bordered 
+                  key={"promo_" + index + index}
+                >
+                  <Body style={styles.bodyCard}>
+                    <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
+                      <Item style={{flex: 6, flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                        <Text style={styles.textoTitulo}>{prod[index].supermercado} </Text>
+                      </Item>
+                      <Item style={{flex: 4, flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
+                        <Text style={styles.textoPrecioPromoNull}>--</Text>
+                        <Text style={styles.textoPrecioPromo}>${prod[index].precio_lista}</Text>
+                      </Item>
+                    </Item>
+                    <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                      <Text style={styles.texto}>Fecha relevada {prod[index].fecha_relevada}</Text>
+                    </Item>
+                    <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                    <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 7, marginRight: 0 }}/>
+                      <Text style={styles.textoUbicacion}>{prod[index].ubicacion}  a  {dist} km</Text>
+                    </Item>
+                  </Body>
+                </CardItem>
+              )
           }
-          
-          botones1.push(
-            <CardItem button bordered 
-                key={"categoria_" + index + index}
-              >
-                <Body style={styles.bodyCard}>
-                  <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
-                    <Item style={{flex: 6, flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                      <Text style={styles.textoTitulo}>{prod[index].supermercado} </Text>
-                    </Item>
-                    <Item style={{flex: 4, flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
-                      <Text style={styles.textoPrecioPromo}>${prod[index].precio_promocion}</Text>
-                      <Text style={styles.textoPrecioLista}>${prod[index].precio_lista}</Text>
-                    </Item>
-                  </Item>
-                  <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                    <Text style={styles.texto}>{prod[index].promocion} {prod[index].descripcion_promo}</Text>
-                    <Text style={styles.texto}>{prod[index].fecha_promo_final != null ? ("Válido hasta el " + prod[index].fecha_promo_final.substring(0, prod[index].fecha_promo_final.length -9)) : (prod[index].fecha_promo_final)}</Text>
-                    <Text style={styles.texto}>Fecha relevada {prod[index].fecha_relevada}</Text>
-                  </Item>
-                  <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                    <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 8 }}/>
-                    <Text style={styles.textoUbicacion}>{prod[index].ubicacion}</Text>
-                  </Item>
-                </Body>
-              </CardItem>
-            )
+        
         } else {
 
-          if(desde > prod[index].precio_lista) {
-            desde = prod[index].precio_lista;
-          }
+          /*Si no tiene promocion muestro otra tarjeta */
+          if(prod[index].precio_promocion != null) {
+            
+            if(desde > prod[index].precio_promocion) {
+              desde = prod[index].precio_promocion;
+            }
 
-          if(hasta < prod[index].precio_lista) {
-            hasta = prod[index].precio_lista;
-          }
+            if(hasta < prod[index].precio_promocion) {
+              hasta = prod[index].precio_promocion;
+            }
 
-          botones2.push(
-            <CardItem button bordered 
-                key={"promo_" + index + index}
-              >
-                <Body style={styles.bodyCard}>
-                  <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
-                    <Item style={{flex: 6, flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                      <Text style={styles.textoTitulo}>{prod[index].supermercado} </Text>
+            
+            
+            botones1.push(
+              <CardItem button bordered 
+                  key={"categoria_" + index + index}
+                >
+                  <Body style={styles.bodyCard}>
+                    <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
+                      <Item style={{flex: 6, flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                        <Text style={styles.textoTitulo}>{prod[index].supermercado} </Text>
+                      </Item>
+                      <Item style={{flex: 4, flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
+                        <Text style={styles.textoPrecioPromo}>${prod[index].precio_promocion}</Text>
+                        <Text style={styles.textoPrecioLista}>${prod[index].precio_lista}</Text>
+                      </Item>
                     </Item>
-                    <Item style={{flex: 4, flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
-                      <Text style={styles.textoPrecioPromoNull}>--</Text>
-                      <Text style={styles.textoPrecioPromo}>${prod[index].precio_lista}</Text>
+                    <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                      <Text style={styles.texto}>{prod[index].promocion} {prod[index].descripcion_promo}</Text>
+                      <Text style={styles.texto}>{prod[index].fecha_promo_final != null ? ("Válido hasta el " + prod[index].fecha_promo_final.substring(0, prod[index].fecha_promo_final.length -9)) : (prod[index].fecha_promo_final)}</Text>
+                      <Text style={styles.texto}>Fecha relevada {prod[index].fecha_relevada}</Text>
                     </Item>
-                  </Item>
-                  <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                    <Text style={styles.texto}>Fecha relevada {prod[index].fecha_relevada}</Text>
-                  </Item>
-                  <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                    <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 8 }}/>
-                    <Text style={styles.textoUbicacion}>{prod[index].ubicacion}</Text>
-                  </Item>
-                </Body>
-              </CardItem>
-            )
+                    <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                    <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 7, marginRight: 0 }}/>
+                      <Text style={styles.textoUbicacion}>{prod[index].ubicacion} </Text>
+                    </Item>
+                  </Body>
+                </CardItem>
+              )
+          } else if (prod[index].precio_lista != null) {
+
+            if(desde > prod[index].precio_lista) {
+              desde = prod[index].precio_lista;
+            }
+
+            if(hasta < prod[index].precio_lista) {
+              hasta = prod[index].precio_lista;
+            }
+
+            botones2.push(
+              <CardItem button bordered 
+                  key={"promo_" + index + index}
+                >
+                  <Body style={styles.bodyCard}>
+                    <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
+                      <Item style={{flex: 6, flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                        <Text style={styles.textoTitulo}>{prod[index].supermercado} </Text>
+                      </Item>
+                      <Item style={{flex: 4, flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
+                        <Text style={styles.textoPrecioPromoNull}>--</Text>
+                        <Text style={styles.textoPrecioPromo}>${prod[index].precio_lista}</Text>
+                      </Item>
+                    </Item>
+                    <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                      <Text style={styles.texto}>Fecha relevada {prod[index].fecha_relevada}</Text>
+                    </Item>
+                    <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                    <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 7, marginRight: 0 }}/>
+                      <Text style={styles.textoUbicacion}>{prod[index].ubicacion} </Text>
+                    </Item>
+                  </Body>
+                </CardItem>
+              )
+          }
         }
 
         if (last == index) {
@@ -305,7 +442,7 @@ export default class DetalleHome extends React.Component {
                 </Body>
                 <Right style={{flex: 4, alignItems: 'flex-end', justifyContent: 'flex-end'}}>
                   <Text style={styles.textoProPre}>Promo</Text>
-                  <Text style={styles.textoProPre}>Precio</Text>
+                  <Text style={styles.textoProPre}>Lista</Text>
                 </Right>
               </Header>
                 <Card style={styles.mb}>
@@ -406,15 +543,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Roboto_bold',
   },
+  textoPrecioND: {
+    flex: 1,
+    color: '#FF1024',
+    textAlign: 'center',
+    fontSize: 16,
+    fontFamily: 'Roboto_medium',
+  },
   textoTitulo: {
     color: '#434343',
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: 'Roboto_bold',
   },
   textoUbicacion: {
     color: '#707070',
     fontSize: 12,
     marginTop: 4,
+    marginLeft: -7,
     fontFamily: 'Roboto',
   },
   textoMilista: {

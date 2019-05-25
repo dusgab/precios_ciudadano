@@ -4,22 +4,31 @@ import { Constants, Font } from 'expo';
 import {
   Container,
   Header,
-  Title,
   Content,
-  Button,
   Icon,
   Card,
   Text,
   CardItem,
-  Thumbnail,
   Left,
   Right,
   Body,
   Spinner
 } from "native-base";
+import IconoSvg from 'react-native-svg-uri';
 
-import HeaderCustom from '../fijos/header';
 import api from '../../services/fetchProductos';
+
+const almacen = require('../../../assets/almacen.svg');
+const bebidas = require('../../../assets/bebidas.svg');
+const carniceria = require('../../../assets/carniceria.svg');
+const farmacia = require('../../../assets/farmacia.svg');
+const fiambreria = require('../../../assets/fiambreria.svg');
+const frutas = require('../../../assets/frutas-verduras.svg');
+const lacteos = require('../../../assets/lacteos.svg');
+const limpieza = require('../../../assets/limpieza.svg');
+const panaderia = require('../../../assets/panaderia.svg');
+const perfumeria = require('../../../assets/perfumeria.svg');
+
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -60,22 +69,74 @@ export default class Categorias extends React.Component {
   
     viewCategoriasListado = () => {
       let botones = []
-      let cat = this.state.categorias
+      let cat = this.state.categorias;
+      
+      let icono = require('../../../assets/almacen.svg');
+
       for (let index = 0; index < cat.length; index++) {
+        
+        const nombre = cat[index].nombre;
+
+        switch(nombre) {
+ 
+          case 'almacen':
+            icono = almacen;
+            break;
+          
+          case 'bebidas':
+            icono = bebidas;
+            break;
+     
+          case 'carniceria':
+            icono = carniceria;
+            break;
+     
+          case 'perfumeria':
+            icono = perfumeria;
+            break;
+          
+          case 'fiambreria':
+            icono = fiambreria;
+            break;
+
+          case 'frutas y verduras':
+            icono = frutas;
+            break;  
+
+          case 'lacteos':
+            icono = lacteos;
+            break;
+
+          case 'limpieza':
+            icono = limpieza;
+            break;
+
+          case 'panaderia':
+            icono = panaderia;
+            break;
+
+          case 'productos farmacéuticos':
+            icono = farmacia;
+            break;
+
+          default:
+            icono = require('../../../assets/almacen.svg');
+            break;
+        
+          }
+
           botones.push(
             <CardItem button bordered onPress={() => this.props.navigation.navigate('Productos', {id: cat[index].id})}
               key={"categoria_" + index}
+              style={{ flex: 1, marginTop: 2 }}
             >
-              <Left>
-                <Icon
-                  active
-                  name="store"
-                  type="MaterialCommunityIcons"
-                  style={{ color: "#78BE20" }}
-                />
-                <Text style={styles.categoria}>{this.Capitalize(cat[index].nombre)}</Text>
+              <Left style={{ flex: 1 }}>
+                <IconoSvg source={icono} width= "25" height= "25" resizeMode= "contain"/>
               </Left>
-              <Right>
+              <Body style={{ flex: 7 }}>
+                <Text style={styles.categoria}>{this.Capitalize(cat[index].nombre)}</Text>
+              </Body>
+              <Right style={{ flex: 2 }}>
                 <Icon 
                   name="arrow-right"
                   type="FontAwesome"

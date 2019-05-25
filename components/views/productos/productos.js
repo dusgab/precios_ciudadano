@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   texto: {
     color: '#434343',
     fontSize: 16,
-    fontWeight: 'bold', 
+    fontFamily: 'Roboto_medium', 
     textAlign: 'auto'
   },
   barraBusqueda: {

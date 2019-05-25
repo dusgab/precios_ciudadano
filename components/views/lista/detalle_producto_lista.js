@@ -130,7 +130,7 @@ export default class DetalleHome extends React.Component {
                       <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
                         <Text style={styles.texto}>Fecha relevada {prod[indice].fecha_relevada}</Text>
                         <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'center', justifyContent: 'center', textAlign: 'center'}}>
-                          <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 6 }}/>
+                          <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 2 }}/>
                           <Text style={styles.textoUbicacion}>{prod[indice].ubicacion}</Text>
                         </Item>
                       </Item>
@@ -258,8 +258,8 @@ const styles = StyleSheet.create({
   },
   textoTitulo: {
     color: '#434343',
-    fontSize: 20,
-    fontFamily: 'Roboto_bold'
+    fontSize: 16,
+    fontFamily: 'Roboto_medium'
   },
   textoUbicacion: {
     color: '#707070',

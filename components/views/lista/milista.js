@@ -169,6 +169,7 @@ export default class MiLista extends React.Component {
               botones.push(
                 <CardItem button bordered
                     key={"categoria_" + index}
+                    style={{ flex: 1 }}
                   >
                     <Left style={{ flex: 2 }}>
                     <Icon
@@ -182,7 +183,7 @@ export default class MiLista extends React.Component {
                         <Text style={styles.texto}>{prod[index].producto} {prod[index].marca} {prod[index].peso}</Text>
                     </Body>
                     <Right style={{ flex: 2 }}>
-                      <Icon name="trash-can-outline" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 30 }} onPress={() => this._eliminarLista(prod[index].marca_producto_id)}/>
+                      <Icon name="trash-can-outline" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 28 }} onPress={() => this._eliminarLista(prod[index].marca_producto_id)}/>
                     </Right>
                 </CardItem>
               )
@@ -199,7 +200,7 @@ export default class MiLista extends React.Component {
               <Left style={{ flex: 2 }}>
                 <Icon name="ban" type="FontAwesome" style={{fontSize: 60, color: 'gray'}}/>
               </Left>
-              <Body style={styles.bodyCard} >
+              <Body style={styles.bodyCardVacio} >
                   <Text style={styles.textovacio}>Lista vacia...</Text>
               </Body>
           </CardItem>
@@ -242,7 +243,7 @@ export default class MiLista extends React.Component {
               <Content padder>
                 <Item style={{borderBottomColor: 'transparent', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
                   <Text style={styles.titulo}>¡Ahorrá Más!</Text>
-                  <Text style={styles.textotitulo}>Compará el precio de tu lista en cada supermercado. Algunos productos pueden estar no disponibles.</Text>
+                  <Text style={styles.textotitulo}>Compará el precio de tu lista en cada supermercado. Algunos productos pueden no estar disponibles.</Text>
                 </Item>
                 <Card style={styles.mb}>
                   {botones}
@@ -316,8 +317,8 @@ const styles = StyleSheet.create({
   },
   texto: {
     color: '#434343',
-    fontSize: 20,
-    fontWeight: 'bold', 
+    fontSize: 16,
+    fontFamily: 'Roboto_medium' 
   },
   textovacio: {
     color: 'gray',
@@ -332,9 +333,16 @@ const styles = StyleSheet.create({
   textotitulo: {
     color: 'gray',
     fontSize: 12,
-    fontFamily: 'Roboto'
+    fontFamily: 'Roboto',
+    textAlign: 'center'
   },
   bodyCard: {
+    flex: 8,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+  },
+  bodyCardVacio: {
     flex: 8,
     flexDirection: 'column',
     alignItems: 'center',
