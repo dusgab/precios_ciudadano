@@ -168,7 +168,7 @@ export default class MiLista extends React.Component {
               
               botones.push(
                 <CardItem button bordered
-                    key={"categoria_" + index}
+                    key={"categoria_" + index + ind + count2}
                     style={{ flex: 1 }}
                   >
                     <Left style={{ flex: 2 }}>

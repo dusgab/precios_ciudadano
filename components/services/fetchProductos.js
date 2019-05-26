@@ -122,4 +122,15 @@ export default {
             console.log(e)
         }
     },
+    async fetchSupermercado() {
+        try {
+            console.log("Fetch Listar Super");
+            let response = await fetch(URL + 'supermercado');
+            let responseJsonData = await response.json();
+            return responseJsonData;
+        }
+        catch(e) {
+            console.log(e)
+        }
+    },
 }
