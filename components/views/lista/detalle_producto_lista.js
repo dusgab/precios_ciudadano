@@ -26,7 +26,7 @@ const HEIGHT = Dimensions.get('window').height;
 const BARRATOP = Constants.statusBarHeight;
 const device_id = Constants.installationId;
 
-export default class DetalleHome extends React.Component {
+export default class DetalleLista extends React.Component {
 
     constructor(props) {
       super(props);
@@ -41,10 +41,8 @@ export default class DetalleHome extends React.Component {
         productos: [],
         supermercados: [],
         filterProductos: [],
-        cat: null,     
         error: null,
         loading: true,
-        showToast: false,
         enlista: false,
         flag: 0,
         isMounted: false,
@@ -56,7 +54,7 @@ export default class DetalleHome extends React.Component {
         status: null,
       }
 
-      this.lista = [];
+      this.listaArray = [];
     }
 
     async componentDidMount() {
@@ -89,9 +87,7 @@ export default class DetalleHome extends React.Component {
       }
         
       this.verificarLista();
-        
       const productos = await api.fetchListarProductosSupermercados();
-      const supermercados = await api.fetchSupermercado();
 
         await Font.loadAsync({
           'Roboto': require("native-base/Fonts/Roboto.ttf"),
@@ -99,9 +95,7 @@ export default class DetalleHome extends React.Component {
           'Roboto_bold': require("native-base/Fonts/Roboto_bold.ttf")
         });
 
-      this.setState({ productos: productos.data, supermercados: supermercados.data, isMounted: true, flag: 10, status });
-
-      this.calcularLista();
+      this.setState({ productos: productos.data, isMounted: true, loading: false, flag: 10, status });
 
     }
 
@@ -116,6 +110,7 @@ export default class DetalleHome extends React.Component {
     };
 
     verificarLista = async () => {
+      console.log("verificar lista detalle lista");
       var milista = [];
       const lista = await AsyncStorage.getItem('lista');
       if(lista == null) {
@@ -127,189 +122,63 @@ export default class DetalleHome extends React.Component {
       }
     }
 
-    calcularLista = () => {
-      //let lista = [];
-      let prod = this.state.productos;
-      let supers = this.state.supermercados;
-      let last = prod.length - 1;
-      let desde = 9999;
-      let hasta = 0;
-      let count = 0;
-
-      if (this.listaArray != null) {
-
-        //POR CADA SUPERMERCADO
-        for (let j = 0; j < supers.length; j++) {
-          
-          let total = 0;
-          let cantidad = 0;
-          let supers_id = null;
-
-          //POR CADA PRODUCTO
-          for (let index = 0; index < prod.length; index++) {
-
-            //POR CADA ELEMENTO DE MI LISTA
-            for (let ind = 0; ind < this.listaArray.length; ind++) {
-          
-              let minimo = 9999;
-              let ps_id = null;
-              let indice = null;
-              
-                if(this.listaArray[ind].marca_producto_id === prod[index].marca_producto_id && prod[index].supermercado_id === supers[j].id) {
-                              
-                  /*Si tiene promocion muestro otra tarjeta */
-                  if(prod[index].precio_promocion != null) {
-                    
-                    if(minimo > prod[index].precio_promocion) {
-                      minimo = prod[index].precio_promocion;
-                      ps_id = prod[index].producto_supermercado_id;
-                      supers_id = prod[index].supermercado_id;
-                      indice = index;
-                    }
-                  } else {
-
-                    if(minimo > prod[index].precio_lista) {
-                      minimo = prod[index].precio_lista;
-                      ps_id = prod[index].producto_supermercado_id;
-                      supers_id = prod[index].supermercado_id;
-                      indice = index;
-                    }
-                  }
-                  cantidad++
-                  total = total + minimo;
-                } 
-            }
-          }
-
-          if(total > 0) {
-            const item = {
-              "supermercado_id": supers_id,
-              "cantidad": cantidad,
-              "total": total,
-            }
-  
-            this.lista.push(item);
-          }          
-        }
-        this.setState({loading: false, });
-      }
-    }
-
     viewProductosListado = () => {
-      let botones = [];
-      let prod = this.state.productos;
-      
-      var obj = [...this.lista];
-      obj.sort((a,b) => b.cantidad - a.cantidad);
+        let botones = [];
+        let prod = this.state.productos;
+        let super_id = this.props.navigation.state.params.super_id;
+        let total = this.props.navigation.state.params.total;
 
-      console.log("lenght obj " + obj.length);
-      console.log(obj);
+        if (this.listaArray != null) {
 
-      for (let index = 0; index < obj.length; index++) {
-        let cont = 0;
-        for (let ind = 0; ind < prod.length; ind++) {
+            for (let ind = 0; ind < this.listaArray.length; ind++) {
+            
+                for (let index = 0; index < prod.length; index++) {
 
-          const distancia = 0;
+                    if(this.listaArray[ind].marca_producto_id === prod[index].marca_producto_id && super_id === prod[index].supermercado_id ) {
+                            
+                        let precio = 0;
 
-            if(obj[index].supermercado_id === prod[ind].supermercado_id && cont == 0) {
-              cont++;
-              let cantidad = this.listaArray.length - obj[index].cantidad;
+                        if(prod[index].precio_promocion != null) {
+                            precio = prod[index].precio_promocion;
+                        } else {
+                            precio = prod[index].precio_lista;
+                        }
 
-              if ( prod[ind].latitud != null && prod[ind].longitud != null && this.state.status === 'granted') {
-
-                let lat = prod[ind].latitud;
-                let long = prod[ind].longitud;
-
-                const newLatLang = { latitude: lat, longitude: long };
-
-                distancia = this.calcDistance(newLatLang);
-                const dist = parseFloat(distancia).toFixed(2);
-
-                botones.push(
-              
-                  <CardItem bordered key={"categoria_" + index + ind} style={{ flex: 1, marginTop: 2 }}>
-                      <Left style={{ flex: 2 }}>
-                      <Icon
-                          active
-                          name="store"
-                          type="MaterialCommunityIcons"
-                          style={{ color: "#78BE20" }}
-                        />
-                      </Left>
-                      <Body style={styles.bodyCard}>
-                          <Text style={styles.textoTitulo}>{prod[ind].supermercado} </Text>
-                          <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start', marginLeft: 0}}>
-                            <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginLeft: 0}}>
-                              {cantidad !== 0 ? <Text style={styles.textoFaltante}>Faltan {cantidad} productos</Text> : null}
-                            </Item>
-                            <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginLeft: 0}}>
-                              <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 1 }}/>
-                              <Text style={styles.textoUbicacion}>{prod[ind].ubicacion} a {dist} km</Text>
-                            </Item>
-                          </Item>
-                      </Body>
-                      <Right style={{ flex: 2 }}>
-                          <Item style={{flex: 1, borderBottomColor: 'transparent', alignItems: 'center', justifyContent: 'center', marginLeft: 0}}>
-                              <Text style={styles.textoPrecio}>Total ${parseFloat(obj[index].total).toFixed(2)}</Text>
-                          </Item>
-                      </Right>
-                  </CardItem>
-                )
-              } else {
-
-                botones.push(
-                
-                  <CardItem bordered key={"categoria_" + index + ind} style={{ flex: 1, marginTop: 2 }}>
-                      <Left style={{ flex: 2 }}>
-                      <Icon
-                          active
-                          name="store"
-                          type="MaterialCommunityIcons"
-                          style={{ color: "#78BE20" }}
-                        />
-                      </Left>
-                      <Body style={styles.bodyCard}>
-                          <Text style={styles.textoTitulo}>{prod[ind].supermercado} </Text>
-                          <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start', marginLeft: 0}}>
-                            <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginLeft: 0}}>
-                            {cantidad !== 0 ? <Text style={styles.textoFaltante}>Faltan {cantidad} productos</Text> : null}
-                            </Item>
-                            <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginLeft: 0}}>
-                              <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 1 }}/>
-                              <Text style={styles.textoUbicacion}>{prod[ind].ubicacion}</Text>
-                            </Item>
-                          </Item>
-                      </Body>
-                      <Right style={{ flex: 2 }}>
-                          <Item style={{flex: 1, borderBottomColor: 'transparent', alignItems: 'center', justifyContent: 'center', marginLeft: 0}}>
-                              <Text style={styles.textoPrecio}>Total ${parseFloat(obj[index].total).toFixed(2)}</Text>
-                          </Item>
-                      </Right>
-                  </CardItem>
-                )
+                        botones.push(
+                            <CardItem bordered
+                                key={"categoria_" + index + ind}
+                                style={{ flex: 1, marginTop: 2, borderBottomColor: 'transparent' }}
+                            >
+                                <Body style={styles.bodyCard} >
+                                    <Text style={styles.texto}>{prod[index].producto} {prod[index].marca} {prod[index].peso}</Text>
+                                </Body>
+                                <Right style={{ flex: 2 }}>
+                                    <Text style={styles.texto}>${parseFloat(precio).toFixed(2)}</Text>
+                                </Right>
+                            </CardItem>
+                        )
+                    }
+                }
             }
-
-          }
-
-          
-          
         }
-        
-      }
-      
-        
+
         return <Container style={styles.containerCard}>
                 <Header style={styles.header}>
                   <Body style={styles.bodyheader}>
-                    <Text style={styles.textoheader}>Comparar Mi Lista</Text>
+                    <Text style={styles.textoheader}>Detalle de Mi Lista</Text>
                   </Body>
                 </Header>
                 <Content padder style={{flex: 1}}>
-                  <Item style={{borderBottomColor: 'transparent', alignItems: 'center', justifyContent: 'center'}}>
-                      <Text style={styles.textoDestacado}>¡Ahorrá Más!</Text>
+                  <Item style={{borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                      <Text style={styles.textoDestacado}>Productos</Text>
                   </Item>
                   <Card style={styles.mb} >
                     {botones}
+                    <CardItem bordered key={"total_"} style={{ flex: 1, borderTopColor: '#e3e3e3', borderTopWidth: 0.5 }}>
+                        <Right style={{ flex: 4 }}>
+                            <Text style={styles.textoPrecio}>Total ${parseFloat(total).toFixed(2)}</Text>
+                        </Right>
+                    </CardItem>
                   </Card>
                 </Content>
               </Container>
@@ -332,151 +201,59 @@ export default class DetalleHome extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: BARRATOP,
-    backgroundColor: '#FFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  containerCard: {
-    backgroundColor: "#F9F9F9",
-    width: WIDTH,
-  },
-  header: {
-    backgroundColor: '#fff',
-  },
-  bodyheader: {
-    flex: 1,
-    width: WIDTH,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  textoheader: {
-    textAlign: 'center',
-    fontSize: 20,
-    fontFamily: 'Roboto_bold',
-    color: '#434343'
-  },
-  mb: {
-    marginBottom: 15
-  },
-  card: {
+    container: { //
       flex: 1,
-  },
-  btnCard: {
+      paddingTop: BARRATOP,
+      backgroundColor: '#FFF',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    containerCard: { //
+      backgroundColor: "#F9F9F9",
+      width: WIDTH,
+    },
+    header: { //
+      backgroundColor: '#fff',
+    },
+    bodyheader: { //
       flex: 1,
-  },
-  bodyCard: {
-    flex: 6,
-    flexDirection: 'column',
-  },
-  texto: {
-    color: '#434343',
-    fontSize: 12,
-    textAlign: 'left',
-    marginTop: 4,
-    fontFamily: 'Roboto'
-  },
-  textoPrecio: {
-    color: 'gray',
-    textAlign: 'right',
-    fontSize: 16,
-    fontFamily: 'Roboto_bold',
-  },
-  titulo: {
-    color: '#434343',
-    fontSize: 14,
-    fontFamily: 'Roboto_bold'
-  },
-  textoPrecioLista: {
-    flex: 5,
-    textDecorationLine: 'line-through',
-    color: 'gray',
-    textAlign: 'right',
-    fontSize: 14,
-  },
-  textoPrecioPromo: {
-    flex: 5,
-    color: 'gray',
-    textAlign: 'right',
-    fontSize: 16,
-    fontWeight: 'bold'
-  },
-  textoPrecioPromoNull: {
-    flex: 5,
-    color: 'gray',
-    textAlign: 'right',
-    fontSize: 16,
-    fontWeight: 'bold'
-  },
-  textoTitulo: {
-    color: '#434343',
-    fontSize: 16,
-    fontFamily: 'Roboto_medium'
-  },
-  textoUbicacion: {
-    color: '#707070',
-    fontSize: 12,
-    marginLeft: -7,
-    fontFamily: 'Roboto',
-  },
-  textoFaltante: {
-    color: 'red',
-    fontSize: 12,
-    fontFamily: 'Roboto',
-  },
-  textoMilista: {
-    color: '#78BE20',
-    fontWeight: '400',
-    fontSize: 14,
-  },
-  textoMilistaRem: {
-    color: 'gray',
-    fontWeight: '400',
-    fontSize: 14,
-  },
-  textoSuper: {
-    textAlign: 'left',
-    fontSize: 16,
-    color: '#434343',
-    fontWeight: 'bold'
-  },
-  textoProPre: {
-    flex: 5,
-    textAlign: 'right',
-    fontSize: 16,
-    fontWeight: 'bold'
-  },
-  botonMilista: {
-    borderColor: '#78BE20',
-    borderStyle: 'solid',
-    borderWidth: 2,
-    borderRadius: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 4, height: 10 },
-    shadowOpacity: 0.6,
-    shadowRadius: 1,
-    elevation: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 8
-  },
-  botonMilistaRem: {
-    borderColor: 'gray',
-    borderStyle: 'solid',
-    borderWidth: 2,
-    borderRadius: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 4, height: 10 },
-    shadowOpacity: 0.6,
-    shadowRadius: 1,
-    elevation: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 8
-  },
-  searchBar: {
-    backgroundColor: '#78BE20'
-  }
-});
+      width: WIDTH,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    textoheader: { //
+      textAlign: 'center',
+      fontSize: 20,
+      fontFamily: 'Roboto_bold',
+      color: '#434343'
+    },
+    mb: { //
+      marginBottom: 15
+    },
+    card: {
+        flex: 1,
+    },
+    bodyCard: { //
+      flex: 6,
+      flexDirection: 'column',
+    },
+    texto: { //
+      color: '#434343',
+      fontSize: 12,
+      textAlign: 'left',
+      marginTop: 4,
+      fontFamily: 'Roboto'
+    },
+    textoPrecio: { //
+      color: 'gray',
+      textAlign: 'right',
+      fontSize: 14,
+      fontFamily: 'Roboto_bold',
+    },
+    textoDestacado: { //
+      color: '#434343',
+      fontSize: 14,
+      fontFamily: 'Roboto_medium',
+      textAlign: 'left'
+    }    
+  });

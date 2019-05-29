@@ -217,11 +217,9 @@ export default class MiLista extends React.Component {
                 {this.state.listaVacia ?
                 <Item style={{borderBottomColor: 'transparent', margin: 0, flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
                   <Button transparent style={styles.botonMilistaRemV}>
-                      <Icon name="trash-can-outline" type="MaterialCommunityIcons" style={{ color: "gray"}}/>
                       <Text style={styles.textoMilistaRemL}>VACIAR MI LISTA</Text>
                   </Button>
                   <Button transparent style={styles.botonMilistaCompV}>
-                      <Icon name="playlist-check" type="MaterialCommunityIcons" style={{ color: "gray"}}/>
                       <Text style={styles.textoMilistaRem}>COMPARAR</Text>
                   </Button>
                 </Item>
@@ -229,12 +227,11 @@ export default class MiLista extends React.Component {
                 <Item style={{borderBottomColor: 'transparent', margin: 0, flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
                   <Button transparent style={styles.botonMilistaRem}
                         onPress={() => this._eliminarTodos()}>
-                      <Icon name="trash-can-outline" type="MaterialCommunityIcons" style={{ color: "gray"}}/>
+                      {/* <Icon name="trash-can-outline" type="MaterialCommunityIcons" style={{ color: "gray"}}/> */}
                       <Text style={styles.textoMilistaRemL}>VACIAR MI LISTA</Text>
                   </Button>
                   <Button transparent style={styles.botonMilistaComp}
-                        onPress={() => this.props.navigation.navigate('DetalleLista')}>
-                      <Icon name="playlist-check" type="MaterialCommunityIcons" style={{ color: "gray"}}/>
+                        onPress={() => this.props.navigation.navigate('CompararLista')}>
                       <Text style={styles.textoMilistaRem}>COMPARAR</Text>
                   </Button>
                 </Item>
@@ -414,7 +411,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   textoMilistaRemL: {
-    marginRight: 5,
     color: 'gray',
     fontWeight: '400',
     fontSize: 14,

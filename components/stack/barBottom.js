@@ -10,6 +10,7 @@ import Buscar from '../views/inicio/buscarProductos';
 import Productos from '../views/productos/productos';
 import Categorias from '../views/productos/categorias';
 import MiLista from '../views/lista/milista';
+import CompararLista from '../views/lista/comparar_lista';
 import DetalleLista from '../views/lista/detalle_producto_lista';
 import Estadistica from '../views/estadisticas/estadisticas';
 import App from '../../App';
@@ -47,6 +48,7 @@ const CategoriasStack = createStackNavigator({
 
 const MiListaStack = createStackNavigator({
   Lista: {screen: MiLista},
+  CompararLista: {screen: CompararLista},
   DetalleLista: {screen: DetalleLista}
 },{
   headerMode: 'none',
