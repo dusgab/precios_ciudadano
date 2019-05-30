@@ -18,6 +18,7 @@ import {
     Toast,
   } from "native-base";
   import haversine from "haversine";
+  import MapView, { Marker, AnimatedRegion, PROVIDER_GOOGLE } from 'react-native-maps';
 
 import api from '../../services/fetchProductos';
 
@@ -25,6 +26,12 @@ const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
 const BARRATOP = Constants.statusBarHeight;
 const device_id = Constants.installationId;
+
+const LATITUDE_DELTA = 0.01;
+const LONGITUDE_DELTA = 0.01;
+
+  const LATITUDE= -27.4710188;
+  const LONGITUDE= -58.8422008;
 
 export default class DetalleLista extends React.Component {
 
@@ -47,14 +54,21 @@ export default class DetalleLista extends React.Component {
         flag: 0,
         isMounted: false,
         //Geo
-        miLatLng: {
-          latitude: 0,
-          longitude: 0
-        },
+        mapa: false,
+        latitude: 0,
+        longitude: 0,
         status: null,
+        coordinate: new AnimatedRegion({
+          latitude: LATITUDE,
+          longitude: LONGITUDE,
+          latitudeDelta: LATITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA
+        })
       }
 
       this.listaArray = [];
+      this.latitude= 0;
+      this.longitude= 0;
     }
 
     async componentDidMount() {
@@ -62,29 +76,29 @@ export default class DetalleLista extends React.Component {
       //Permisos para geolocalizacion y calcular la distancia hacia los supermercados
       const { status } = await Permissions.askAsync(Permissions.LOCATION);
 
-      if ( status === 'granted' ) {
+      // if ( status === 'granted' ) {
 
-       this.watchID = navigator.geolocation.watchPosition(
-         position => {
-           const { latitude, longitude } = position.coords;
+      //  this.watchID = navigator.geolocation.watchPosition(
+      //    position => {
+      //      const { latitude, longitude } = position.coords;
 
-           const miLatLng = {
-             latitude,
-             longitude
-           };
+      //      const miLatLng = {
+      //        latitude,
+      //        longitude
+      //      };
            
-           this.setState({ miLatLng });
+      //      this.setState({ miLatLng });
 
-         },
-           error => console.log("error en wathc" + error),
-         {
-           enableHighAccuracy: true,
-           timeout: 20000,
-           maximumAge: 1000,
-         }
-       );
+      //    },
+      //      error => console.log("error en wathc" + error),
+      //    {
+      //      enableHighAccuracy: true,
+      //      timeout: 20000,
+      //      maximumAge: 1000,
+      //    }
+      //  );
 
-      }
+      // }
         
       this.verificarLista();
       const productos = await api.fetchListarProductosSupermercados();
@@ -100,7 +114,7 @@ export default class DetalleLista extends React.Component {
     }
 
     componentWillUnmount() {
-      navigator.geolocation.clearWatch(this.watchID);
+      //navigator.geolocation.clearWatch(this.watchID);
     }
 
     calcDistance = newLatLng => {
@@ -122,11 +136,29 @@ export default class DetalleLista extends React.Component {
       }
     }
 
+    getMapRegion = () => ({
+      latitude: this.state.latitude,
+      longitude: this.state.longitude,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA
+  });
+
+  _setCoordenadas = (lat, long) => {
+      this.setState({ latitude: lat, longitude: long});    
+  };
+
     viewProductosListado = () => {
         let botones = [];
         let prod = this.state.productos;
         let super_id = this.props.navigation.state.params.super_id;
         let total = this.props.navigation.state.params.total;
+        let mapa = false;
+        let lat = -27.4710188;
+        let long = -58.8422008;
+        
+        let cont = 0;
+        let supermercado = "";
+        
 
         if (this.listaArray != null) {
 
@@ -137,6 +169,21 @@ export default class DetalleLista extends React.Component {
                     if(this.listaArray[ind].marca_producto_id === prod[index].marca_producto_id && super_id === prod[index].supermercado_id ) {
                             
                         let precio = 0;
+                        
+                        if(this.state.status === 'granted' && prod[index].latitud !== null && cont == 0) {
+                            
+                            cont++;
+                            mapa = true;
+                             lat = prod[index].latitud;
+                            lat = parseFloat(lat);
+                            //  console.log(lat);
+                             long = prod[index].longitud;
+                            long = parseFloat(long);
+                            //  console.log(long);
+                            
+
+                            supermercado = prod[index].supermercado;
+                        }
 
                         if(prod[index].precio_promocion != null) {
                             precio = prod[index].precio_promocion;
@@ -161,6 +208,7 @@ export default class DetalleLista extends React.Component {
                 }
             }
         }
+        //this.setState({ mapa: mapa, latitude: lat, longitude: long });
 
         return <Container style={styles.containerCard}>
                 <Header style={styles.header}>
@@ -169,6 +217,37 @@ export default class DetalleLista extends React.Component {
                   </Body>
                 </Header>
                 <Content padder style={{flex: 1}}>
+                  {mapa ?
+                    <View style={styles.containerMapa}>
+                    <MapView
+                      provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+                      style={styles.map}
+                      showUserLocation
+                      followUserLocation
+                      loadingEnabled
+                      region={{
+                        latitude: -27.4710188,
+                        longitude: -58.8422008,
+                        latitudeDelta: 0.015,
+         longitudeDelta: 0.0121,}}
+                    >
+                      <Marker.Animated
+                        ref={marker => {
+                          this.marker = marker;
+                        }}
+                        coordinate={new AnimatedRegion({
+                          latitude: lat,
+                          longitude: long,
+                          latitudeDelta: 0.015,
+         longitudeDelta: 0.0121,
+                        })}
+                      >
+                      </Marker.Animated>
+                    </MapView>
+                  </View>
+                  :
+                      null
+                  }
                   <Item style={{borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
                       <Text style={styles.textoDestacado}>Productos</Text>
                   </Item>
@@ -255,5 +334,15 @@ const styles = StyleSheet.create({
       fontSize: 14,
       fontFamily: 'Roboto_medium',
       textAlign: 'left'
-    }    
+    },
+    containerMapa: {
+      //...StyleSheet.absoluteFillObject,
+      width: WIDTH,
+      height: 300,
+      justifyContent: "flex-start",
+      alignItems: "center"
+    },
+    map: {
+      ...StyleSheet.absoluteFillObject
+  },
   });
