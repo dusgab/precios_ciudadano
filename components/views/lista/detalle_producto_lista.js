@@ -27,11 +27,8 @@ const HEIGHT = Dimensions.get('window').height;
 const BARRATOP = Constants.statusBarHeight;
 const device_id = Constants.installationId;
 
-const LATITUDE_DELTA = 0.01;
-const LONGITUDE_DELTA = 0.01;
-
-  const LATITUDE= -27.4710188;
-  const LONGITUDE= -58.8422008;
+const LATITUDE_DELTA = 0.02062570693835042;
+const LONGITUDE_DELTA = 0.03186095505952835;
 
 export default class DetalleLista extends React.Component {
 
@@ -58,17 +55,9 @@ export default class DetalleLista extends React.Component {
         latitude: 0,
         longitude: 0,
         status: null,
-        coordinate: new AnimatedRegion({
-          latitude: LATITUDE,
-          longitude: LONGITUDE,
-          latitudeDelta: LATITUDE_DELTA,
-          longitudeDelta: LONGITUDE_DELTA
-        })
       }
 
       this.listaArray = [];
-      this.latitude= 0;
-      this.longitude= 0;
     }
 
     async componentDidMount() {
@@ -136,15 +125,8 @@ export default class DetalleLista extends React.Component {
       }
     }
 
-    getMapRegion = () => ({
-      latitude: this.state.latitude,
-      longitude: this.state.longitude,
-      latitudeDelta: LATITUDE_DELTA,
-      longitudeDelta: LONGITUDE_DELTA
-  });
-
-  _setCoordenadas = (lat, long) => {
-      this.setState({ latitude: lat, longitude: long});    
+  onRegionChange = (region) => {
+      console.log({region});    
   };
 
     viewProductosListado = () => {
@@ -158,6 +140,7 @@ export default class DetalleLista extends React.Component {
         
         let cont = 0;
         let supermercado = "";
+        let direccion = "";
         
 
         if (this.listaArray != null) {
@@ -174,15 +157,13 @@ export default class DetalleLista extends React.Component {
                             
                             cont++;
                             mapa = true;
-                             lat = prod[index].latitud;
+                            lat = prod[index].latitud;
                             lat = parseFloat(lat);
-                            //  console.log(lat);
-                             long = prod[index].longitud;
+                            long = prod[index].longitud;
                             long = parseFloat(long);
-                            //  console.log(long);
-                            
 
                             supermercado = prod[index].supermercado;
+                            direccion = prod[index].ubicacion;
                         }
 
                         if(prod[index].precio_promocion != null) {
@@ -208,7 +189,6 @@ export default class DetalleLista extends React.Component {
                 }
             }
         }
-        //this.setState({ mapa: mapa, latitude: lat, longitude: long });
 
         return <Container style={styles.containerCard}>
                 <Header style={styles.header}>
@@ -216,30 +196,31 @@ export default class DetalleLista extends React.Component {
                     <Text style={styles.textoheader}>Detalle de Mi Lista</Text>
                   </Body>
                 </Header>
-                <Content padder style={{flex: 1}}>
+                <Content style={{flex: 1}}>
                   {mapa ?
                     <View style={styles.containerMapa}>
                     <MapView
-                      provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+                      //provider={PROVIDER_GOOGLE} // remove if not using Google Maps
                       style={styles.map}
-                      showUserLocation
-                      followUserLocation
                       loadingEnabled
                       region={{
-                        latitude: -27.4710188,
-                        longitude: -58.8422008,
-                        latitudeDelta: 0.015,
-         longitudeDelta: 0.0121,}}
+                        latitude: lat,
+                        longitude: long,
+                        latitudeDelta: LATITUDE_DELTA,
+                        longitudeDelta: LONGITUDE_DELTA
+                      }}
                     >
                       <Marker.Animated
                         ref={marker => {
                           this.marker = marker;
                         }}
+                        title={supermercado}
+                        description={direccion}
                         coordinate={new AnimatedRegion({
                           latitude: lat,
                           longitude: long,
-                          latitudeDelta: 0.015,
-         longitudeDelta: 0.0121,
+                          latitudeDelta: LATITUDE_DELTA,
+                          longitudeDelta: LONGITUDE_DELTA
                         })}
                       >
                       </Marker.Animated>
@@ -248,17 +229,19 @@ export default class DetalleLista extends React.Component {
                   :
                       null
                   }
-                  <Item style={{borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                      <Text style={styles.textoDestacado}>Productos</Text>
-                  </Item>
-                  <Card style={styles.mb} >
-                    {botones}
-                    <CardItem bordered key={"total_"} style={{ flex: 1, borderTopColor: '#e3e3e3', borderTopWidth: 0.5 }}>
-                        <Right style={{ flex: 4 }}>
-                            <Text style={styles.textoPrecio}>Total ${parseFloat(total).toFixed(2)}</Text>
-                        </Right>
-                    </CardItem>
-                  </Card>
+                  <Content padder style={{flex: 1}}>
+                    <Item style={{borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                        <Text style={styles.textoDestacado}>Productos</Text>
+                    </Item>
+                    <Card style={styles.mb} >
+                      {botones}
+                      <CardItem bordered key={"total_"} style={{ flex: 1, borderTopColor: '#e3e3e3', borderTopWidth: 0.5 }}>
+                          <Right style={{ flex: 4 }}>
+                              <Text style={styles.textoPrecio}>Total ${parseFloat(total).toFixed(2)}</Text>
+                          </Right>
+                      </CardItem>
+                    </Card>
+                  </Content>
                 </Content>
               </Container>
 }
@@ -333,7 +316,8 @@ const styles = StyleSheet.create({
       color: '#434343',
       fontSize: 14,
       fontFamily: 'Roboto_medium',
-      textAlign: 'left'
+      textAlign: 'left',
+      marginTop: 6
     },
     containerMapa: {
       //...StyleSheet.absoluteFillObject,

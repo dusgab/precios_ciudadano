@@ -16,10 +16,12 @@ import {
     Body, 
     Spinner,
     Toast,
+    Thumbnail
   } from "native-base";
   import haversine from "haversine";
 
 import api from '../../services/fetchProductos';
+import URL from '../../config';
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -385,24 +387,16 @@ export default class DetalleHome extends React.Component {
             <Card style={styles.mb}
               key={"categoria_" + index}>
               <CardItem>
-                  <Left style={{ flex: 2 }}>
-                  <Icon
-                      active
-                      name="store"
-                      type="MaterialCommunityIcons"
-                      style={{ color: "#78BE20" }}
-                    />
+                  <Left style={{ flex: 2.5 }}>
+                  {prod[index].imagen !== null ? <Thumbnail square large source={{uri: URL + prod[index].imagen}} /> : <Icon name="ban" type="FontAwesome" style={{fontSize: 40, color: 'gray'}}/>}
                   </Left>
                   <Body style={styles.bodyCard}>
-                      <Text style={styles.textoTitulo}>{prod[index].producto} {prod[index].peso} {prod[index].marca}</Text>
-                      <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
-                        <Item style={{flexDirection: 'row', flex: 9, borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                          <Text style={styles.textoPrecio}>Rango de precios ${parseFloat(desde).toFixed(2)}</Text>
-                          <Icon name="arrow-right" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 18, marginLeft: 4, textAlign: 'center'}}/>
-                          <Text style={styles.textoPrecio}>${parseFloat(hasta).toFixed(2)}</Text>
-                        </Item>
-                      </Item>
-                      
+                    <Text style={styles.textoTitulo}>{prod[index].producto} {prod[index].peso} {prod[index].marca}</Text>
+                    <Item style={{flexDirection: 'row', flex: 1, borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start', marginLeft: 0}}>
+                      <Text style={styles.textoPrecio}>Rango de precios ${parseFloat(desde).toFixed(2)}</Text>
+                      <Icon name="arrow-right" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 18, marginLeft: 4, textAlign: 'center'}}/>
+                      <Text style={styles.textoPrecio}>${parseFloat(hasta).toFixed(2)}</Text>
+                    </Item>
                   </Body>
               </CardItem>
               {this.state.enlista ? 
@@ -492,7 +486,7 @@ const styles = StyleSheet.create({
   textoheader: {
     textAlign: 'center',
     fontSize: 20,
-    fontFamily: 'Roboto_bold',
+    fontFamily: 'Roboto_medium',
     color: '#434343'
   },
   mb: {
@@ -505,7 +499,7 @@ const styles = StyleSheet.create({
       flex: 1,
   },
   bodyCard: {
-    flex: 8,
+    flex: 7.5,
     flexDirection: 'column',
   },
   texto: {
@@ -517,7 +511,7 @@ const styles = StyleSheet.create({
   },
   textoPrecio: {
     color: '#838181',
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Roboto',
   },
   textoPrecioLista: {
@@ -531,23 +525,16 @@ const styles = StyleSheet.create({
   textoPrecioPromo: {
     flex: 5,
     color: 'gray',
-    textAlign: 'right',
+    textAlign: 'center',
     fontSize: 16,
     fontFamily: 'Roboto_bold',
   },
   textoPrecioPromoNull: {
     flex: 5,
     color: 'gray',
-    textAlign: 'right',
-    fontSize: 16,
-    fontFamily: 'Roboto_bold',
-  },
-  textoPrecioND: {
-    flex: 1,
-    color: '#FF1024',
     textAlign: 'center',
     fontSize: 16,
-    fontFamily: 'Roboto_medium',
+    fontFamily: 'Roboto_bold',
   },
   textoTitulo: {
     color: '#434343',
@@ -579,7 +566,7 @@ const styles = StyleSheet.create({
   },
   textoProPre: {
     flex: 5,
-    textAlign: 'right',
+    textAlign: 'center',
     fontSize: 16,
     color: '#434343',
     fontFamily: 'Roboto_bold',

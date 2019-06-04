@@ -12,22 +12,22 @@ import {
   Left,
   Right,
   Body,
+  Thumbnail,
   Spinner
 } from "native-base";
-import IconoSvg from 'react-native-svg-uri';
 
 import api from '../../services/fetchProductos';
 
-const almacen = require('../../../assets/almacen.svg');
-const bebidas = require('../../../assets/bebidas.svg');
-const carniceria = require('../../../assets/carniceria.svg');
-const farmacia = require('../../../assets/farmacia.svg');
-const fiambreria = require('../../../assets/fiambreria.svg');
-const frutas = require('../../../assets/frutas-verduras.svg');
-const lacteos = require('../../../assets/lacteos.svg');
-const limpieza = require('../../../assets/limpieza.svg');
-const panaderia = require('../../../assets/panaderia.svg');
-const perfumeria = require('../../../assets/perfumeria.svg');
+const almacen = require('../../../assets/almacen.png');
+const bebidas = require('../../../assets/bebidas.png');
+const carniceria = require('../../../assets/carniceria.png');
+const farmacia = require('../../../assets/farmacia.png');
+const fiambreria = require('../../../assets/fiambreria.png');
+const frutas = require('../../../assets/frutas-verduras.png');
+const lacteos = require('../../../assets/lacteos.png');
+const limpieza = require('../../../assets/limpieza.png');
+const panaderia = require('../../../assets/panaderia.png');
+const perfumeria = require('../../../assets/perfumeria.png');
 
 
 const WIDTH = Dimensions.get('window').width;
@@ -58,7 +58,7 @@ export default class Categorias extends React.Component {
           'Roboto_medium': require("native-base/Fonts/Roboto_medium.ttf"),
           'Roboto_bold': require("native-base/Fonts/Roboto_bold.ttf")
         }); 
-
+        
         this.setState({ categorias: categorias.data, loading: false });
       
     }
@@ -71,7 +71,7 @@ export default class Categorias extends React.Component {
       let botones = []
       let cat = this.state.categorias;
       
-      let icono = require('../../../assets/almacen.svg');
+      let icono = require('../../../assets/almacen.png');
 
       for (let index = 0; index < cat.length; index++) {
         
@@ -120,7 +120,7 @@ export default class Categorias extends React.Component {
             break;
 
           default:
-            icono = require('../../../assets/almacen.svg');
+            icono = require('../../../assets/almacen.png');
             break;
         
           }
@@ -131,7 +131,7 @@ export default class Categorias extends React.Component {
               style={{ flex: 1, marginTop: 2 }}
             >
               <Left style={{ flex: 1 }}>
-                <IconoSvg source={icono} width= "25" height= "25" resizeMode= "contain"/>
+                <Thumbnail square  source={icono} style={{ width: 25, height: 25, resizeMode: 'contain' }}/>
               </Left>
               <Body style={{ flex: 7 }}>
                 <Text style={styles.categoria}>{this.Capitalize(cat[index].nombre)}</Text>
@@ -145,6 +145,7 @@ export default class Categorias extends React.Component {
             </CardItem>
           )
       }
+      
       return <Container style={styles.containerCard}>
               <Header style={styles.header}>
                 <Body style={styles.bodyheader}>
@@ -195,7 +196,7 @@ const styles = StyleSheet.create({
   textoheader: {
     textAlign: 'center',
     fontSize: 20,
-    fontFamily: 'Roboto_bold',
+    fontFamily: 'Roboto_medium',
     color: '#434343'
   },
   categoria: {

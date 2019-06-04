@@ -1,3 +1,3 @@
-const URL = 'https://precios.mcypcorrientes.gob.ar/api/'; //
+const URL = 'https://precios.mcypcorrientes.gob.ar'; //
 
 export default URL;

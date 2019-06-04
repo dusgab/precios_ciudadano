@@ -23,6 +23,7 @@ import {
   } from "native-base";
 
 import api from '../../services/fetchProductos';
+import URL from '../../config';
 import HeaderCustom from '../fijos/header';
 
 const WIDTH = Dimensions.get('window').width;
@@ -128,7 +129,7 @@ export default class Inicio extends React.Component {
                             returnKeyType="next"
                             onSubmitEditing={()=> this._handlePress() }
                             ref={this.searchInput}/>
-                    <Button iconRight transparent primary onPress={() => this._handlePress()}>
+                    <Button iconRight primary style={styles.btnNative} onPress={() => this._handlePress()}>
                         <Icon active name='search' type="FontAwesome" style={{fontSize: SIZE, color: 'gray'}}/>
                     </Button>
                 </Item>
@@ -155,10 +156,10 @@ export default class Inicio extends React.Component {
                                   <CardItem button bordered style={styles.listItem} 
                                   onPress={() => this.props.navigation.push('DetalleHome', {mpid: data.marca_producto_id})}
                                   >
-                                    <Left style={{flex: 2}}>
-                                      <Thumbnail square size={40} source={icono1} />
+                                    <Left style={{flex: 3}}>
+                                      {data.imagen !== null ? <Thumbnail square large source={{uri: URL + data.imagen}} /> : <Icon name="ban" type="FontAwesome" style={{fontSize: 40, color: 'gray'}}/>}
                                     </Left>
-                                    <Body style={{flex: 8, flexDirection: 'column'}}>
+                                    <Body style={{flex: 7, flexDirection: 'column'}}>
                                       <Text style={styles.textoProd}>{data.producto} {data.peso} {data.marca} - {data.supermercado}</Text>
                                     <Item style={styles.listItemPrecio}>
                                       <Item style={styles.listItemPromo}>
@@ -166,10 +167,6 @@ export default class Inicio extends React.Component {
                                           onPress={() =>
                                             Toast.show({
                                               text: <Text>{(data.fecha_promo_final != null) ? (data.promocion + " " + data.descripcion_promo + " - Válido hasta el " + data.fecha_promo_final.substring(0, data.fecha_promo_final.length -9)) : (data.promocion + " " + data.descripcion_promo + " - Válido hasta el ")}</Text>,
-                                              style: {
-                                                backgroundColor: "#78BE20",
-                                                color: '#FFF'
-                                               },
                                               duration: 7000,
                                               buttonText: "Ok",
                                               type: "success"
@@ -232,6 +229,14 @@ const styles = StyleSheet.create({
   header: {
     flex: 3
   },
+  btnNative: {
+    backgroundColor: 'transparent',
+    elevation: 0,
+    shadowColor: null,
+    shadowOffset: null,
+    shadowRadius: null,
+    shadowOpacity: null,
+  },
   containerCard: {
     flex: 1,
     backgroundColor: "#F9F9F9",
@@ -270,7 +275,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   textoProd: {
-    flex: 7,
+    flex: 8,
     fontSize: 16,
     color: '#434343',
     fontFamily: 'Roboto_bold',
@@ -386,12 +391,13 @@ const styles = StyleSheet.create({
     elevation: 1
 },
   listItemPrecio: {
-    flex: 3,
+    flex: 2,
     flexDirection: 'row',
     alignItems: 'center', 
     justifyContent: 'center',
     borderBottomColor: 'transparent',
-    marginLeft: 65,
+    marginLeft: 50,
+    marginRight: 8,
     textAlign: 'right'
   },
   listItemPromo: {

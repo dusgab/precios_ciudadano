@@ -152,7 +152,7 @@ export default class Productos extends React.Component {
                       placeholderTextColor='#434343'
                       onChangeText={(text) => this.SearchFilterFunction(text)}
                       ref={this.searchInput} />
-                    <Button iconRight transparent primary>
+                    <Button iconRight style={styles.btnNative} primary>
                         <Icon active name='search' type="FontAwesome" style={{fontSize: SIZE, color: 'gray'}}/>
                     </Button>
                   </Item>
@@ -204,10 +204,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  btnNative: {
+    backgroundColor: 'transparent',
+    elevation: 0,
+    shadowColor: null,
+    shadowOffset: null,
+    shadowRadius: null,
+    shadowOpacity: null,
+  },
   textoheader: {
     textAlign: 'center',
     fontSize: 20,
-    fontFamily: 'Roboto_bold',
+    fontFamily: 'Roboto_medium',
     color: '#434343'
   },
   bodyCardVacio: {

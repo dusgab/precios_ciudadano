@@ -1,4 +1,6 @@
-import URL from '../config';
+import URL1 from '../config';
+
+const URL = URL1 + '/api/';
 
 export default {
     async fetchProductoSupermecado() {
