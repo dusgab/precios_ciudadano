@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Dimensions, AsyncStorage } from 'react-native';
+import { StyleSheet, View, Dimensions, AsyncStorage, Image } from 'react-native';
 import { Constants, Font, Permissions } from 'expo';
 import {
     Container,
@@ -20,6 +20,7 @@ import {
   import haversine from "haversine";
 
 import api from '../../services/fetchProductos';
+import URL from '../../config';
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -197,7 +198,6 @@ export default class CompararLista extends React.Component {
     }
 
     detalleComparar = (super_id, total) => {
-      console.log("detalle comparar");
       this.props.navigation.navigate('DetalleLista', {super_id: super_id, total: total});
     }
 
@@ -206,10 +206,7 @@ export default class CompararLista extends React.Component {
       let prod = this.state.productos;
       
       var obj = [...this.lista];
-      obj.sort((a,b) => b.cantidad - a.cantidad);
-
-      console.log("lenght obj " + obj.length);
-      console.log(obj);
+      obj.sort((a,b) => b.cantidad - a.cantidad || a.total - b.total);
 
       for (let index = 0; index < obj.length; index++) {
         let cont = 0;
@@ -235,19 +232,11 @@ export default class CompararLista extends React.Component {
               
                   <CardItem bordered button key={"categoria_" + index + ind} style={{ flex: 1, marginTop: 2 }}
                               onPress={() => this.detalleComparar(prod[ind].supermercado_id, obj[index].total)}>
-                      <Left style={{ flex: 2 }}>
-                      <Icon
-                          active
-                          name="store"
-                          type="MaterialCommunityIcons"
-                          style={{ color: "#78BE20" }}
-                        />
-                      </Left>
                       <Body style={styles.bodyCard}>
-                          <Text style={styles.textoTitulo}>{prod[ind].supermercado} </Text>
+                          {prod[ind].imagenSuper !== null ? <Image source={{uri: URL + prod[ind].imagenSuper}} style={{ width: 100, height: 50, resizeMode: 'contain'}} /> : <Icon name="ban" type="FontAwesome" style={{fontSize: 40, color: 'gray'}}/>}
                           <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start', marginLeft: 0}}>
                             <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginLeft: 0}}>
-                              {cantidad !== 0 ? <Text style={styles.textoFaltante}>Faltan {cantidad} productos</Text> : null}
+                            {cantidad !== 0 ? (cantidad === 1 ? <Text style={styles.textoFaltante}>Falta {cantidad} producto</Text> : <Text style={styles.textoFaltante}>Faltan {cantidad} productos</Text>) : null}
                             </Item>
                             <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginLeft: 0}}>
                               <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 1 }}/>
@@ -255,9 +244,10 @@ export default class CompararLista extends React.Component {
                             </Item>
                           </Item>
                       </Body>
-                      <Right style={{ flex: 2 }}>
-                          <Item style={{flex: 1, borderBottomColor: 'transparent', alignItems: 'center', justifyContent: 'center', marginLeft: 0}}>
-                              <Text style={styles.textoPrecio}>Total ${parseFloat(obj[index].total).toFixed(2)}</Text>
+                      <Right style={{ flex: 2.5 }}>
+                          <Item style={{flex: 1, flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-end', justifyContent: 'flex-end', marginLeft: 0}}>
+                              <Text style={styles.textoPrecio}>Total</Text>
+                              <Text style={styles.textoPrecio}>${parseFloat(obj[index].total).toFixed(2)}</Text>
                           </Item>
                       </Right>
                   </CardItem>
@@ -268,19 +258,11 @@ export default class CompararLista extends React.Component {
                 
                   <CardItem bordered button key={"categoria_" + index + ind} style={{ flex: 1, marginTop: 2 }}
                           onPress={() => this.detalleComparar(prod[ind].supermercado_id, obj[index].total)}>
-                      <Left style={{ flex: 2 }}>
-                      <Icon
-                          active
-                          name="store"
-                          type="MaterialCommunityIcons"
-                          style={{ color: "#78BE20" }}
-                        />
-                      </Left>
                       <Body style={styles.bodyCard}>
-                          <Text style={styles.textoTitulo}>{prod[ind].supermercado} </Text>
+                          {prod[ind].imagenSuper !== null ? <Image source={{uri: URL + prod[ind].imagenSuper}} style={{ width: 100, height: 50, resizeMode: 'contain'}} /> : <Icon name="ban" type="FontAwesome" style={{fontSize: 40, color: 'gray'}}/>}
                           <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start', marginLeft: 0}}>
                             <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginLeft: 0}}>
-                            {cantidad !== 0 ? <Text style={styles.textoFaltante}>Faltan {cantidad} productos</Text> : null}
+                            {cantidad !== 0 ? (cantidad === 1 ? <Text style={styles.textoFaltante}>Falta {cantidad} producto</Text> : <Text style={styles.textoFaltante}>Faltan {cantidad} productos</Text>) : null}
                             </Item>
                             <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginLeft: 0}}>
                               <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 1 }}/>
@@ -288,9 +270,10 @@ export default class CompararLista extends React.Component {
                             </Item>
                           </Item>
                       </Body>
-                      <Right style={{ flex: 2 }}>
-                          <Item style={{flex: 1, borderBottomColor: 'transparent', alignItems: 'center', justifyContent: 'center', marginLeft: 0}}>
-                              <Text style={styles.textoPrecio}>Total ${parseFloat(obj[index].total).toFixed(2)}</Text>
+                      <Right style={{ flex: 2.5 }}>
+                          <Item style={{flex: 1, flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-end', justifyContent: 'flex-end', marginLeft: 0}}>
+                              <Text style={styles.textoPrecio}>Total</Text>
+                              <Text style={styles.textoPrecio}>${parseFloat(obj[index].total).toFixed(2)}</Text>
                           </Item>
                       </Right>
                   </CardItem>
@@ -298,8 +281,6 @@ export default class CompararLista extends React.Component {
             }
 
           }
-
-          
           
         }
         
@@ -376,7 +357,7 @@ const styles = StyleSheet.create({
       flex: 1,
   },
   bodyCard: {
-    flex: 6,
+    flex: 7.5,
     flexDirection: 'column',
   },
   texto: {
@@ -435,7 +416,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto_medium'
   },
   textoFaltante: {
-    color: 'red',
+    color: '#e34234',
     fontSize: 12,
     fontFamily: 'Roboto',
   },

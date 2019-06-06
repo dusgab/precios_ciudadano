@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Dimensions, Keyboard, Alert } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, Keyboard, Alert, TouchableOpacity } from 'react-native';
 import { Constants, Font } from 'expo';
 import {
     Container,
@@ -152,17 +152,19 @@ export default class Inicio extends React.Component {
                               if (cat.nombre === data.categoria) {
                                 cont++;
                                 return (
-                                  <Card key={"promocion_" + j + i}>
-                                  <CardItem button bordered style={styles.listItem} 
-                                  onPress={() => this.props.navigation.push('DetalleHome', {mpid: data.marca_producto_id})}
-                                  >
-                                    <Left style={{flex: 3}}>
+                                  <Card key={"promocion_" + j + i} >
+                                  <CardItem button bordered style={styles.listItem} onPress={() => this.props.navigation.push('DetalleHome', {mpid: data.marca_producto_id})}>
+                                    
+                                    <Left style={{flex: 3, marginLeft: 0}}>
                                       {data.imagen !== null ? <Thumbnail square large source={{uri: URL + data.imagen}} /> : <Icon name="ban" type="FontAwesome" style={{fontSize: 40, color: 'gray'}}/>}
                                     </Left>
                                     <Body style={{flex: 7, flexDirection: 'column'}}>
-                                      <Text style={styles.textoProd}>{data.producto} {data.peso} {data.marca} - {data.supermercado}</Text>
-                                    <Item style={styles.listItemPrecio}>
-                                      <Item style={styles.listItemPromo}>
+                                      {/* <Item style={{flex: 8, flexDirection: 'column', borderBottomColor: 'transparent', justifyContent: 'flex-start', alignItems: 'flex-start'}}> */}
+                                        <Text style={styles.textoProd}>{data.producto} {data.peso} {data.marca}</Text>
+                                        <Text style={styles.textoProdSuper}>{data.supermercado}</Text>
+                                      {/* </Item> */}
+                                      <Item style={styles.listItemPrecio}>
+                                        <Item style={styles.listItemPromo}>
                                           <Text style={{color: "#FFF", paddingHorizontal: 7, paddingVertical: 0, fontSize: 14, fontWeight: '500', textAlign: 'center'}}
                                           onPress={() =>
                                             Toast.show({
@@ -170,7 +172,8 @@ export default class Inicio extends React.Component {
                                               duration: 7000,
                                               buttonText: "Ok",
                                               type: "success"
-                                            })}>Promo</Text>
+                                            })}
+                                            >Promo</Text>
                                         </Item>
                                         
                                         <Text style={styles.textoPrecioLista}>
@@ -181,7 +184,6 @@ export default class Inicio extends React.Component {
                                         </Text>
                                       </Item>
                                     </Body>
-                                    
                                   </CardItem>
                                   </Card>
                                 );
@@ -275,11 +277,20 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   textoProd: {
-    flex: 8,
-    fontSize: 16,
+    //flex: 5,
+    fontSize: 14,
     color: '#434343',
     fontFamily: 'Roboto_bold',
-    textAlign: 'left'
+    textAlign: 'left',
+    marginBottom: 0
+  },
+  textoProdSuper: {
+    flex: 2,
+    fontSize: 14,
+    color: '#959595',
+    fontFamily: 'Roboto_bold',
+    textAlign: 'left',
+    marginTop: 0
   },
   textoProdVacio: {
     fontSize: 16,
@@ -357,14 +368,14 @@ const styles = StyleSheet.create({
   listItem: {
     marginRight: 4,
     width: WIDTH - 70,
-    height: HEIGHT / 5.5,
+    height: HEIGHT / 6,
     borderRadius: 7,
     shadowColor: '#000000',
   },
   listItemVacio: {
     marginRight: 4,
     width: WIDTH - 70,
-    height: HEIGHT / 5.5,
+    height: HEIGHT / 6,
     borderRadius: 7,
     shadowColor: '#000000',
     alignContent: 'center', 
@@ -391,7 +402,7 @@ const styles = StyleSheet.create({
     elevation: 1
 },
   listItemPrecio: {
-    flex: 2,
+    flex: 1.5,
     flexDirection: 'row',
     alignItems: 'center', 
     justifyContent: 'center',
@@ -402,7 +413,7 @@ const styles = StyleSheet.create({
   },
   listItemPromo: {
     borderColor: 'transparent',
-    backgroundColor: '#FF1024',
+    backgroundColor: '#e34234',
     marginRight: 10,
     paddingHorizontal: 0,
     borderRadius: 30,

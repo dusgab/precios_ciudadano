@@ -128,17 +128,17 @@ export default class Categorias extends React.Component {
           botones.push(
             <CardItem button bordered onPress={() => this.props.navigation.navigate('Productos', {id: cat[index].id})}
               key={"categoria_" + index}
-              style={{ flex: 1, marginTop: 2 }}
+              style={{ flex: 1, marginTop: 2, height: HEIGHT * 0.09 }}
             >
-              <Left style={{ flex: 1 }}>
-                <Thumbnail square  source={icono} style={{ width: 25, height: 25, resizeMode: 'contain' }}/>
+              <Left style={{ flex: 2 }}>
+                <Thumbnail square large  source={icono} style={{ width: 40, height: 40, resizeMode: 'contain' }}/>
               </Left>
-              <Body style={{ flex: 7 }}>
+              <Body style={{ flex: 6, justifyContent: 'center' }}>
                 <Text style={styles.categoria}>{this.Capitalize(cat[index].nombre)}</Text>
               </Body>
               <Right style={{ flex: 2 }}>
                 <Icon 
-                  name="arrow-right"
+                  name="chevron-right"
                   type="FontAwesome"
                     />
               </Right>
@@ -152,7 +152,7 @@ export default class Categorias extends React.Component {
                   <Text style={styles.textoheader}>Categorías</Text>
                 </Body>
               </Header>
-              <Content padder>
+              <Content padder style={styles.card}>
                 <Card style={styles.mb}>
                   {botones}
                 </Card>
@@ -197,7 +197,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 20,
     fontFamily: 'Roboto_medium',
-    color: '#434343'
+    color: '#434343',
+    marginLeft: 6
   },
   categoria: {
     fontFamily: 'Roboto_medium',
@@ -210,7 +211,12 @@ const styles = StyleSheet.create({
     width: WIDTH,
   },
   mb: {
-    marginBottom: 15
+    marginBottom: 15,
+    elevation: 0,
+    shadowColor: null,
+    shadowOffset: null,
+    shadowRadius: null,
+    shadowOpacity: null,
   },
   card: {
       flex: 1,

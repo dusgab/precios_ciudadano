@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     textoheader: { //
       textAlign: 'center',
       fontSize: 20,
-      fontFamily: 'Roboto_bold',
+      fontFamily: 'Roboto_medium',
       color: '#434343'
     },
     mb: { //

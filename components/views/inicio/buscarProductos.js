@@ -21,7 +21,7 @@ import {
   } from "native-base";
 
 import api from '../../services/fetchProductos';
-import HeaderCustom from '../fijos/header';
+import URL from '../../config';
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -95,7 +95,12 @@ export default class buscarProductos extends React.Component {
 
     viewProductosListado = () => {
       let botones = [];
-      let prod1 = this.state.productos;
+      let prod = this.state.productos;
+
+      let cont = 0;
+
+      var prod1 = [...prod];
+      prod1.sort((a,b) => (a.marca_producto_id - b.marca_producto_id || (a.precio_promocion === null) - (b.precio_promocion === null) || a.precio_promocion - b.precio_promocion || a.precio_lista - b.precio_lista));
       
       if(prod1.length == 0) {
         botones.push(
@@ -113,31 +118,29 @@ export default class buscarProductos extends React.Component {
       } else {
         for (let index = 0; index < prod1.length; index++) {
 
+          if(cont !== prod1[index].marca_producto_id) {
+            cont = prod1[index].marca_producto_id;
             let mpid = prod1[index].marca_producto_id;
             botones.push(
               <CardItem button bordered onPress={() => this._onPress(mpid)}
                   key={"categoria_" + index}
                 >
                   <Left style={{ flex: 2 }}>
-                  <Icon
-                      active
-                      name="store"
-                      type="MaterialCommunityIcons"
-                      style={{ color: "#78BE20" }}
-                    />
+                  {prod1[index].imagen !== null ? <Thumbnail square source={{uri: URL + prod1[index].imagen}} /> : <Icon name="ban" type="FontAwesome" style={{fontSize: 40, color: 'gray'}}/>}
                   </Left>
                   <Body style={styles.bodyCard}>
-                      <Text style={styles.texto}>{prod1[index].producto.toUpperCase()} {prod1[index].marca.toUpperCase()}</Text>
-                      <Text note>Desde $ {prod1[index].precio_lista}</Text>
+                      <Text style={styles.texto}>{prod1[index].producto.toUpperCase()} {prod1[index].peso.toUpperCase()} {prod1[index].marca.toUpperCase()}</Text>
+                      {prod1[index].precio_promocion === null ? <Text note>Desde ${parseFloat(prod1[index].precio_lista).toFixed(2)}</Text> : <Text note>Desde ${parseFloat(prod1[index].precio_promocion).toFixed(2)}</Text>}
                   </Body>
-                  <Right style={{ flex: 2 }}>
+                  <Right style={{ flex: 1 }}>
                     <Icon 
-                      name="arrow-right"
+                      name="chevron-right"
                       type="FontAwesome"
                       />
                   </Right>
                 </CardItem>
               )
+            }
           }
         }
         return <Container style={styles.containerCard}>
@@ -153,7 +156,7 @@ export default class buscarProductos extends React.Component {
                       onChangeText={(text) => this.SearchFilterFunction(text)}
                       onKeyPress={this.handleKeyDown}
                       ref={this.searchInput}/>
-                    <Button iconRight transparent primary>
+                    <Button iconRight style={styles.btnNative} primary>
                         <Icon active name='search' type="FontAwesome" style={{fontSize: SIZE, color: 'gray'}}/>
                     </Button>
                   </Item>
@@ -221,8 +224,9 @@ const styles = StyleSheet.create({
       flex: 1,
   },
   bodyCard: {
-    flex: 8,
+    flex: 7,
     flexDirection: 'column',
+    justifyContent: 'center'
   },
   bodyCardVacio: {
     flex: 8,
@@ -233,13 +237,21 @@ const styles = StyleSheet.create({
   texto: {
     fontFamily: 'Roboto_medium',
     color: '#434343',
-    fontSize: 16,
+    fontSize: 14,
     textAlign: 'auto'
   },
   textoVacio: {
     fontFamily: 'Roboto_bold',
     color: 'gray',
     fontSize: 20,
+  },
+  btnNative: {
+    backgroundColor: 'transparent',
+    elevation: 0,
+    shadowColor: null,
+    shadowOffset: null,
+    shadowRadius: null,
+    shadowOpacity: null,
   },
   searchBar: {
     backgroundColor: '#FFF',

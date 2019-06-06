@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Dimensions, AsyncStorage } from 'react-native';
+import { StyleSheet, View, Dimensions, AsyncStorage, Image } from 'react-native';
 import { Constants, Font, Permissions } from 'expo';
 import {
     Container,
@@ -35,7 +35,7 @@ export default class DetalleHome extends React.Component {
 
       this.props.navigation.addListener('didFocus', () => {
         if ( this.state.isMounted ) {
-          this.verificarLista(this.props.navigation.state.params.mpid);
+          this.verificarLista1();
         }
       });
 
@@ -46,9 +46,10 @@ export default class DetalleHome extends React.Component {
         error: null,
         loading: true,
         showToast: false,
-        enlista: false,
+        enlista: true,
         flag: 0,
         isMounted: false,
+        id: 0,
         //Geo
         miLatLng: {
           latitude: 0,
@@ -56,6 +57,7 @@ export default class DetalleHome extends React.Component {
         },
         status: null,
       }
+
     }
 
     async componentDidMount() {
@@ -96,8 +98,8 @@ export default class DetalleHome extends React.Component {
           'Roboto_bold': require("native-base/Fonts/Roboto_bold.ttf")
         });
 
-        this.verificarLista(mpid);
-        this.setState({ productos: productos.data, loading: false, isMounted: true, flag: 10, status });
+        //this.verificarLista(mpid);
+        this.setState({ productos: productos.data, isMounted: true, enlista: false, flag: 10, status, id: mpid });
         
     }
 
@@ -113,29 +115,59 @@ export default class DetalleHome extends React.Component {
 
     //Funcion para verificar si el producto se encuentra en Mi Lista por marca_producto _id
     verificarLista = async (id) => {
+      console.log("verificar ");
+      this.setState({ enlista: false  });
       
-       var milista = [];
-       const lista = await AsyncStorage.getItem('lista');
+      var milista = [];
+      const lista = await AsyncStorage.getItem('lista');
+      milista = JSON.parse(lista);
+      
+      if(milista == null || milista.length == 0) {
+       
+        this.setState({ listaVacia: true, flag: 1, enlista: false });
+     
+      } else {
 
-       milista = JSON.parse(lista);
+        for (let index = 0; index < milista.length; index++) {
 
-       if(milista == null || milista.length == 0) {
-
-         this.setState({ listaVacia: true, flag: 1, enlista: false });
-
-       } else {
-
-          for (let index = 0; index < milista.length; index++) {
-
-              if(milista[index].marca_producto_id == id) {
-                this.setState({ enlista: true, flag: 8  });
-              } else {
-                this.setState({ enlista: false, flag: 9  });
-              }
-
+          if(milista[index].marca_producto_id == id) {
+            this.setState({ enlista: true, flag: 8  });
           }
-       }
+      
+        }
+      
+      }
+      this.setState({ loading: false, flag: 298 });
+  }
+
+  verificarLista1 = async () => {
+    console.log("verificar 1");
+    this.setState({ enlista: false });
+    
+    var milista = [];
+    const lista = await AsyncStorage.getItem('lista');
+    milista = JSON.parse(lista);
+    
+    if(milista == null || milista.length == 0) {
+      
+      this.setState({ listaVacia: true, flag: 91, enlista: false });
+    
+    } else {
+
+      for (let index = 0; index < milista.length; index++) {
+
+        if(milista[index].marca_producto_id === this.state.id) {
+          
+          this.setState({ enlista: true, flag: 98  });
+        }
+    
+      }
+    
     }
+    
+    this.setState({ loading: false, flag: 198 });
+  
+  }
 
     //Funcion para eliminar un producto de Mi Lista por marca_producti_id
     _eliminarLista = async (id) => {
@@ -242,14 +274,16 @@ export default class DetalleHome extends React.Component {
             }
 
             botones1.push(
-              <CardItem button bordered 
+              <CardItem button bordered
+                  style={{marginTop: 2}} 
                   key={"categoria_" + index + index}
                 >
                   <Body style={styles.bodyCard}>
                     <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
                       <Item style={{flex: 6, flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                        <Text style={styles.textoTitulo}>{prod[index].supermercado} </Text>
+                        {prod[index].imagenSuper !== null ? <Image source={{uri: URL + prod[index].imagenSuper}} style={{ width: 100, height: 40}} /> : <Icon name="ban" type="FontAwesome" style={{fontSize: 40, color: 'gray'}}/>}
                       </Item>
+                      
                       <Item style={{flex: 4, flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
                         <Text style={styles.textoPrecioPromo}>${parseFloat(prod[index].precio_promocion).toFixed(2)}</Text>
                         <Text style={styles.textoPrecioLista}>${parseFloat(prod[index].precio_lista).toFixed(2)}</Text>
@@ -257,12 +291,12 @@ export default class DetalleHome extends React.Component {
                     </Item>
                     <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
                       <Text style={styles.texto}>{prod[index].promocion} {prod[index].descripcion_promo}</Text>
-                      <Text style={styles.texto}>{prod[index].fecha_promo_final != null ? ("Válido hasta el " + prod[index].fecha_promo_final.substring(0, prod[index].fecha_promo_final.length -9)) : (prod[index].fecha_promo_final)}</Text>
                       <Text style={styles.texto}>Fecha relevada {prod[index].fecha_relevada}</Text>
+                      <Text style={styles.texto}>{prod[index].fecha_promo_final != null ? ("Válido hasta el " + prod[index].fecha_promo_final) : null}</Text>
                     </Item>
                     <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
                       <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 7, marginRight: 0 }}/>
-                      <Text style={styles.textoUbicacion}>{prod[index].ubicacion}  a  {dist} km</Text>
+                      <Text style={styles.textoUbicacion}>{prod[index].ubicacion} a {dist} km</Text>
                     </Item>
                   </Body>
                 </CardItem>
@@ -278,14 +312,16 @@ export default class DetalleHome extends React.Component {
             }
 
             botones2.push(
-              <CardItem button bordered 
+              <CardItem button bordered
+                  style={{marginTop: 2}} 
                   key={"promo_" + index + index}
                 >
                   <Body style={styles.bodyCard}>
                     <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
                       <Item style={{flex: 6, flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                        <Text style={styles.textoTitulo}>{prod[index].supermercado} </Text>
+                        {prod[index].imagenSuper !== null ? <Image source={{uri: URL + prod[index].imagenSuper}} style={{ width: 100, height: 40}} /> : <Icon name="ban" type="FontAwesome" style={{fontSize: 40, color: 'gray'}}/>}
                       </Item>
+                      
                       <Item style={{flex: 4, flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
                         <Text style={styles.textoPrecioPromoNull}>--</Text>
                         <Text style={styles.textoPrecioPromo}>${parseFloat(prod[index].precio_lista).toFixed(2)}</Text>
@@ -296,7 +332,7 @@ export default class DetalleHome extends React.Component {
                     </Item>
                     <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
                     <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 7, marginRight: 0 }}/>
-                      <Text style={styles.textoUbicacion}>{prod[index].ubicacion}  a  {dist} km</Text>
+                      <Text style={styles.textoUbicacion}>{prod[index].ubicacion} a {dist} km</Text>
                     </Item>
                   </Body>
                 </CardItem>
@@ -316,17 +352,17 @@ export default class DetalleHome extends React.Component {
               hasta = prod[index].precio_promocion;
             }
 
-            
-            
             botones1.push(
-              <CardItem button bordered 
+              <CardItem button bordered
+                  style={{marginTop: 2}} 
                   key={"categoria_" + index + index}
                 >
                   <Body style={styles.bodyCard}>
                     <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
                       <Item style={{flex: 6, flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                        <Text style={styles.textoTitulo}>{prod[index].supermercado} </Text>
+                        {prod[index].imagenSuper !== null ? <Image source={{uri: URL + prod[index].imagenSuper}} style={{ width: 100, height: 40}} /> : <Icon name="ban" type="FontAwesome" style={{fontSize: 40, color: 'gray'}}/>}
                       </Item>
+                      
                       <Item style={{flex: 4, flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
                         <Text style={styles.textoPrecioPromo}>${parseFloat(prod[index].precio_promocion).toFixed(2)}</Text>
                         <Text style={styles.textoPrecioLista}>${parseFloat(prod[index].precio_lista).toFixed(2)}</Text>
@@ -334,8 +370,8 @@ export default class DetalleHome extends React.Component {
                     </Item>
                     <Item style={{flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
                       <Text style={styles.texto}>{prod[index].promocion} {prod[index].descripcion_promo}</Text>
-                      <Text style={styles.texto}>{prod[index].fecha_promo_final != null ? ("Válido hasta el " + prod[index].fecha_promo_final.substring(0, prod[index].fecha_promo_final.length -9)) : (prod[index].fecha_promo_final)}</Text>
                       <Text style={styles.texto}>Fecha relevada {prod[index].fecha_relevada}</Text>
+                      <Text style={styles.texto}>{prod[index].fecha_promo_final != null ? ("Válido hasta el " + prod[index].fecha_promo_final) : null}</Text>
                     </Item>
                     <Item style={{flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
                     <Icon active name="map-marker" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 12, marginTop: 7, marginRight: 0 }}/>
@@ -355,14 +391,16 @@ export default class DetalleHome extends React.Component {
             }
 
             botones2.push(
-              <CardItem button bordered 
+              <CardItem button bordered
+                  style={{marginTop: 2}} 
                   key={"promo_" + index + index}
                 >
                   <Body style={styles.bodyCard}>
                     <Item style={{flexDirection: 'row', borderBottomColor: 'transparent'}}>
                       <Item style={{flex: 6, flexDirection: 'column', borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
-                        <Text style={styles.textoTitulo}>{prod[index].supermercado} </Text>
+                        {prod[index].imagenSuper !== null ? <Image source={{uri: URL + prod[index].imagenSuper}} style={{ width: 100, height: 40}} /> : <Icon name="ban" type="FontAwesome" style={{fontSize: 40, color: 'gray'}}/>}
                       </Item>
+                      
                       <Item style={{flex: 4, flexDirection: 'row', borderBottomColor: 'transparent', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
                         <Text style={styles.textoPrecioPromoNull}>--</Text>
                         <Text style={styles.textoPrecioPromo}>${parseFloat(prod[index].precio_lista).toFixed(2)}</Text>
@@ -394,7 +432,7 @@ export default class DetalleHome extends React.Component {
                     <Text style={styles.textoTitulo}>{prod[index].producto} {prod[index].peso} {prod[index].marca}</Text>
                     <Item style={{flexDirection: 'row', flex: 1, borderBottomColor: 'transparent', alignItems: 'flex-start', justifyContent: 'flex-start', marginLeft: 0}}>
                       <Text style={styles.textoPrecio}>Rango de precios ${parseFloat(desde).toFixed(2)}</Text>
-                      <Icon name="arrow-right" type="MaterialCommunityIcons" style={{ color: "gray", fontSize: 18, marginLeft: 4, textAlign: 'center'}}/>
+                      <Icon name="right" type="AntDesign" style={{ color: "#838181", fontSize: 13, marginTop: 5, marginLeft: 6, textAlign: 'center'}}/>
                       <Text style={styles.textoPrecio}>${parseFloat(hasta).toFixed(2)}</Text>
                     </Item>
                   </Body>
@@ -421,6 +459,7 @@ export default class DetalleHome extends React.Component {
           )
         }
       }
+
       return <Container style={styles.containerCard}>
               <Header style={styles.header}>
                 <Body style={styles.bodyheader}>

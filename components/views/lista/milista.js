@@ -21,8 +21,8 @@ import {
     Toast,
   } from "native-base";
 
-import HeaderCustom from '../fijos/header';
 import api from '../../services/fetchProductos';
+import URL from '../../config';
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -35,7 +35,6 @@ export default class MiLista extends React.Component {
         
         this.props.navigation.addListener('didFocus', () => {
           if ( this.state.isMounted ) {
-            console.log("ismounted on focus detalle home");
             this.verificarLista();
           }
         });
@@ -85,9 +84,7 @@ export default class MiLista extends React.Component {
     verificarLista = async () => {
       var milista = [];
       const lista = await AsyncStorage.getItem('lista');
-      console.log(" lista verificar" + lista);
       if(lista == null || lista.length == 0) {
-        console.log(" milista null " + this.listaArray);
         this.setState({ listaVacia: true, flag: 1 });
       } else {
         milista = JSON.parse(lista);
@@ -169,15 +166,10 @@ export default class MiLista extends React.Component {
               botones.push(
                 <CardItem button bordered
                     key={"categoria_" + index + ind + count2}
-                    style={{ flex: 1 }}
+                    style={{ flex: 1, marginTop: 2 }}
                   >
                     <Left style={{ flex: 2 }}>
-                    <Icon
-                        active
-                        name="store"
-                        type="MaterialCommunityIcons"
-                        style={{ color: "#78BE20" }}
-                      />
+                    {prod[index].imagen !== null ? <Thumbnail square small source={{uri: URL + prod[index].imagen}} /> : <Icon name="ban" type="FontAwesome" style={{fontSize: 30, color: 'gray'}}/>}
                     </Left>
                     <Body style={styles.bodyCard} >
                         <Text style={styles.texto}>{prod[index].producto} {prod[index].marca} {prod[index].peso}</Text>
