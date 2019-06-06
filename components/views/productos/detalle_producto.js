@@ -46,7 +46,7 @@ export default class DetalleHome extends React.Component {
         error: null,
         loading: true,
         showToast: false,
-        enlista: true,
+        enlista: false,
         flag: 0,
         isMounted: false,
         id: 0,
@@ -99,7 +99,7 @@ export default class DetalleHome extends React.Component {
         });
 
         //this.verificarLista(mpid);
-        this.setState({ productos: productos.data, isMounted: true, enlista: false, flag: 10, status, id: mpid });
+        this.setState({ productos: productos.data, loading: false, isMounted: true, flag: 10, status, id: mpid });
         
     }
 
@@ -141,9 +141,11 @@ export default class DetalleHome extends React.Component {
   }
 
   verificarLista1 = async () => {
-    console.log("verificar 1");
-    this.setState({ enlista: false });
+    //console.log("verificar 1");
+    //this.setState({ enlista: false });
     
+    let ban = 0;
+
     var milista = [];
     const lista = await AsyncStorage.getItem('lista');
     milista = JSON.parse(lista);
@@ -157,7 +159,7 @@ export default class DetalleHome extends React.Component {
       for (let index = 0; index < milista.length; index++) {
 
         if(milista[index].marca_producto_id === this.state.id) {
-          
+          ban++;
           this.setState({ enlista: true, flag: 98  });
         }
     
@@ -165,7 +167,9 @@ export default class DetalleHome extends React.Component {
     
     }
     
-    this.setState({ loading: false, flag: 198 });
+    if(ban === 0) {
+      this.setState({ enlista: false, flag: 918  });
+    }
   
   }
 
